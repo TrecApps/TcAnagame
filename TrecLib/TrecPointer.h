@@ -112,7 +112,7 @@ template<class T> class _TREC_LIB_DLL TrecPointer : public TrecPointerBase
 
 public:
 
-	explicit TrecPointer(const TrecPointer<T>& copy)
+	TrecPointer(const TrecPointer<T>& copy)
 	{
 		pointer = copy.pointer;
 		Increment();

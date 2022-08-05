@@ -40,5 +40,9 @@ public:
 	virtual ~TObject();
 
 	bool IsDeleteLocked() const;
+
+	void ThreadLock() const;
+
+	void ThreadRelease()const;
 };
 

@@ -25,3 +25,16 @@ bool TObject::IsDeleteLocked() const
 {
 	return deleteLock;
 }
+
+
+void TObject::ThreadLock() const
+{
+
+	EnterCriticalSection(&thread);
+}
+
+void TObject::ThreadRelease() const
+{
+	LeaveCriticalSection(&thread);
+
+}
