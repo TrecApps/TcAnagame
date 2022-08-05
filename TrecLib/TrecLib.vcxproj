@@ -144,6 +144,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="TDataArray.h" />
+    <ClInclude Include="TFile.h" />
     <ClInclude Include="TObject.h" />
     <ClInclude Include="TrecLib.h" />
     <ClInclude Include="TrecPointer.h" />
@@ -158,6 +159,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TFile.cpp" />
     <ClCompile Include="TObject.cpp" />
     <ClCompile Include="TString.cpp" />
   </ItemGroup>

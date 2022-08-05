@@ -22,6 +22,22 @@ void TcFileClose(FILE_HANDLE& fileName)
 	fileName = nullptr;
 }
 
+void TcFileFlush(FILE_HANDLE& fileName)
+{
+	if (fileName)
+		FlushFileBuffers(fileName);
+}
+
+UINT TcMultiByteToWideChar(const char* source, UINT sourceSize, WCHAR* target)
+{
+	return MultiByteToWideChar(CP_UTF8, 0, source, sourceSize, target, sourceSize * 2);
+}
+
+UINT TcWideCharToMultiByte(const WCHAR* source, UINT sourceSize, char* target)
+{
+	return WideCharToMultiByte(CP_ACP, 0, source, -1, target, sourceSize, nullptr, nullptr);
+}
+
 
 #elif defined(__linux__) || (defined (__APPLE__) && defined (__MACH__))
 void TcFileRead(FILE_HANDLE fileName, UCHAR* bytes, DWORD sizeToRead, DWORD& bytesRead)
@@ -39,4 +55,21 @@ void TcFileClose(FILE_HANDLE& fileName)
 		close(fileName);
 	fileName = -1;
 }
+
+void TcFileFlush(FILE_HANDLE& fileName)
+{
+	if (fileName > 2)
+		fsync(fileName);
+}
+
+UINT TcMultiByteToWideChar(const char* source, UINT sourceSize, WCHAR* target)
+{
+	return mbstowcs(target, source, sourceSize * 2);
+}
+
+UINT TcWideCharToMultiByte(const WCHAR* source, UINT sourceSize, char* target)
+{
+	return wcstombs(target, source, sourceSize / 2);
+}
+
 #endif
