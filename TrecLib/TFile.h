@@ -46,7 +46,6 @@ TString _TREC_LIB_DLL GetDirectoryWithSlash(CentralDirectories cd);
 
 TString _TREC_LIB_DLL GetShadowDirectoryWithSlash(CentralDirectories cd);
 
-TString _TREC_LIB_DLL GetShadowFilePath(TrecPointer<TFile::TFileShell> f);
 
 class TFile :
     public TObject
@@ -380,6 +379,9 @@ private:
 
 	UCHAR ReadUnicode8Char(char* seq4);
 };
+
+
+TString _TREC_LIB_DLL GetShadowFilePath(TrecPointer<TFile::TFileShell> f);
 
 class _TREC_LIB_DLL TDirectory :
 	public TFile::TFileShell

@@ -1,6 +1,6 @@
 #pragma once
 #include "BaseTypes.h"
-#include "TrecLib.h"
+#include "TrecPointer.h"
 
 class _TREC_LIB_DLL TObjectLocker
 {
@@ -12,7 +12,26 @@ private:
 	ThreadBlocker* section;
 };
 
-class _TREC_LIB_DLL TObject
+
+using var_type = enum class var_type
+{
+	expression,          // Can be Operated upon to generate a new variable
+	primitive,           // Primitive variable is being held
+	primitive_formatted, // Primitive variable with formatting data
+	collection,          // A collection type variable is being held, whether an array, JavaScript style object, tuple, dictionary, etc.
+	native_object,       // Variable references a C++ level native Anagame object
+	string,              // References a String
+	interpretor,         // References an Interpretor (i.e. procedures/functions that are stored as variables
+	interpretor_gen,     // Generates new Interpretors
+	processor,
+	accessor,            // Type of variable that holds a Getter and Setter method
+	special_value,       // Holds a special value that doesn't fit in any of the other categories
+	iterator,            // Serves as an iterator
+	async,               // Serves as a brdge between threads
+	runner               // Function/Procedure that 'Runs' in some form
+};
+
+class _TREC_LIB_DLL TObject: public TCoreObject
 {
 public:
 	using ObjectType = enum class ObjectType
@@ -29,20 +48,49 @@ public:
 		ot_other		// Does not fit into the previous categories
 	};
 
+    class _TREC_LIB_DLL TVariable : public TCoreObject
+    {
+    public:
+		TVariable();
+		virtual ~TVariable();
+
+        virtual TrecPointer<TVariable> Clone() = 0;
+
+        virtual var_type GetVarType() = 0;
+
+        virtual TrecPointer<TVariable> ToString() = 0;
+
+        virtual TrecPointer<TVariable> ToString(TrecPointer<TVariable> detail) = 0;
+
+        virtual UINT Get4Value() = 0;
+
+        virtual UINT GetSize() = 0;
+
+
+        virtual void SetSelf(TrecPointer<TVariable> vSelf);
+
+    protected:
+        /**
+         * Self Reference
+         */
+        TrecPointerSoft<TVariable> vSelf;
+    };
+
+
 protected:
 	mutable ThreadBlocker thread;
 
-	bool deleteLock;
 public:
 
 	TObject();
 
 	virtual ~TObject();
 
-	bool IsDeleteLocked() const;
-
 	void ThreadLock() const;
 
 	void ThreadRelease()const;
+
+	TrecPointer<TVariable> ToString(TrecPointer<TVariable>);
 };
 
+using TVariable = TObject::TVariable;

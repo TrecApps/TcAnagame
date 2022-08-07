@@ -2065,3 +2065,58 @@ IndexRange::IndexRange(int s, int e)
 	end = e;
 	active = false;
 }
+
+TrecPointer<TVariable> TStringVariable::Clone()
+{
+	return TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(string);
+}
+
+TStringVariable::TStringVariable(const TString& string)
+{
+	this->string.Set(string);
+}
+
+var_type TStringVariable::GetVarType()
+{
+	return var_type::string;
+}
+
+TrecPointer<TVariable> TStringVariable::GetIterator()
+{
+	return TrecPointer<TVariable>();
+}
+
+TString TStringVariable::GetString()
+{
+	return string;
+}
+
+UINT TStringVariable::Get4Value()
+{
+	return 0;
+}
+
+UINT TStringVariable::GetSize()
+{
+	return string.GetSize();
+}
+
+TrecPointer<TVariable> TStringVariable::ToString()
+{
+	return TrecPointerKey::TrecFromSoft<TVariable>(vSelf);
+}
+
+TrecPointer<TVariable> TStringVariable::ToString(TrecPointer<TVariable> detail)
+{
+	return TrecPointerKey::TrecFromSoft<TVariable>(vSelf);
+}
+
+bool TVObject::GetVariable(const TString& name, TrecPointer<TVariable>& var)
+{
+	return false;
+}
+
+bool TVObject::SetVariable(const TString& name, TrecPointer<TVariable> var)
+{
+	return false;
+}

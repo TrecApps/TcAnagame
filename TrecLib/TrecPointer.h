@@ -1,17 +1,25 @@
 #pragma once
 #include <memory>
+#include "TrecLib.h"
+#include "BaseTypes.h"
 
-#include "TObject.h"
+class _TREC_LIB_DLL TCoreObject
+{
+public:
+	virtual ~TCoreObject();
+};
 
 class _TREC_LIB_DLL TrecBoxPointer
 {
 	friend class TrecPointerKey;
 	friend class TrecPointerBase;
+	
+
 
 	/**
 	 * The raw pointer to the actual object being used
 	 */
-	TObject* rawPointer;
+	TCoreObject* rawPointer;
 
 	/**
 	 * tracks the number of TrecPointers referencing the object
@@ -35,7 +43,7 @@ protected:
 		pointer = nullptr;
 	}
 
-	TObject* GetObjectPointer()
+	TCoreObject* GetObjectPointer()
 	{
 		return pointer ? pointer->rawPointer : nullptr;
 	}
@@ -45,7 +53,7 @@ protected:
 		return pointer;
 	}
 
-	void SetNewPointer(TObject* obj)
+	void SetNewPointer(TCoreObject* obj)
 	{
 		pointer = new TrecBoxPointer();
 		pointer->rawPointer = obj;
@@ -103,11 +111,12 @@ template<class T> class _TREC_LIB_DLL TrecPointer : public TrecPointerBase
 	friend class TrecPointerKey;
 	
 
-	explicit TrecPointer(t* raw)
+	explicit TrecPointer(T* raw)
 	{
-		if (!raw)
+		if (!dynamic_cast<TCoreObject*>(raw))
 			throw 1;
-		pointer = new TrecBoxPointer(raw);
+
+		SetNewPointer(dynamic_cast<TCoreObject*>(raw));
 	}
 
 public:
@@ -152,12 +161,12 @@ public:
 	T* Get()
 	{
 		if (!pointer) return nullptr;
-		return dynamic_cast<T*>(pointer->GetObjectPointer());
+		return dynamic_cast<T*>(GetObjectPointer());
 	}
 
 	T* operator->()
 	{
-		Get();
+		return Get();
 	}
 };
 
@@ -173,18 +182,18 @@ public:
 		Increment();
 	}
 
-	explicit TrecPointerSoft(const TrecPointerSoft<T>& copy)
+	TrecPointerSoft(const TrecPointerSoft<T>& copy)
 	{
 		pointer = copy.pointer;
 		Increment();
 	}
 
-	TrecPointer()
+	TrecPointerSoft()
 	{
 		pointer = nullptr;
 	}
 
-	~TrecPointer()
+	~TrecPointerSoft()
 	{
 		// Make sure we decriment the coutner before deletion is complete
 		Nullify();

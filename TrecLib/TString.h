@@ -326,6 +326,46 @@ private:
 	WCHAR* string;
 };
 
+class _TREC_LIB_DLL TStringVariable : public TVariable
+{
+public:
+	virtual TrecPointer<TVariable> Clone()override;
+
+	TStringVariable(const TString& string);
+
+	virtual var_type GetVarType() override;
+
+	virtual TrecPointer<TVariable> GetIterator();
+
+	virtual TString GetString();
+
+	virtual UINT Get4Value()override;
+
+	virtual UINT GetSize()override;
+
+	virtual TrecPointer<TVariable> ToString();
+
+	virtual TrecPointer<TVariable> ToString(TrecPointer<TVariable> detail);
+
+private:
+	/**
+	 * The String held by the variable
+	 */
+	TString string;
+};
+
+
+class _TREC_LIB_DLL TVObject : public TObject
+{
+public:
+
+	virtual bool GetVariable(const TString& name, TrecPointer<TVariable>& var);
+
+	virtual bool SetVariable(const TString& name, TrecPointer<TVariable> var);
+};
+
+
+
 bool _TREC_LIB_DLL IsWhitespace(WCHAR ch);
 
 bool convertToNumber(TCHAR c, int* i);
