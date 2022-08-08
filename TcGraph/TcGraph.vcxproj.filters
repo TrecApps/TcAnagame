@@ -21,31 +21,19 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TObject.h">
+    <ClInclude Include="DrawingBoard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FileFunctions.hpp">
+    <ClInclude Include="TcGraph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TrecLib.h">
+    <ClInclude Include="TTextElement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BaseTypes.h">
+    <ClInclude Include="GraphicsDef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TrecPointer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TString.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TDataArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TFile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TDataMap.h">
+    <ClInclude Include="TColor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -56,19 +44,13 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TObject.cpp">
+    <ClCompile Include="DrawingBoard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FileFunctions.cpp">
+    <ClCompile Include="TTextElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TString.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TFile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TrecPointer.cpp">
+    <ClCompile Include="TColor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

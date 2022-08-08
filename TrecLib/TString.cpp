@@ -1829,20 +1829,34 @@ TString TString::GetLower() const
 	return ret;
 }
 
-void TString::SetUpper()
+void TString::SetUpper(UINT mode)
 {
 	TObjectLocker threadLock(&thread);
+	bool firstLetter = false;
+	bool onSpace = true;
 	for (UINT c = 0; c < size; c++)
 	{
-		string[c] = towupper(string[c]);
+		if (mode)
+		{
+			if (IsWhitespace(string[c]))
+				onSpace = true;
+			else if (onSpace)
+			{
+				onSpace = false;
+				firstLetter = true;
+			}
+			else firstLetter = false;
+		}
+		if(!mode || firstLetter)
+			string[c] = towupper(string[c]);
 	}
 }
 
-TString TString::GetUpper()const
+TString TString::GetUpper(UINT mode)const
 {
 	TObjectLocker threadLock(&thread);
 	TString ret(this);
-	ret.SetUpper();
+	ret.SetUpper(mode);
 	return ret;
 }
 
@@ -2086,7 +2100,7 @@ TrecPointer<TVariable> TStringVariable::GetIterator()
 	return TrecPointer<TVariable>();
 }
 
-TString TStringVariable::GetString()
+TString& TStringVariable::GetString()
 {
 	return string;
 }

@@ -270,9 +270,9 @@ public:
 
 	TString GetLower()const;
 
-	void SetUpper();
+	void SetUpper(UINT mode = 0);
 
-	TString GetUpper()const;
+	TString GetUpper(UINT mode = 0)const;
 
 	void SetReverse();
 
@@ -337,7 +337,7 @@ public:
 
 	virtual TrecPointer<TVariable> GetIterator();
 
-	virtual TString GetString();
+	virtual TString& GetString();
 
 	virtual UINT Get4Value()override;
 
