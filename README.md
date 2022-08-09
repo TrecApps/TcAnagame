@@ -83,7 +83,8 @@ Dependency Name (Folder Name to copy to): `Freetype_2.0`
 
 This dependency is intended to Provide Video Encoding/Decoding Support
 
-Note: This Dependency has not been Added Yet.
+Command: `./vcpkg install ffmpeg:x64-windows` (Note: If you are focused on Building a 32-bit Version, omit the `:x64-windows` from the command
+Dependency Name (Folder Name to copy to): `ffmpeg`
 
 ### Linux/Mac
 
