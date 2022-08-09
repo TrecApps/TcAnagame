@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\..\Freetype_2.0\include;..\..\GLFW\include;..\TrecLib;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\Freetype_2.0\lib;..\..\GLFW\lib;..\x64\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\ffmpeg\include;..\..\Freetype_2.0\include;..\..\GLFW\include;..\TrecLib;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\ffmpeg\lib;..\..\Freetype_2.0\lib;..\..\GLFW\lib;..\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -121,7 +121,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>freetype.lib;glfw3dll.lib;OpenGL32.lib;TrecLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>avcodec.lib;freetype.lib;glfw3dll.lib;OpenGL32.lib;TrecLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
