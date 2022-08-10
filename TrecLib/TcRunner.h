@@ -1,6 +1,8 @@
 #pragma once
 #include "TString.h"
 
+#include <thread>
+
 using runner_block_mode = enum class runner_block_mode {
     block,          // This Runner Only supports running in the calling thread
     supports_async, // This runner runs in the calling thread but can run in a separate thread if requested
@@ -99,6 +101,8 @@ public:
     TrecPointer<TVariable> value;
 };
 
+
+
 class TcRunner :
     public TVariable
 {
@@ -108,7 +112,8 @@ protected:
 
     ULONG64 termination;                              // Whether the Runner Should terminate after a set amout of time (0 for no)
 
-    bool doAsync;
+    bool doAsync;       // Whether to run this asyncronously
+    bool doTerminate;   // Whether to terminate or not, should start out as false
 
     virtual void RunDetails(ReturnObject& ret) = 0;
     
@@ -124,7 +129,7 @@ public:
 
     void SetTerminate(ULONG64 termination);
 
-
+    void Terminate();
 
     virtual runner_block_mode GetBlockMode() = 0;
 
@@ -133,3 +138,46 @@ public:
     void Run(ReturnObject& ret);
 };
 
+class TcAsyncVariable : public TVariable
+{
+private:
+    TrecPointer<TcRunner> mainFunction;
+    VariableHolder varHolder;           // The Place to retrieve the resulting value once complete
+    signed char process;
+protected:
+
+    using AsyncResponseRunner = struct AsyncResponseRunner {
+        TrecPointer<TcRunner> accepted;
+        TrecPointer<TcRunner> rejected;
+    };
+
+    TDataArray<AsyncResponseRunner> response;
+
+    TrecPointer<TcRunner> finalCall;
+
+    mutable ThreadBlocker thread;
+
+    std::thread* threadReference;
+
+    bool doTerminate;
+
+public:
+
+    TcAsyncVariable(TrecPointer<TcRunner> mainRunner);
+
+    ~TcAsyncVariable();
+
+    static void Invoke_(TrecPointer<TcAsyncVariable> thisVar);
+
+    void SetExpectedType(const TString& type);
+
+    void Invoke();
+
+    TrecPointer<TVariable> GetResult();
+
+    signed char GetProgess();
+
+    void AppendResponse(TrecPointer<TcRunner> success, TrecPointer<TcRunner> rejected);
+
+    void SetFinalResponse(TrecPointer<TcRunner> finallyRunner);
+};

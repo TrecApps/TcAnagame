@@ -68,6 +68,7 @@ void TcRunner::SetParameterSpecs(const TDataArray<VariableHolder>& specs)
 
 void TcRunner::SetParameters(TrecPointer<TVariable>& params, ReturnObject& result)
 {
+	
 }
 
 void TcRunner::SetTerminate(ULONG64 termination)
@@ -75,12 +76,120 @@ void TcRunner::SetTerminate(ULONG64 termination)
 	this->termination = termination;
 }
 
+void TcRunner::Terminate()
+{
+	doTerminate = true;
+}
+
 void TcRunner::Run(ReturnObject& ret)
 {
 	if (doAsync)
 	{
+		TrecPointer<TcRunner> thisRunner = TrecPointerKey::ConvertPointer<TVariable, TcRunner>(
+			Clone()
+			);
+		thisRunner->doAsync = false;
 
+		ret.errorObject = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TcAsyncVariable>(thisRunner);
 	}
 	else
 		RunDetails(ret);
+}
+
+TcAsyncVariable::TcAsyncVariable(TrecPointer<TcRunner> mainRunner)
+{
+	this->mainFunction = mainRunner;
+	this->doTerminate = false;
+	this->process = 0;
+
+	this->threadReference = nullptr;
+	
+	TcInitLock(&thread);
+}
+
+TcAsyncVariable::~TcAsyncVariable()
+{
+	if (threadReference)
+	{
+		doTerminate = true;
+		threadReference->join();
+
+		delete threadReference;
+		threadReference = nullptr;
+	}
+}
+
+// This method is expected to be run 
+void TcAsyncVariable::Invoke_(TrecPointer<TcAsyncVariable> thisVar)
+{
+	thisVar->process = 0;
+	ReturnObject ret;
+	if (thisVar->mainFunction.Get())
+		thisVar->mainFunction->Run(ret);
+
+	for (UINT Rust = 0; !thisVar->doTerminate && Rust < thisVar->response.Size(); Rust++)
+	{
+		if (!ret.returnCode)
+		{
+			auto accepted = thisVar->response[Rust].accepted;
+			if (accepted.Get())
+			{
+				accepted->SetParameters(ret.errorObject, ret);
+				accepted->Run(ret);
+			}
+		}
+		else
+		{
+			auto rejected = thisVar->response[Rust].rejected;
+			if (rejected.Get())
+			{
+				rejected->SetParameters(ret.errorObject, ret);
+				rejected->Run(ret);
+				break;
+			}
+		}
+	}
+
+	if (!thisVar->doTerminate && thisVar->finalCall.Get())
+		thisVar->finalCall->Run(ret);
+
+	thisVar->varHolder.value = ret.errorObject;
+
+	thisVar->process = ret.returnCode ? -1 : 1;
+
+	
+}
+
+void TcAsyncVariable::SetExpectedType(const TString& type)
+{
+	varHolder.type.Set(type);
+}
+
+void TcAsyncVariable::Invoke()
+{
+	TrecPointer<TcAsyncVariable> thisVar = TrecPointerKey::ConvertPointer<TVariable, TcAsyncVariable>(
+		TrecPointerKey::TrecFromSoft<>(vSelf)
+		);
+	threadReference = new std::thread(Invoke_, thisVar);
+}
+
+TrecPointer<TVariable> TcAsyncVariable::GetResult()
+{
+	return process ? varHolder.value : TrecPointer<TVariable>();
+}
+
+signed char TcAsyncVariable::GetProgess()
+{
+	return process;
+}
+
+void TcAsyncVariable::AppendResponse(TrecPointer<TcRunner> success, TrecPointer<TcRunner> rejected)
+{
+	if (success.Get() || rejected.Get())
+		response.push_back({ success, rejected });
+}
+
+void TcAsyncVariable::SetFinalResponse(TrecPointer<TcRunner> finallyRunner)
+{
+	finalCall = finallyRunner;
 }
