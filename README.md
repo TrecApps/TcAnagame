@@ -33,7 +33,7 @@ The Libraries they are built-upon
 * TcSock - Provides networking, encryption
 * TrecLib - Core Library upon which everything else is built
 
-_Note:_ As of right now, only *TcGraph* and *TrecLib* have been created
+_Note:_ As of right now, only **TcGraph** and **TrecLib** have been created
 
 ## Dependencies
 

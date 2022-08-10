@@ -182,6 +182,217 @@ float hueToRgb(float p, float q, float t) {
 	return p;
 }
 
+TColor GetColorFromColorName(const TString& color, bool& worked)
+{
+	for (UINT Rust = 0; Rust < COLOR_MAP_SIZE; Rust++)
+	{
+		if (!color.Compare(colorMap[Rust].string))
+		{
+			UINT val = colorMap[Rust].value;
+			worked = true;
+			auto r = static_cast<float>((val & 0x00FF0000) >> 16);
+			auto g = static_cast<float>((val & 0x0000FF00) >> 8);
+			auto b = static_cast<float>(val & 0x000000FF);
+			return TColor(r / 255.0f, g / 255.0f, b / 255.0f);
+		}
+	}
+	return TColor();
+}
+
+TColor GetColorFromHashtag(const TString& color, bool& worked)
+{
+	UINT hexValue = 0;
+	bool w = TString::ConvertStringToUint(color.SubString(1), hexValue, number_base::nb_hexadecimal);
+	if (w)
+	{
+		worked = true;
+		byte vals[4];
+		vals[0] = (hexValue & 0xff000000) >> 24;
+		vals[1] = (hexValue & 0x00ff0000) >> 16;
+		vals[2] = (hexValue & 0x0000ff00) >> 8;
+		vals[3] = hexValue & 0x000000ff;
+
+		float f0 = static_cast<float>(vals[0]) / 255.0f;
+		float f1 = static_cast<float>(vals[1]) / 255.0f;
+		float f2 = static_cast<float>(vals[2]) / 255.0f;
+		float f3 = static_cast<float>(vals[3]) / 255.0f;
+		worked = true;
+		if (vals[0])
+		{
+			return TColor(f0, f1, f2, f3);
+		}
+		else
+			return TColor(f1, f2, f3);
+	}
+}
+
+TColor GetColorFromRgb(const TString& color, bool& worked)
+{
+	TString tempColor(color.SubString(4, color.GetSize() - 1));
+	auto colors = tempColor.split(L',');
+
+	if (colors->Size() == 3)
+	{
+		float rgbf[] = {
+			0.0f,0.0f,0.0f
+		};
+		bool w = true;
+		for (UINT Rust = 0; Rust < 3 && w; Rust++)
+		{
+			colors->at(Rust).Trim();
+			bool usePercent = false;
+			if (colors->at(Rust).EndsWith(L'%'))
+			{
+				usePercent = true;
+				colors->at(Rust).SubString(0, colors->at(Rust).GetSize() - 1);
+			}
+			if (colors->at(Rust).ConvertToFloat(rgbf[Rust]))
+				w = false;
+			else
+				rgbf[Rust] /= (usePercent) ? 100.f : 255.0f;
+		}
+		if (w)
+		{
+			worked = true;
+			return TColor(rgbf[0], rgbf[1], rgbf[2]);
+		}
+	}
+	return TColor();
+}
+
+TColor GetColorFromRgba(const TString& color, bool& worked)
+{
+	TString tempColor(color.SubString(5, color.GetSize() - 1));
+	auto colors = tempColor.split(L',');
+
+	if (colors->Size() == 3)
+	{
+		float rgbf[] = {
+			0.0f,0.0f,0.0f, 1.0f
+		};
+		bool w = true;
+		for (UINT Rust = 0; Rust < 4 && w; Rust++)
+		{
+			colors->at(Rust).Trim();
+			bool usePercent = false;
+			if (colors->at(Rust).EndsWith(L'%'))
+			{
+				usePercent = true;
+				colors->at(Rust).SubString(0, colors->at(Rust).GetSize() - 1);
+			}
+			if (colors->at(Rust).ConvertToFloat(rgbf[Rust]))
+				w = false;
+			else
+				rgbf[Rust] /= (usePercent) ? 100.f : 255.0f;
+		}
+		if (w)
+		{
+			worked = true;
+			return TColor(rgbf[0], rgbf[1], rgbf[2], rgbf[3]);
+		}
+	}
+}
+
+TColor GetColorFromHsl(const TString& color, bool& worked)
+{
+	TString tempColor(color.SubString(4, color.GetSize() - 1));
+	auto colors = tempColor.split(L',');
+
+	if (colors->Size() != 3)
+		return TColor();
+
+
+	float hslf[] = {
+		   0.0f,0.0f,0.0f
+	};
+	bool w = true;
+	float divisor = 360.f;
+	for (UINT Rust = 0; Rust < 3 && w; Rust++)
+	{
+		colors->at(Rust).Trim();
+		if (Rust)
+		{
+			if (colors->at(Rust).EndsWith(L'%'))
+				colors->at(Rust).Set(colors->at(Rust).SubString(0, colors->at(Rust).GetSize() - 1));
+			colors->at(Rust).Trim();
+		}
+		if (colors->at(Rust).ConvertToFloat(hslf[Rust]))
+			return TColor();
+
+		if (static_cast<bool>(hslf[Rust]))
+			hslf[Rust] /= divisor;
+		divisor = 100.0f;
+	}
+
+	if (w)
+	{
+		if (!static_cast<bool>(hslf[1]))
+			return TColor(1.0f, 1.0f, 1.0f);
+
+		float q = hslf[2] < 0.5f ? hslf[2] * (1.0f + hslf[1]) : hslf[2] + hslf[1] - hslf[2] * hslf[1];
+		float p = 2.0f * hslf[2] - q;
+		worked = true;
+		return TColor(hueToRgb(p, q, hslf[0] + 1.0f / 3.0f),
+			hueToRgb(p, q, hslf[0]),
+			hueToRgb(p, q, hslf[0] - 1.0f / 3.0f));
+	}
+	
+}
+
+TColor GetColorFromHsla(const TString& color, bool& worked)
+{
+	TString tempColor(color.SubString(5, color.GetSize() - 1));
+	auto colors = tempColor.split(L',');
+
+	if (colors->Size() != 3)
+		return TColor();
+	
+	float hslf[] = {
+		   0.0f,0.0f,0.0f,0.0f
+	};
+	bool w = true;
+	bool usePercent = false;
+	float divisor = 360.f;
+	for (UINT Rust = 0; Rust < 4 && w; Rust++)
+	{
+		colors->at(Rust).Trim();
+		if (Rust)
+		{
+			if (colors->at(Rust).EndsWith(L'%'))
+			{
+				usePercent = true;
+				colors->at(Rust).Set(colors->at(Rust).SubString(0, colors->at(Rust).GetSize() - 1));
+			}
+			else
+				usePercent = false;
+			colors->at(Rust).Trim();
+		}
+		if (colors->at(Rust).ConvertToFloat(hslf[Rust]))
+			return TColor();
+
+		if (static_cast<bool>(hslf[Rust]) && Rust < 3)
+			hslf[Rust] /= divisor;
+		divisor = 100.0f;
+	}
+
+	if (w)
+	{
+		if (!static_cast<bool>(hslf[1]))
+			return TColor(1.0f, 1.0f, 1.0f);
+
+		float q = hslf[2] < 0.5f ? hslf[2] * (1.0f + hslf[1]) : hslf[2] + hslf[1] - hslf[2] * hslf[1];
+		float p = 2.0f * hslf[2] - q;
+			
+		worked = true;
+
+		return TColor(hueToRgb(p, q, hslf[0] + 1.0f / 3.0f),
+			hueToRgb(p, q, hslf[0]),
+			hueToRgb(p, q, hslf[0] - 1.0f / 3.0f),
+			hslf[3] / (usePercent ? 100.0f : 255.0f));
+	}
+	
+}
+
 TColor TColor::GetColorFromString(const TString& color, bool& worked)
 {
 	TString tempColor(color);
@@ -190,211 +401,45 @@ TColor TColor::GetColorFromString(const TString& color, bool& worked)
 
 	worked = false;
 
-	for (UINT Rust = 0; Rust < COLOR_MAP_SIZE; Rust++)
-	{
-		if (!tempColor.Compare(colorMap[Rust].string))
-		{
-			UINT val = colorMap[Rust].value;
-			worked = true;
-			float r = static_cast<float>((val & 0x00FF0000) >> 16);
-			float g = static_cast<float>((val & 0x0000FF00) >> 8);
-			float b = static_cast<float>(val & 0x000000FF);
-			return TColor(r / 255.0f, g / 255.0f, b / 255.0f);
-		}
-	}
+	TColor ret = GetColorFromColorName(tempColor, worked);
+
+	if (worked)
+		return ret;
 
 	if (tempColor.StartsWith(L"#"))
 	{
-		UINT hexValue = 0;
-		bool w = TString::ConvertStringToUint(tempColor.SubString(1), hexValue, number_base::nb_hexadecimal);
-		if (w)
-		{
-			worked = true;
-			byte vals[4];
-			vals[0] = (hexValue & 0xff000000) >> 24;
-			vals[1] = (hexValue & 0x00ff0000) >> 16;
-			vals[2] = (hexValue & 0x0000ff00) >> 8;
-			vals[3] = hexValue & 0x000000ff;
-
-			float f0 = static_cast<float>(vals[0]) / 255.0f;
-			float f1 = static_cast<float>(vals[1]) / 255.0f;
-			float f2 = static_cast<float>(vals[2]) / 255.0f;
-			float f3 = static_cast<float>(vals[3]) / 255.0f;
-			worked = true;
-			if (vals[0])
-			{
-				return TColor(f0, f1, f2, f3);
-			}
-			else
-				return TColor(f1, f2, f3);
-		}
+		ret = GetColorFromHashtag(tempColor, worked);
+		if (worked)
+			return ret;
 	}
 
 	if (tempColor.StartsWith(L"rgb(") && tempColor.EndsWith(L")"))
 	{
-		tempColor.Set(tempColor.SubString(4, tempColor.GetSize() - 1));
-		auto colors = tempColor.split(L',');
-
-		if (colors->Size() == 3)
-		{
-			float rgbf[] = {
-				0.0f,0.0f,0.0f
-			};
-			bool w = true;
-			for (UINT Rust = 0; Rust < 3 && w; Rust++)
-			{
-				colors->at(Rust).Trim();
-				bool usePercent = false;
-				if (colors->at(Rust).EndsWith(L'%'))
-				{
-					usePercent = true;
-					colors->at(Rust).SubString(0, colors->at(Rust).GetSize() - 1);
-				}
-				if (colors->at(Rust).ConvertToFloat(rgbf[Rust]))
-					w = false;
-				else
-					rgbf[Rust] /= (usePercent) ? 100.f : 255.0f;
-			}
-			if (w)
-			{
-				worked = true;
-				return TColor(rgbf[0], rgbf[1], rgbf[2]);
-			}
-		}
+		ret = GetColorFromRgb(tempColor, worked);
+		if (worked)
+			return ret;
 	}
 
 	if (tempColor.StartsWith(L"rgba(") && tempColor.EndsWith(L")"))
 	{
-		tempColor.Set(tempColor.SubString(5, tempColor.GetSize() - 1));
-		auto colors = tempColor.split(L',');
-
-		if (colors->Size() == 3)
-		{
-			float rgbf[] = {
-				0.0f,0.0f,0.0f, 1.0f
-			};
-			bool w = true;
-			for (UINT Rust = 0; Rust < 4 && w; Rust++)
-			{
-				colors->at(Rust).Trim();
-				bool usePercent = false;
-				if (colors->at(Rust).EndsWith(L'%'))
-				{
-					usePercent = true;
-					colors->at(Rust).SubString(0, colors->at(Rust).GetSize() - 1);
-				}
-				if (colors->at(Rust).ConvertToFloat(rgbf[Rust]))
-					w = false;
-				else
-					rgbf[Rust] /= (usePercent) ? 100.f : 255.0f;
-			}
-			if (w)
-			{
-				worked = true;
-				return TColor(rgbf[0], rgbf[1], rgbf[2], rgbf[3]);
-			}
-		}
+		ret = GetColorFromRgba(tempColor, worked);
+		if (worked)
+			return ret;
 	}
 
 	// Algorithm provided by https://stackoverflow.com/questions/2353211/hsl-to-rgb-color-conversion
 	if (tempColor.StartsWith(L"hsl(") && tempColor.EndsWith(L")"))
 	{
-		tempColor.Set(tempColor.SubString(4, tempColor.GetSize() - 1));
-		auto colors = tempColor.split(L',');
-
-		if (colors->Size() == 3)
-		{
-			float hslf[] = {
-				   0.0f,0.0f,0.0f
-			};
-			bool w = true;
-			for (UINT Rust = 0; Rust < 3 && w; Rust++)
-			{
-				colors->at(Rust).Trim();
-				if (Rust)
-				{
-					if (colors->at(Rust).EndsWith(L'%'))
-						colors->at(Rust).Set(colors->at(Rust).SubString(0, colors->at(Rust).GetSize() - 1));
-					colors->at(Rust).Trim();
-				}
-				if (colors->at(Rust).ConvertToFloat(hslf[Rust]))
-					w = false;
-			}
-
-			if (w)
-			{
-				if (hslf[0])
-					hslf[0] /= 360.f;
-				if (hslf[1] > 1.0f)
-					hslf[1] /= 100.0f;
-				if (hslf[2] > 1.0f)
-					hslf[2] /= 100.0f;
-
-				if (!hslf[1])
-					return TColor(1.0f, 1.0f, 1.0f);
-
-				float q = hslf[2] < 0.5f ? hslf[2] * (1.0f + hslf[1]) : hslf[2] + hslf[1] - hslf[2] * hslf[1];
-				float p = 2.0f * hslf[2] - q;
-				worked = true;
-				return TColor(hueToRgb(p, q, hslf[0] + 1.0f / 3.0f),
-					hueToRgb(p, q, hslf[0]),
-					hueToRgb(p, q, hslf[0] - 1.0f / 3.0f));
-			}
-		}
+		ret = GetColorFromHsl(tempColor, worked);
+		if (worked)
+			return ret;
 	}
 
 	if (tempColor.StartsWith(L"hsla(") && tempColor.EndsWith(L")"))
 	{
-		tempColor.Set(tempColor.SubString(5, tempColor.GetSize() - 1));
-		auto colors = tempColor.split(L',');
-
-		if (colors->Size() == 3)
-		{
-			float hslf[] = {
-				   0.0f,0.0f,0.0f,0.0f
-			};
-			bool w = true, usePercent = false;
-			for (UINT Rust = 0; Rust < 4 && w; Rust++)
-			{
-				colors->at(Rust).Trim();
-				if (Rust)
-				{
-					if (colors->at(Rust).EndsWith(L'%'))
-					{
-						usePercent = true;
-						colors->at(Rust).Set(colors->at(Rust).SubString(0, colors->at(Rust).GetSize() - 1));
-					}
-					else
-						usePercent = false;
-					colors->at(Rust).Trim();
-				}
-				if (colors->at(Rust).ConvertToFloat(hslf[Rust]))
-					w = false;
-			}
-
-			if (w)
-			{
-				if (hslf[0])
-					hslf[0] /= 360.f;
-				if (hslf[1] > 1.0f)
-					hslf[1] /= 100.0f;
-				if (hslf[2] > 1.0f)
-					hslf[2] /= 100.0f;
-
-				if (!hslf[1])
-					return TColor(1.0f, 1.0f, 1.0f);
-
-				float q = hslf[2] < 0.5f ? hslf[2] * (1.0f + hslf[1]) : hslf[2] + hslf[1] - hslf[2] * hslf[1];
-				float p = 2.0f * hslf[2] - q;
-
-				worked = true;
-
-				return TColor(hueToRgb(p, q, hslf[0] + 1.0f / 3.0f),
-					hueToRgb(p, q, hslf[0]),
-					hueToRgb(p, q, hslf[0] - 1.0f / 3.0f),
-					hslf[3] / (usePercent ? 100.0f : 255.0f));
-			}
-		}
+		ret = GetColorFromHsla(tempColor, worked);
+		if (worked)
+			return ret;
 	}
 
 	auto pieces = tempColor.split(L",;");
@@ -433,14 +478,11 @@ TColor TColor::GetColorFromString(const TString& color, bool& worked)
 		fColors[2] = static_cast<float>(uColors[2]) / 255.0f;
 	}
 
-	if (fColors[0] > 1.0f)
-		fColors[0] = 1.0f;
-	if (fColors[1] > 1.0f)
-		fColors[1] = 1.0f;
-	if (fColors[2] > 1.0f)
-		fColors[2] = 1.0f;
-	if (fColors[3] > 1.0f)
-		fColors[3] = 1.0f;
+	for (UINT Rust = 0; Rust < 4; Rust++)
+	{
+		if (fColors[Rust] > 1.0f)
+			fColors[Rust] = 1.0f;
+	}
 
 	return TColor(fColors[0], fColors[1], fColors[2], fColors[3]);
 }

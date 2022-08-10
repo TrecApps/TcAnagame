@@ -5,18 +5,24 @@
 
 #include <GLFW/glfw3.h>
 
+#include "TColor.h"
+
 class _TC_GRAPH DrawingBoard :
     public TVObject
 {
-protected:
     GLFWwindow* window;
     TrecPointerSoft<DrawingBoard> self;
-    DrawingBoard(GLFWwindow* window);
+    TColor defaultClearColor;
+protected:
+    
+    explicit DrawingBoard(GLFWwindow* window);
+
+    
 public:
 
-    virtual ~DrawingBoard();
+    ~DrawingBoard() override;
 
-
+    void BeginDraw() const;
     void ConfirmDraw();
 
 
