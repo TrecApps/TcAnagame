@@ -148,8 +148,10 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="GraphicsDef.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="TBrush.h" />
     <ClInclude Include="TcGraph.h" />
     <ClInclude Include="TColor.h" />
+    <ClInclude Include="TColorBrush.h" />
     <ClInclude Include="TTextElement.h" />
   </ItemGroup>
   <ItemGroup>
@@ -161,7 +163,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TBrush.cpp" />
     <ClCompile Include="TColor.cpp" />
+    <ClCompile Include="TColorBrush.cpp" />
     <ClCompile Include="TTextElement.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

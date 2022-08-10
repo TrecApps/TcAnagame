@@ -36,6 +36,12 @@
     <ClInclude Include="TColor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TBrush.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TColorBrush.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -51,6 +57,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TColor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TBrush.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TColorBrush.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

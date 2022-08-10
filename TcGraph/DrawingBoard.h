@@ -1,11 +1,6 @@
 #pragma once
 
-#include "TcGraph.h"
-#include <TString.h>
-
-#include <GLFW/glfw3.h>
-
-#include "TColor.h"
+#include "TBrush.h"
 
 class _TC_GRAPH DrawingBoard :
     public TVObject
@@ -16,15 +11,16 @@ class _TC_GRAPH DrawingBoard :
 protected:
     
     explicit DrawingBoard(GLFWwindow* window);
-
+    bool mode2d;
     
 public:
-
     ~DrawingBoard() override;
 
     void BeginDraw() const;
     void ConfirmDraw();
 
+    void set2D();
 
+    TrecPointer<TBrush> GetSolidColorBrush(const TColor& color);
 };
 
