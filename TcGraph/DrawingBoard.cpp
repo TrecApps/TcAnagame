@@ -51,7 +51,7 @@ void DrawingBoard::set2D()
 	mode2d = true;
 }
 
-TrecPointer<TBrush> DrawingBoard::GetSolidColorBrush(const TColor& color)
+TrecPointer<TBrush> DrawingBoard::GetSolidColorBrush(const TColor& color) const
 {
 	TrecPointer<TColorBrush> ret = TrecPointerKey::GetNewTrecPointer<TColorBrush>();
 

@@ -21,6 +21,6 @@ public:
 
     void set2D();
 
-    TrecPointer<TBrush> GetSolidColorBrush(const TColor& color);
+    TrecPointer<TBrush> GetSolidColorBrush(const TColor& color) const;
 };
 
