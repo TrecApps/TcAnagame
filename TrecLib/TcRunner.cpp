@@ -21,6 +21,7 @@ VariableHolder& VariableHolder::operator=(const VariableHolder& copy)
 	value = copy.value;
 	nullable = copy.nullable;
 	type.Set(type);
+	return *this;
 }
 
 VariableHolder::~VariableHolder()
@@ -94,6 +95,36 @@ void TcRunner::Run(ReturnObject& ret)
 	}
 	else
 		RunDetails(ret);
+}
+
+var_type TcAsyncVariable::GetVarType()
+{
+	return var_type::async;
+}
+
+TrecPointer<TVariable> TcAsyncVariable::Clone()
+{
+	return TrecPointerKey::TrecFromSoft<>(vSelf);
+}
+
+TrecPointer<TVariable> TcAsyncVariable::ToString()
+{
+	return TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"[Async Variable]");
+}
+
+TrecPointer<TVariable> TcAsyncVariable::ToString(TrecPointer<TVariable> detail)
+{
+	return ToString();
+}
+
+UINT TcAsyncVariable::Get4Value()
+{
+	return 0;
+}
+
+UINT TcAsyncVariable::GetSize()
+{
+	return 0;
 }
 
 TcAsyncVariable::TcAsyncVariable(TrecPointer<TcRunner> mainRunner)
@@ -173,12 +204,12 @@ void TcAsyncVariable::Invoke()
 	threadReference = new std::thread(Invoke_, thisVar);
 }
 
-TrecPointer<TVariable> TcAsyncVariable::GetResult()
+TrecPointer<TVariable> TcAsyncVariable::GetResult() const
 {
 	return process ? varHolder.value : TrecPointer<TVariable>();
 }
 
-signed char TcAsyncVariable::GetProgess()
+signed char TcAsyncVariable::GetProgess() const
 {
 	return process;
 }

@@ -163,6 +163,18 @@ protected:
 
 public:
 
+    var_type GetVarType() override;
+
+    TrecPointer<TVariable> Clone() override;
+
+    TrecPointer<TVariable> ToString() override;
+
+    TrecPointer<TVariable> ToString(TrecPointer<TVariable> detail) override;
+
+    UINT Get4Value()override;
+
+    UINT GetSize()override;
+
     TcAsyncVariable(TrecPointer<TcRunner> mainRunner);
 
     ~TcAsyncVariable();
@@ -173,9 +185,9 @@ public:
 
     void Invoke();
 
-    TrecPointer<TVariable> GetResult();
+    TrecPointer<TVariable> GetResult() const;
 
-    signed char GetProgess();
+    signed char GetProgess() const;
 
     void AppendResponse(TrecPointer<TcRunner> success, TrecPointer<TcRunner> rejected);
 

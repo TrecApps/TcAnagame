@@ -4,7 +4,7 @@
 #include "TrecPointer.h"
 
 
-template<typename T> class _TREC_LIB_DLL ListNode 
+template<typename T> class _TREC_LIB_DLL ListNode : public TCoreObject
 {
 public:
 	TrecPointer<ListNode<T>> next;
@@ -23,7 +23,9 @@ template<typename T> class _TREC_LIB_DLL TLinkedList
 	UINT size;
 	UINT currentNode;
 
-	TrecPointer<ListNode<T>> head, current, tail;
+	TrecPointer<ListNode<T>> head;
+	TrecPointer<ListNode<T>> current;
+	TrecPointer<ListNode<T>> tail;
 
 public:
 	TLinkedList()
@@ -52,7 +54,7 @@ public:
 		else
 		{
 			tail->next = node;
-			node->prev = TrecPointerKey::GetSoftPointerFromTrec<ListNode<T>>(tail);
+			node->prev = TrecPointerKey::SoftFromTrec<ListNode<T>>(tail);
 			tail = node;
 		}
 		size++;
@@ -132,7 +134,7 @@ public:
 		}
 		else
 		{
-			head->prev = TrecPointerKey::GetSoftPointerFromTrec<>( node);
+			head->prev = TrecPointerKey::SoftFromTrec<>( node);
 			node->next = head;
 			head = node;
 		}
@@ -212,7 +214,7 @@ public:
 		}
 
 		if (tail.Get() == current.Get())
-			current = current->prev;
+			current = TrecPointerKey::TrecFromSoft<>(current->prev);
 		
 		TrecPointer<ListNode<T>> tailPrev = TrecPointerKey::TrecFromSoft<>(tail->prev);
 
@@ -234,11 +236,12 @@ public:
 		return true;
 	}
 
-	bool Prev() const
+	bool Prev()
 	{
 		if (!size || !currentNode)
 			return false;
-		current = TrecPointerKey::GetTrecPointerFromSoft<ListNode<T>>(current->prev);
+		TrecPointerSoft< ListNode<T>> p = current->prev;
+		current = TrecPointerKey::TrecFromSoft<>(p);
 	}
 	
 	

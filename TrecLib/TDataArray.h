@@ -70,6 +70,7 @@ public:
 			if (c < capacity)
 				array[c] = newArray.array[c];
 		}
+		return *this;
 	}
 
 	T& at(UINT c)

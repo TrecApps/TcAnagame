@@ -166,7 +166,10 @@ public:
 
 	T* operator->()
 	{
-		return Get();
+		auto ret = Get();
+		if (!ret)
+			throw 0;
+		return ret;
 	}
 };
 

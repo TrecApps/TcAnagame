@@ -151,6 +151,7 @@
     <ClInclude Include="TFile.h" />
     <ClInclude Include="TLinkedList.h" />
     <ClInclude Include="TObject.h" />
+    <ClInclude Include="TObjectVariable.h" />
     <ClInclude Include="TrecLib.h" />
     <ClInclude Include="TrecPointer.h" />
     <ClInclude Include="TString.h" />
@@ -168,6 +169,7 @@
     <ClCompile Include="TcRunner.cpp" />
     <ClCompile Include="TFile.cpp" />
     <ClCompile Include="TObject.cpp" />
+    <ClCompile Include="TObjectVariable.cpp" />
     <ClCompile Include="TrecPointer.cpp" />
     <ClCompile Include="TString.cpp" />
   </ItemGroup>
