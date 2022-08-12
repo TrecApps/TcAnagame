@@ -251,12 +251,13 @@ public:
 	* Parameters: TMap<t2>& cop - TMap to copy from
 	* Returns: void
 	*/
-	void operator=(TDataMap<T>& cop)
+	TDataMap<T>& operator=(TDataMap<T>& cop)
 	{
 		for (UINT c = 0; c < cop.fields.Size(); c++)
 		{
 			fields.push_back(cop.fields.at(c));
 		}
+		return *this;
 	}
 
 	/*

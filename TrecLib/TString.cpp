@@ -2080,6 +2080,18 @@ IndexRange::IndexRange(int s, int e)
 	active = false;
 }
 
+TString TStringVariable::Extract(TrecPointer<TVariable> var, const TString& fallback)
+{
+	if (var.Get())
+	{
+		auto strVar = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(var->ToString());
+
+		if (strVar.Get())
+			return strVar->GetString();
+	}
+	return fallback;
+}
+
 TrecPointer<TVariable> TStringVariable::Clone()
 {
 	return TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(string);

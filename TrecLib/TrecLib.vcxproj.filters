@@ -51,6 +51,12 @@
     <ClInclude Include="TcRunner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TContainerVariable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TLinkedList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -75,6 +81,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TcRunner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TContainerVariable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

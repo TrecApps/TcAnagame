@@ -329,6 +329,9 @@ private:
 class _TREC_LIB_DLL TStringVariable : public TVariable
 {
 public:
+
+	static TString Extract(TrecPointer<TVariable> var, const TString& fallback);
+
 	virtual TrecPointer<TVariable> Clone()override;
 
 	TStringVariable(const TString& string);

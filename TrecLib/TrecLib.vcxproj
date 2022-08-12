@@ -144,10 +144,12 @@
     <ClInclude Include="FileFunctions.hpp" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="TContainerVariable.h" />
     <ClInclude Include="TcRunner.h" />
     <ClInclude Include="TDataArray.h" />
     <ClInclude Include="TDataMap.h" />
     <ClInclude Include="TFile.h" />
+    <ClInclude Include="TLinkedList.h" />
     <ClInclude Include="TObject.h" />
     <ClInclude Include="TrecLib.h" />
     <ClInclude Include="TrecPointer.h" />
@@ -162,6 +164,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TContainerVariable.cpp" />
     <ClCompile Include="TcRunner.cpp" />
     <ClCompile Include="TFile.cpp" />
     <ClCompile Include="TObject.cpp" />
