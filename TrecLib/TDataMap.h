@@ -168,7 +168,7 @@ public:
 	*				T& entry - the object being held
 	* Returns: bool - whether the entry was found
 	*/
-	bool retrieveEntry(const TString& str, T& entry)
+	bool retrieveEntry(const TString& str, T& entry) const
 	{
 		for (UINT c = 0; c < fields.Size(); c++)
 		{

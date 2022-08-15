@@ -11,6 +11,11 @@ TObjectLocker::~TObjectLocker()
 	TcUnlockObject(section);
 }
 
+TObject::ObjectType TObject::GetObjectType()
+{
+	return ObjectType::ot_other;
+}
+
 TObject::TObject()
 {
 	TcInitLock(&thread);

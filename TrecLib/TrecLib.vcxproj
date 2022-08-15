@@ -148,6 +148,7 @@
     <ClInclude Include="TcRunner.h" />
     <ClInclude Include="TDataArray.h" />
     <ClInclude Include="TDataMap.h" />
+    <ClInclude Include="TEnvironment.h" />
     <ClInclude Include="TFile.h" />
     <ClInclude Include="TLinkedList.h" />
     <ClInclude Include="TObject.h" />
@@ -167,6 +168,7 @@
     </ClCompile>
     <ClCompile Include="TContainerVariable.cpp" />
     <ClCompile Include="TcRunner.cpp" />
+    <ClCompile Include="TEnvironment.cpp" />
     <ClCompile Include="TFile.cpp" />
     <ClCompile Include="TObject.cpp" />
     <ClCompile Include="TObjectVariable.cpp" />

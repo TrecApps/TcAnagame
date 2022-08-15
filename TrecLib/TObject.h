@@ -83,6 +83,8 @@ protected:
 
 public:
 
+	virtual ObjectType GetObjectType();
+
 	TObject();
 
 	virtual ~TObject();
