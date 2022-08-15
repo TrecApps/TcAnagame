@@ -380,6 +380,8 @@ private:
 	UCHAR ReadUnicode8Char(char* seq4);
 };
 
+using TFileShell = TFile::TFileShell;
+
 
 TString _TREC_LIB_DLL GetShadowFilePath(TrecPointer<TFile::TFileShell> f);
 
