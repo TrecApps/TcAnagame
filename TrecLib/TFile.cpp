@@ -291,12 +291,6 @@ TString GetDirectory(CentralDirectories cd)
 	return directories[static_cast<UINT>(cd)];
 }
 
-/*
-* Function: GetDirectoryWithSlash
-* Purpose: Gets the directory specified with a slash at the end
-* Parameters: CentralDirectories cd - the Directory type being sought
-* Returns: TString - the Directory in the computer being requested
-*/
 TString GetDirectoryWithSlash(CentralDirectories cd)
 {
 	if (!initialized)
@@ -312,13 +306,6 @@ TString GetShadowDirectoryWithSlash(CentralDirectories cd)
 	return  shadowDirectories[static_cast<UINT>(cd)] + slasher;
 }
 
-/*
-* Function: GetShadowFilePath
-* Purpose: Sets up the directory and returns the path for the Shadow version of the provided file
-* Parameters: TFile& f - the file to get s shadow File's path for
-* Returns: TString - the Path of the intended Shadow file
-* Note: The provided File has to be open AND it has to be found in an AnaGame approved directory. Otherwise, an empty string is returned
-*/
 TString GetShadowFilePath(const TFile& f)
 {
 	if (!f.IsOpen())
@@ -371,20 +358,17 @@ TString _TREC_LIB_DLL GetShadowFilePath(TrecPointer<TFile::TFileShell> f)
 	return shadowDirectories[dirNum] + TString(L"\\") + returnable;
 }
 
+///
+/// TFileShell
+///
 
-// TFileShell
+
 
 bool TFile::TFileShell::IsDirectory()
 {
 	return false;
 }
 
-/*
-* Method: TFile::TFileShell::IsValid
-* Purpose: Reports whether the object represents an existing file
-* Parameters: void
-* Returns: bool - true if the file exists and have not yet been deleted, false otherwise
-*/
 bool TFile::TFileShell::IsValid()
 {
 	TObjectLocker lock(&thread);
@@ -392,14 +376,6 @@ bool TFile::TFileShell::IsValid()
 	return ret;
 }
 
-/*
-* Method: TFile::TFileShell::GetPath
-* Purpose: Reports the path that leads to the file
-* Parameters: void
-* Returns: TString - the path of the file
-*
-* Note: if the path is an empty string, you can assume that the TFileShell is invalid
-*/
 TString TFile::TFileShell::GetPath()
 {
 	TObjectLocker lock(&thread);
@@ -407,12 +383,6 @@ TString TFile::TFileShell::GetPath()
 	return ret;
 }
 
-/*
-* Method: TFile::TFileShell::GetName
-* Purpose: Reports the name of the file minus the path
-* Parameters: void
-* Returns: TString - the name of the file
-*/
 TString TFile::TFileShell::GetName()
 {
 	TObjectLocker lock(&thread);
@@ -496,12 +466,6 @@ TrecPointer<TFile::TFileShell> TFile::TFileShell::GetFileInfo(const TString& pat
 
 #endif
 
-/**
- * Method: TFile::TFileShell::GetParent
- * Purpose: Enables the File Object to return a representation of it's parent folder
- * Parameters: void
- * Returns: TrecPointer<TFileShell> - the directory of the current file (if null, then likely this file is as high as it can be)
- */
 TrecPointer<TFile::TFileShell> TFile::TFileShell::GetParent()
 {
 	auto pieces = path.split(L'\\');
@@ -519,12 +483,6 @@ TrecPointer<TFile::TFileShell> TFile::TFileShell::GetParent()
 	return TFile::TFileShell::GetFileInfo(newPath);
 }
 
-/*
-* Method: TFile::TFileShell::GetCreationDate
-* Purpose: Reports the time that the file was created
-* Parameters: void
-* Returns: FILETIME - the structure representing the file creation time
-*/
 FILETIME TFile::TFileShell::GetCreationDate()
 {
 	TObjectLocker lock(&thread);
@@ -533,12 +491,6 @@ FILETIME TFile::TFileShell::GetCreationDate()
 	return ret;
 }
 
-/*
-* Method: TFile::TFileShell::GetLastAccessed
-* Purpose: Reports the time that the file was last accessed
-* Parameters: void
-* Returns: FILETIME - the structure representing the last access time
-*/
 FILETIME TFile::TFileShell::GetLastAccessed()
 {
 	TObjectLocker lock(&thread);
@@ -547,12 +499,6 @@ FILETIME TFile::TFileShell::GetLastAccessed()
 	return ret;
 }
 
-/*
-* Method: TFile::TFileShell::GetLastWritten
-* Purpose: Reports the time that the file was last updated
-* Parameters: void
-* Returns: FILETIME - the structure representing the last update time
-*/
 FILETIME TFile::TFileShell::GetLastWritten()
 {
 	TObjectLocker lock(&thread);
@@ -561,12 +507,6 @@ FILETIME TFile::TFileShell::GetLastWritten()
 	return ret;
 }
 
-/*
-* Method: TFile::TFileShell::GetSize
-* Purpose: Reports the current size of the file
-* Parameters: void
-* Returns: ULONG64 - the size of the file
-*/
 ULONG64 TFile::TFileShell::GetSize()
 {
 	TObjectLocker lock(&thread);
@@ -579,14 +519,6 @@ ULONG64 TFile::TFileShell::GetSize()
 	return ret;
 }
 
-/**
- * Method: TFile::TFileShell::GetRelativePath
- * Purpose: Retrieves the Relative file path for the Provided directory
- * Parameters: TString& relativePath - the relative path provided if successful
- *				TrecPointer<TFileShell> directory - the directory to check (must be valid and a TDirectory)
- *				bool allowOutside - if true, than this file can be outside of the provided directory
- * Returns: bool - true if the method worked, false otherwise
- */
 bool TFile::TFileShell::GetRelativePath(TString& relativePath, TrecPointer<TFileShell> directory, bool allowOutside)
 {
 	if (!directory.Get() || !directory->IsDirectory())
@@ -638,13 +570,6 @@ bool TFile::TFileShell::GetRelativePath(TString& relativePath, TrecPointer<TFile
 	return done;
 }
 
-
-/**
- * Method: TFile::TFileShell::GetDirectoryName
- * Purpose: Retrieves the Name fo the directory containing this file path ("C:\\Users\\John\\Desktop\\file.txt" returns "Desktop")
- * Parameters: void
- * Returns: TString - the name of the containing Directory
- */
 TString TFile::TFileShell::GetDirectoryName()
 {
 	auto pieces = path.split(L'\\');
@@ -654,12 +579,6 @@ TString TFile::TFileShell::GetDirectoryName()
 	return pSize > 1 ? pieces->at(pSize - 2) : L"";
 }
 
-/*
-* Method: TFile::TFileShell::IsArchive
-* Purpose: Reports the file represents an archive
-* Parameters: void
-* Returns: bool - whether the file is an archive
-*/
 bool TFile::TFileShell::IsArchive()
 {
 	TObjectLocker lock(&thread);
@@ -667,12 +586,6 @@ bool TFile::TFileShell::IsArchive()
 	return IS_ARCHIVE;
 }
 
-/*
-* Method: TFile::TFileShell::IsEncrypted
-* Purpose: Reports the file is encrypted
-* Parameters: void
-* Returns: bool - whether the file is encrypted
-*/
 bool TFile::TFileShell::IsEncrypted()
 {
 	TObjectLocker lock(&thread);
@@ -680,12 +593,6 @@ bool TFile::TFileShell::IsEncrypted()
 	return IS_ENCRYPTED;
 }
 
-/*
-* Method: TFile::TFileShell::IsHidden
-* Purpose: Reports the file is hidden
-* Parameters: void
-* Returns: bool - whether the file is hidden
-*/
 bool TFile::TFileShell::IsHidden()
 {
 	TObjectLocker lock(&thread);
@@ -694,12 +601,6 @@ bool TFile::TFileShell::IsHidden()
 	return name.StartsWith(L'.');
 }
 
-/*
-* Method: TFile::TFileShell::IsReadOnly
-* Purpose: Reports the file is read-only
-* Parameters: void
-* Returns: bool - whether the file is read-only
-*/
 bool TFile::TFileShell::IsReadOnly()
 {
 	TObjectLocker lock(&thread);
@@ -827,6 +728,10 @@ void TDirectory::GetFileListing(TDataArray<TrecPointer<TFileShell>>& files)
 #endif
 
 
+///
+/// TDirectory
+///
+
 TDirectory::TDirectory(const TString& path) : TFileShell(path)
 {
 
@@ -871,44 +776,25 @@ TDataArray<TrecPointer<TFile::TFileShell>> TDirectory::GetFileListing()
 	return ret;
 }
 
-TFile::TFile()
+///
+/// TFile
+///
+
+TFile::TFile(): fileHandle(0), position(0ULL)
 {
 	fileEncode = FileEncodingType::fet_unknown;
-	fileHandle = 0;
-	position = 0ULL;
 }
 
-/*
-* Method: TFile::TFile
-* Purpose: Constructor
-* Parameters: LPCTSTR lpszFileName - the File name to open
-*			UINT nOpenFlags - flags that specify the open status of the file
-* Returns: void
-*/
 TFile::TFile(TrecPointer<TFileShell> lpszFileName, UINT nOpenFlags)
 {
 	Open(lpszFileName, nOpenFlags);
 }
 
-
-/*
-* Method: TFile::~TFile
-* Purpose: Destructor
-* Parameters: void
-* Returns: void
-*/
 TFile::~TFile()
 {
 	Close();
 }
 
-/*
-* Method: TFile::Open
-* Purpose: Opens the File
-* Parameters: LPCTSTR lpszFileName - The File to open
-*			UINT nOpenFlags - Flags to open the file
-* Returns: bool - success or failure to open file
-*/
 bool TFile::Open(TrecPointer<TFileShell> file, UINT nOpenFlags)
 {
 	if (!file.Get() || file->IsDirectory())
@@ -939,16 +825,6 @@ bool TFile::Open(TrecPointer<TFileShell> file, UINT nOpenFlags)
 	return true;
 }
 
-
-
-
-
-/**
- * Method: TFile::ReadString
- * Purpose: Reads a line in a file into a String, taking into account the file encoding, stopping at the next line
- * Parameters: TString& rString - the String to read into
- * Returns: bool - success of reading
- */
 BOOL TFile::ReadString(TString& rString)
 {
 	TObjectLocker lock(&thread);
@@ -1031,15 +907,6 @@ BOOL TFile::ReadString(TString& rString)
 	return success;
 }
 
-
-/**
- * Method: TFile::ReadString
- * Purpose: Reads a line in a file into a String, taking into account the file encoding, stopping at the next line
- *			Or when the specificed number of characters are read
- * Parameters: TString& rString - the String to read into
- *				ULONGLONG nMax - max number of characters to read
- * Returns: ULONGLONG - How many characgers were read
- */
 ULONGLONG TFile::ReadString(TString& rString, ULONGLONG nMax)
 {
 	TObjectLocker lock(&thread);
@@ -1091,7 +958,7 @@ ULONGLONG TFile::ReadString(TString& rString, ULONGLONG nMax)
 		break;
 	case FileEncodingType::fet_unicode8:
 		ZeroMemory(uni8, sizeof(char) * 4);
-		while (bytes = ReadUnicode8Char(uni8) && rust <= nMax)
+		while ((bytes = ReadUnicode8Char(uni8)) && rust <= nMax)
 		{
 			rust += bytes;
 
@@ -1175,7 +1042,7 @@ ULONGLONG TFile::ReadStringLine(TString& rString, ULONGLONG nMax)
 		break;
 	case FileEncodingType::fet_unicode8:
 		ZeroMemory(uni8, sizeof(char) * 4);
-		while (bytes = ReadUnicode8Char(uni8) && rust <= nMax)
+		while ((bytes = ReadUnicode8Char(uni8)) && rust <= nMax)
 		{
 			rust += bytes;
 			if (uni8[0] == '\n')
@@ -1199,13 +1066,6 @@ ULONGLONG TFile::ReadStringLine(TString& rString, ULONGLONG nMax)
 	return rust;
 }
 
-/**
- * Method: TFile::ReadString
- * Purpose: Reads a line in a file into a String, taking into account the file encoding, stopping at the specified chara
- * Parameters: TString& rString - the String to read into
- *				WCHAR chara - the character to stop at
- * Returns: bool - success of reading
- */
 UINT TFile::ReadString(TString& rString, WCHAR chara)
 {
 	TObjectLocker lock(&thread);
@@ -1286,21 +1146,6 @@ UINT TFile::ReadString(TString& rString, WCHAR chara)
 	return rString.GetSize();
 }
 
-/**
- * Method: TFile::ReadString
- * Purpose: Reads the file up to one of the provided characters
- * Parameters: TString& rString - the string to retun
- *				TString& chars - the characters to stop at
- *				UCHAR flags - flags influence the behavior of this method
- *				UINT max - max number of bytes to read (0 for no maximum)
- * Returns: UINT - the size of the resulting string
- *
- * Note: Written with Source code interpretation in mind
- * Flags variable values:
- *		0b00000001 - TFile::include_end - include the terminating character in the return String
- *      0b00000010 - TFile::out_of_quotes - makesure that when we do find the characters, they are outside of quotes
- *      0b00000100 - TFile::watch_backslash - factor backslashes in handling the other flags
- */
 UINT TFile::ReadString(TString& rString, const TString& chars, UCHAR flags, UINT max)
 {
 	TObjectLocker lock(&thread);
@@ -1745,7 +1590,7 @@ void TFile::Write(const void* buffer, UINT count)
 	return;
 }
 
-FileEncodingType TFile::GetEncodingType()
+FileEncodingType TFile::GetEncodingType()const
 {
 	return fileEncode;
 }
@@ -1848,15 +1693,7 @@ FileEncodingType TFile::DeduceEncodingType()
 #endif
 	return FileEncodingType::fet_unknown;
 }
-/**
- * Method: TFile::ConvertFlags
- * Purpose: Used internally by the class to convert TFile:: flags into Windows Crreate flags
- * Parameters: UINT& input - the flags to convert
- *				 UINT& open - basic open flags to send to Windows
- *				 UINT& security - share attributes to send to windows
- *				 UINT& creation - create instruction flags for Windows
- * Returns: void
- */
+
 void TFile::ConvertFlags(UINT& input, UINT& open, UINT& security, UINT& creation)
 {
 	open = input & 0xff000000;
@@ -2093,3 +1930,327 @@ ULONGLONG TFile::SeekToEnd()
 	return position = static_cast<ULONGLONG>(lseek(fileHandle, 0, SEEK_END));
 }
 #endif
+
+///
+/// TFileNode
+///
+
+TFileNode::TFileNode(UINT l) : TObjectNode(l), showAllFiles(false)
+{
+	filter_mode = file_node_filter_mode::fnfm_blank;
+}
+
+TString TFileNode::GetContent()
+{
+	TObjectLocker lock(&thread);
+
+	return data.Get() ? data->GetName() : L"";
+}
+
+TString TFileNode::GetCommand(const TString& info)
+{
+	TObjectLocker lock(&thread);
+	if (!info.CompareNoCase(L"dbl_ck") && data.Get())
+	{
+		return TString(L"win_OpenFile \"") + data->GetPath() + L"\"";
+	}
+	return L"";
+}
+
+bool TFileNode::IsExtendable()
+{
+	TObjectLocker lock(&thread);
+		if (!data.Get())
+		{
+			return false;
+		}
+	return data->IsDirectory();
+}
+
+bool TFileNode::IsExtended()
+{
+	return files.Size();
+}
+
+TrecPointer<TObjectNode> TFileNode::GetNodeAt(UINT target, UINT current)
+{
+	if (target == current)
+		return TrecPointerKey::TrecFromSoft<TObjectNode>(self);
+
+	if (target < current)
+		return TrecPointer<TObjectNode>();
+
+	TrecPointer<TObjectNode> ret;
+
+	current++;
+	TObjectLocker lock(&thread);
+		for (UINT rust = 0; rust < files.Size(); rust++)
+		{
+			ret = files[rust]->GetNodeAt(target, current);
+			if (ret.Get())
+			{
+				return ret;
+			}
+			current += files[rust]->TotalChildren() + 1;
+		}
+	return TrecPointer<TObjectNode>();
+}
+
+UINT TFileNode::TotalChildren()
+{
+	UINT ret = 0;
+	TObjectLocker lock(&thread);
+		for (UINT rust = 0; rust < files.Size(); rust++)
+		{
+			ret += files[rust]->TotalChildren() + 1;
+		}
+	return ret;
+}
+
+bool TFileNode::Initialize()
+{
+	return false;
+}
+
+bool TFileNode::Initialize(TString& value)
+{
+	TObjectLocker lock(&thread);
+		data = TFileShell::GetFileInfo(value);
+	return data.Get() != nullptr;
+}
+
+void TFileNode::Extend()
+{
+	TObjectLocker lock(&thread);
+		files.RemoveAll();
+	if (data.Get() && data->IsDirectory())
+	{
+		TDataArray<TrecPointer<TFileShell>> shellFiles;
+		dynamic_cast<TDirectory*>(data.Get())->GetFileListing(shellFiles);
+
+		for (UINT Rust = 0; Rust < shellFiles.Size(); Rust++)
+		{
+			TrecPointer<TFileShell> f = shellFiles[Rust];
+			if (ShouldShow(f))
+			{
+				TrecPointer<TObjectNode> n = TrecPointerKey::GetNewSelfTrecPointerAlt<TObjectNode, TFileNode>(level + 1);
+				files.push_back(n);
+				auto fileNode = dynamic_cast<TFileNode*>(n.Get());
+				fileNode->SetFile(f);
+				fileNode->SetFilterMode(filter_mode);
+				fileNode->SetShowAllFiles(showAllFiles);
+
+				for (UINT Rust = 0; Rust < extensions.Size(); Rust++)
+				{
+					fileNode->AddExtension(extensions[Rust]);
+				}
+			}
+		}
+	}
+	return;
+}
+
+TrecPointer<TObjectNode> TFileNode::GetChildNodes(UINT index)
+{
+	TObjectLocker lock(&thread);
+		if (index < files.Size())
+		{
+			auto ret = files[index];
+			return ret;
+		}
+	return TrecPointer<TObjectNode>();
+}
+
+void TFileNode::DropChildNodes()
+{
+	TObjectLocker lock(&thread);
+		files.RemoveAll();
+	return;
+}
+
+void TFileNode::SetFile(const TrecPointer<TFileShell>& d)
+{
+	TObjectLocker lock(&thread);
+		data = d;
+	DropChildNodes();
+	return;
+}
+
+TrecPointer<TFileShell> TFileNode::GetData()
+{
+	TObjectLocker lock(&thread);
+		auto ret = data;
+	return ret;
+}
+
+void TFileNode::SetShowAllFiles(bool show)
+{
+	TObjectLocker lock(&thread);
+		for (UINT Rust = 0; Rust < files.Size(); Rust++)
+		{
+			auto fileNode = dynamic_cast<TFileNode*>(files[Rust].Get());
+
+			if (fileNode)
+			{
+				fileNode->SetShowAllFiles(show);
+			}
+		}
+
+	showAllFiles = show;
+	return;
+}
+
+bool TFileNode::GetShowAllFiles()
+{
+	TObjectLocker lock(&thread);
+		bool ret = showAllFiles || !extensions.Size();
+	return ret;
+}
+
+bool TFileNode::AddExtension(const TString& extension)
+{
+	TObjectLocker lock(&thread);
+		for (UINT Rust = 0; Rust < extensions.Size(); Rust++)
+		{
+			if (!extensions[Rust].CompareNoCase(extension))
+			{
+				return true;
+			}
+		}
+
+	if (extension.GetSize() < 2)
+	{
+		return false;
+	}
+	if (extension[0] == L'.')
+	{
+		for (UINT Rust = 1; Rust < extension.GetSize(); Rust++)
+		{
+			WCHAR letter = extension[Rust];
+
+			if ((letter >= L'A' && letter <= L'Z') ||
+				(letter >= L'a' && letter <= L'z'))
+				continue;
+			return false;
+		}
+
+		extensions.push_back(extension);
+
+		for (UINT Rust = 0; Rust < files.Size(); Rust++)
+		{
+			auto fileNode = dynamic_cast<TFileNode*>(files[Rust].Get());
+
+			if (fileNode)
+			{
+				fileNode->AddExtension(extension);
+			}
+
+		}
+
+		return true;
+	}
+	return false;
+}
+
+void TFileNode::SetFilterMode(file_node_filter_mode mode)
+{
+	TObjectLocker lock(&thread);
+		filter_mode = mode;
+
+	for (UINT Rust = 0; Rust < files.Size(); Rust++)
+	{
+		auto fileNode = dynamic_cast<TFileNode*>(files[Rust].Get());
+		if (fileNode)
+			fileNode->SetFilterMode(mode);
+	}
+	return;
+}
+
+file_node_filter_mode TFileNode::GetFilterMode()
+{
+	return filter_mode;
+}
+
+bool TFileNode::RemoveNode(TrecPointer<TObjectNode> obj)
+{
+	TObjectLocker lock(&thread);
+		if (!obj.Get())
+		{
+			return false;
+		}
+	for (UINT Rust = 0; Rust < files.Size(); Rust++)
+	{
+		auto f = files[Rust].Get();
+		if (!f)
+			continue;
+
+		if (f == obj.Get())
+		{
+			files.RemoveAt(Rust);
+			return true;
+		}
+
+		if (f->RemoveNode(obj))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool TFileNode::ShouldShow(TrecPointer<TFileShell> node)
+{
+	if (!node.Get())
+		return false;
+
+	TString nodeName(node->GetName());
+	TObjectLocker lock(&thread);
+		if (node->IsDirectory())
+		{
+			switch (filter_mode)
+			{
+			case file_node_filter_mode::fnfm_blank:
+			case file_node_filter_mode::fnfm_block_files:
+				return true;
+			case file_node_filter_mode::fnfm_block_current:
+			case file_node_filter_mode::fnfm_block_current_and_files:
+				return nodeName.Compare(L".");
+			case file_node_filter_mode::fnfm_block_upper:
+			case file_node_filter_mode::fnfm_block_upper_and_files:
+				return nodeName.Compare(L"..");
+			case file_node_filter_mode::fnfm_block_both:
+			case file_node_filter_mode::fnfm_block_both_and_files:
+				return nodeName.Compare(L".") && nodeName.Compare(L"..");
+			default:
+				return false;
+			}
+		}
+		else
+		{
+			// We have a regular file
+			switch (filter_mode)
+			{
+			case file_node_filter_mode::fnfm_block_current_and_files:
+			case file_node_filter_mode::fnfm_block_upper_and_files:
+			case file_node_filter_mode::fnfm_block_both_and_files:
+			case file_node_filter_mode::fnfm_block_files:
+				return false;
+			default:
+				if (showAllFiles && extensions.Size())
+				{
+					for (UINT Rust = 0; Rust < extensions.Size(); Rust++)
+					{
+						if (nodeName.FindLast(extensions[Rust]) == nodeName.GetSize() - extensions[Rust].GetSize())
+						{
+							return true;
+						}
+					}
+					return false;
+				}
+				else
+				{
+					return true;
+				}
+			}
+		}
+}

@@ -87,7 +87,7 @@ public:
 
 	TObject();
 
-	virtual ~TObject();
+	~TObject() override;
 
 	void ThreadLock() const;
 

@@ -12,7 +12,7 @@ protected:
     virtual TrecPointer<TObject> RetrieveResource(const TString& name) = 0;
     virtual void RetrieveResourceListSub(TDataArray<TString>& resources) = 0;
 public:
-    ObjectType GetObjectType()override final;
+    ObjectType GetObjectType()final;
 
     void RetrieveResourceList(TDataArray<TString>& resources);
 

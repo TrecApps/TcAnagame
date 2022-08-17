@@ -37,10 +37,7 @@ public:
 	 * Parameters: void
 	 * Returns: new TEntry
 	 */
-	TDataEntry()
-	{
-
-	}
+	TDataEntry() = default;
 
 	/**
 	 * The object to hold
@@ -168,11 +165,12 @@ public:
 	*				T& entry - the object being held
 	* Returns: bool - whether the entry was found
 	*/
-	bool retrieveEntry(const TString& str, T& entry) const
+	bool retrieveEntry(const TString& str, T& entry) const 
 	{
 		for (UINT c = 0; c < fields.Size(); c++)
 		{
-			if (!str.Compare(fields.at(c).key))
+			//TString key()
+			if (!str.Compare(fields.at_const(c).key))
 			{
 				entry = fields[c].object;
 				return true;

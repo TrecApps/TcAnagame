@@ -75,7 +75,7 @@ public:
 		return current->data;
 	}
 
-	T& Extract(UINT index)
+	T Extract(UINT index)
 	{
 		auto ret = at(index);
 
@@ -242,6 +242,7 @@ public:
 			return false;
 		TrecPointerSoft< ListNode<T>> p = current->prev;
 		current = TrecPointerKey::TrecFromSoft<>(p);
+		return true;
 	}
 	
 	

@@ -80,6 +80,13 @@ public:
 		return array[c];
 	}
 
+	const T& at_const(UINT c) const 
+	{
+		if (c >= size)
+			throw 2;
+		return array[c];
+	}
+
 	void operator=(const std::vector<T, std::allocator<T>>& vectorSource)
 	{
 		if (array)

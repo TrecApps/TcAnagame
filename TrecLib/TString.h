@@ -316,7 +316,7 @@ public:
 
 	void Empty();
 
-	bool IsEmpty();
+	bool IsEmpty() const;
 
 	std::string GetRegString();
 

@@ -1,6 +1,6 @@
 #pragma once
 #include "TObject.h"
-#include "TString.h"
+#include "TObjectNode.h"
 #include "FileFunctions.hpp"
 
 /*
@@ -47,11 +47,11 @@ TString _TREC_LIB_DLL GetDirectoryWithSlash(CentralDirectories cd);
 TString _TREC_LIB_DLL GetShadowDirectoryWithSlash(CentralDirectories cd);
 
 
-class TFile :
+class _TREC_LIB_DLL TFile :
     public TObject
 {
 public:
-	class TFileShell : public TObject
+	class _TREC_LIB_DLL TFileShell : public TObject
 	{
 		friend class TrecPointerKey;
 	public:
@@ -261,6 +261,21 @@ public:
 
 	UINT ReadString(TString& rString, WCHAR chara);
 
+	/**
+	 * Method: TFile::ReadString
+	 * Purpose: Reads the file up to one of the provided characters
+	 * Parameters: TString& rString - the string to retun
+	 *				TString& chars - the characters to stop at
+	 *				UCHAR flags - flags influence the behavior of this method
+	 *				UINT max - max number of bytes to read (0 for no maximum)
+	 * Returns: UINT - the size of the resulting string
+	 *
+	 * Note: Written with Source code interpretation in mind
+	 * Flags variable values:
+	 *		0b00000001 - TFile::include_end - include the terminating character in the return String
+	 *      0b00000010 - TFile::out_of_quotes - makesure that when we do find the characters, they are outside of quotes
+	 *      0b00000100 - TFile::watch_backslash - factor backslashes in handling the other flags
+	 */
 	UINT ReadString(TString& rString, const TString& chars, UCHAR flags, UINT max = 0);
 
 	void WriteString(const TString& lpsz);
@@ -348,7 +363,7 @@ public:
 	 * Parameters: void
 	 * Returns: FileEncodingType - the type of encoding the file is set to use
 	 */
-	FileEncodingType GetEncodingType();
+	FileEncodingType GetEncodingType() const;
 
 protected:
 	/*
@@ -399,4 +414,98 @@ public:
 	TDataArray<TrecPointer<TFile::TFileShell>> GetFileListing();
 
 	void GetFileListing(TDataArray<TrecPointer<TFile::TFileShell>>& files);
+};
+
+using file_node_filter_mode = enum class file_node_filter_mode
+{
+	fnfm_blank,                   // no directory filtering
+	fnfm_block_upper,             // block the upper directory
+	fnfm_block_current,           // block the current directory
+	fnfm_block_both,              // block both the upper and current directory
+	fnfm_block_upper_and_files,   // Only show regular and current directories
+	fnfm_block_current_and_files, // Only show regular and upper directories
+	fnfm_block_both_and_files,    // Only show regular directories
+	fnfm_block_directories,       // Only show files
+	fnfm_block_files              // Show all Directories and no files
+};
+
+/*
+ * Class: TFileNode
+ * Purpose: Implements the TObjectNode interface for Files found on the local hard drive
+ *
+ * SuperClass: TObjectNode - Allows TBlankNode to be used by the TTreeDataBind control
+ */
+class _TREC_LIB_DLL TFileNode :
+	public TObjectNode
+{
+public:
+
+	explicit TFileNode(UINT l);
+
+	TString GetContent() override;
+
+	TString GetCommand(const TString& info)override;
+
+	bool IsExtendable() override;
+
+	bool IsExtended()override;
+
+	TrecPointer<TObjectNode> GetNodeAt(UINT target, UINT current) override;
+
+	UINT TotalChildren() override;
+
+	bool Initialize() override;
+
+	bool Initialize(TString& value) override;
+
+	void Extend() override;
+
+	TrecPointer<TObjectNode> GetChildNodes(UINT index) override;
+
+	void DropChildNodes() override;
+
+	void SetFile(const TrecPointer<TFileShell>& d);
+
+	TrecPointer<TFileShell> GetData();
+
+	void SetShowAllFiles(bool show);
+
+	bool GetShowAllFiles();
+
+	bool AddExtension(const TString& extension);
+
+	void SetFilterMode(file_node_filter_mode mode);
+
+	file_node_filter_mode GetFilterMode();
+
+	bool RemoveNode(TrecPointer<TObjectNode> obj) override;
+
+protected:
+
+	bool ShouldShow(TrecPointer<TFileShell> node);
+
+	/**
+	 * the data held by this node
+	 */
+	TrecPointer<TFileShell> data;
+
+	/**
+	 * list of files held by this node (if object is a TDirectory
+	 */
+	TDataArray<TrecPointer<TObjectNode>> files;
+
+	/**
+	 * The Directory filtering mode
+	 */
+	file_node_filter_mode filter_mode;
+
+	/**
+	 * Whether to show all files or only the target ones
+	 */
+	bool showAllFiles;
+
+	/**
+	 * Extension Filter, only report these files
+	 */
+	TDataArray<TString> extensions;
 };

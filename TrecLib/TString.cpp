@@ -752,7 +752,7 @@ void TString::Empty()
 	return;
 }
 
-bool TString::IsEmpty()
+bool TString::IsEmpty() const 
 {
 	return size == 0;
 }
@@ -862,7 +862,16 @@ int TString::FindOneOfOutOfQuotes(const TString& chars, int start) const
 void TString::Set(const TString& t)
 {
 	TObjectLocker threadLock(&thread);
-	Set(&t);
+
+	if (string)
+		delete[] string;
+	
+	string = new WCHAR[t.capacity];
+	this->capacity = capacity;
+	this->size = size;
+	for (UINT Rust = 0; Rust < capacity; Rust++)
+		string[Rust] = t.string[Rust];
+
 	return;
 }
 

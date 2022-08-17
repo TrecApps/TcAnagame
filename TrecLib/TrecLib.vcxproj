@@ -152,6 +152,7 @@
     <ClInclude Include="TFile.h" />
     <ClInclude Include="TLinkedList.h" />
     <ClInclude Include="TObject.h" />
+    <ClInclude Include="TObjectNode.h" />
     <ClInclude Include="TObjectVariable.h" />
     <ClInclude Include="TrecLib.h" />
     <ClInclude Include="TrecPointer.h" />
@@ -171,6 +172,7 @@
     <ClCompile Include="TEnvironment.cpp" />
     <ClCompile Include="TFile.cpp" />
     <ClCompile Include="TObject.cpp" />
+    <ClCompile Include="TObjectNode.cpp" />
     <ClCompile Include="TObjectVariable.cpp" />
     <ClCompile Include="TrecPointer.cpp" />
     <ClCompile Include="TString.cpp" />
