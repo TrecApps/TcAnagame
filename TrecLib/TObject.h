@@ -29,7 +29,8 @@ using var_type = enum class var_type
 	special_value,       // Holds a special value that doesn't fit in any of the other categories
 	iterator,            // Serves as an iterator
 	async,               // Serves as a brdge between threads
-	runner               // Function/Procedure that 'Runs' in some form
+	runner,               // Function/Procedure that 'Runs' in some form
+	type					// helps map out the type of variable being wirked with
 };
 
 class _TREC_LIB_DLL TObject: public TCoreObject
@@ -53,7 +54,7 @@ public:
     {
     public:
 		TVariable();
-		virtual ~TVariable();
+		~TVariable() override;
 
         virtual TrecPointer<TVariable> Clone() = 0;
 
