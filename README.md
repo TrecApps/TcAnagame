@@ -72,6 +72,13 @@ This Dependency is used to ensure that OpenGL can be used in a Windowed-Environm
 Command: `./vcpkg install glfw3:x64-windows` (Note: If you are focused on Building a 32-bit Version, omit the `:x64-windows` from the command
 Dependency Name (Folder Name to copy to): `GLFW`
 
+#### GLEW
+
+This Dependency is used to ensure that OpenGL shaders can be referenced in code
+
+Command: `./vcpkg install glew:x64-windows` (Note: If you are focused on Building a 32-bit Version, omit the `:x64-windows` from the command
+Dependency Name (Folder Name to copy to): `GLEW`
+
 #### FreeType 2.0
 
 This Dependency is being used to Provide Text Management support
