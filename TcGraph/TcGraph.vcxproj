@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\..\ffmpeg\include;..\..\Freetype_2.0\include;..\..\GLFW\include;..\TrecLib;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\ffmpeg\lib;..\..\Freetype_2.0\lib;..\..\GLFW\lib;..\x64\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\GLEW\include;..\..\ffmpeg\include;..\..\Freetype_2.0\include;..\..\GLFW\include;..\TrecLib;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\GLEW\lib;..\..\ffmpeg\lib;..\..\Freetype_2.0\lib;..\..\GLFW\lib;..\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -121,7 +121,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>avcodec.lib;freetype.lib;glfw3dll.lib;OpenGL32.lib;TrecLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>avcodec.lib;freetype.lib;glfw3dll.lib;OpenGL32.lib;TrecLib.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -152,6 +152,7 @@
     <ClInclude Include="TcGraph.h" />
     <ClInclude Include="TColor.h" />
     <ClInclude Include="TColorBrush.h" />
+    <ClInclude Include="TShader.h" />
     <ClInclude Include="TTextElement.h" />
     <ClInclude Include="TVidPlayer.h" />
   </ItemGroup>
@@ -167,6 +168,7 @@
     <ClCompile Include="TBrush.cpp" />
     <ClCompile Include="TColor.cpp" />
     <ClCompile Include="TColorBrush.cpp" />
+    <ClCompile Include="TShader.cpp" />
     <ClCompile Include="TTextElement.cpp" />
     <ClCompile Include="TVidPlayer.cpp" />
   </ItemGroup>
