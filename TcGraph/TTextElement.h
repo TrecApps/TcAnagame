@@ -14,6 +14,13 @@ using tc_line_spacing = enum class tc_line_spacing
     justified = 3
 };
 
+using tc_text_spacing = enum class tc_text_spacing
+{
+    top = 0,
+    center = 1,
+    bottom = 2
+};
+
 class _TC_GRAPH TextFormattingDetails
 {
 public:
@@ -23,6 +30,7 @@ public:
     float fontSize;
     UCHAR formatTweaks;
     tc_line_spacing defaultLineSPacing;
+    tc_text_spacing textSpacing;
 };
 
 class BasicCharacter

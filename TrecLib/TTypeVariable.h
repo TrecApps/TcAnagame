@@ -1,5 +1,6 @@
 #pragma once
 #include "TObject.h"
+#include "TDataArray.h"
 
 using type_category = enum class type_category
 {
@@ -71,14 +72,46 @@ public:
     static TrecPointer<TFeatureType> GetReferenceType(TrecPointer<TTypeVariable>, bool isMut = true);
 };
 
+using tc_primitive_type = enum class tc_primitve_type {
+    pt_int,
+    pt_uint,
+    pt_float,
+    pt_char,
+    pt_bool
+};
+
+using tc_primitive_size = enum class tc_primitive_size {
+    one_byte,       // 8-bits
+    two_byte,       // 16-bits
+    four_byte,      // 32-bits
+    eight_byte,     // 64-bits
+    twelve_byte,    // 96-bits
+    sixteen_byte,   // 128-bits
+    flexible_size   // Size varies (should not be used in Binary-Runners)
+};
+
 class TPrimitiveType : public TTypeVariable
 {
+    friend class TrecPointerKey;
+    tc_primitive_size size;
+    tc_primitive_type type;
+    explicit TPrimitiveType() = default;
+public:
+    static TrecPointer<TPrimitiveType> GetPrimitiveType(tc_primitive_size size, tc_primitive_type type);
 
+    type_category GetTypeCategory() override;
+    tc_primitive_size GetPrimitiveSize() const;
+    tc_primitive_type GetPrimitiveType() const;
 };
 
 class TUnionType : public TTypeVariable
 {
-
+    TDataArray<TrecPointer<TTypeVariable>> subTypes;
+public:
+    explicit TUnionType(const TDataArray<TrecPointer<TTypeVariable>>& newTypes);
+    type_category GetTypeCategory() override;
+    UINT GetTypeCount() const;
+    TrecPointer<TTypeVariable> GetTypeAt(UINT index) const;
 };
 
 class TClassType : public TTypeVariable
