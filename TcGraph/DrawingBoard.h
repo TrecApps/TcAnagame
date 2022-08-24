@@ -14,6 +14,8 @@ protected:
     bool mode2d;
     
 public:
+    bool GetDisplayResolution(int& width, int& height);
+
     ~DrawingBoard() override;
 
     void BeginDraw() const;

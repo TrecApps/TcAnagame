@@ -3,16 +3,16 @@
 FT_Library  freeTypeLibrary;
 
 #ifdef _WINDOWS
-TString fontDirectory(L"C:\\Windows\\Fonts\\");
+const TString fontDirectory(L"C:\\Windows\\Fonts\\");
 #elif defined(__linux__)
 TString fontDirectory(L"/usr/share/fonts/truetype/");
 #elif (defined (__APPLE__) && defined (__MACH__))
 TString fontDirectory(L"/System/Library/Fonts/Supplemental/");
 #endif // _WINDOWS
 
-TDataMap<FT_Face> fontMap;
+static TDataMap<FT_Face> fontMap;
 
-TTextElement::TTextElement(TrecPointer<DrawingBoard> board)
+TTextElement::TTextElement(TrecPointer<DrawingBoard> board): drawingBoard(board)
 {
 	wrap = true;
 	bounds.bottom = bounds.left = bounds.right = bounds.top = 0.0f;
@@ -48,6 +48,10 @@ bool TTextElement::RetrieveFont(const TString& name, FT_Face& face)
 	}
 	else
 	{
+		int width = 300;
+		int height = 300;
+		drawingBoard->GetDisplayResolution(width, height);
+		FT_Set_Char_Size(face, 0, 16*64, width, height);
 		fontMap.addEntry(name, face);
 	}
 
@@ -65,14 +69,19 @@ void TTextElement::ClearFonts()
 	fontMap.clear();
 }
 
+void TTextElement::SetBounds(RECT_F bounds)
+{
+	this->bounds = bounds;
+	ReCreateLayout();
+}
+
 void TTextElement::ReCreateLayout()
 {
 }
 
-TextFormattingDetails::TextFormattingDetails()
+TextFormattingDetails::TextFormattingDetails():
+	fontSize(16.0f),
+	formatTweaks(0)
 {
 }
 
-TextFormattingDetails::TextFormattingDetails(const TextFormattingDetails& copy)
-{
-}

@@ -11,6 +11,21 @@ DrawingBoard::DrawingBoard(GLFWwindow* window)
 	defaultClearColor.SetColor(L"white");
 }
 
+bool DrawingBoard::GetDisplayResolution(int& width, int& height)
+{
+	GLFWmonitor* mon = glfwGetWindowMonitor(window);
+	if (!mon)
+		mon = glfwGetPrimaryMonitor();
+	const GLFWvidmode* mode = glfwGetVideoMode(mon);
+
+	if (!mode)
+		return false;
+	
+	width = mode->width;
+	height = mode->height;
+	return true;
+}
+
 DrawingBoard::~DrawingBoard()
 {
 	glfwDestroyWindow(window);

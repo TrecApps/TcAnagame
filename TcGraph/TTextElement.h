@@ -10,8 +10,32 @@ class _TC_GRAPH TextFormattingDetails
 {
 public:
     TextFormattingDetails();
-    TextFormattingDetails(const TextFormattingDetails& copy);
+    TextFormattingDetails(const TextFormattingDetails& copy)=default;
 
+    float fontSize;
+    UCHAR formatTweaks;
+};
+
+class BasicCharacter
+{
+public:
+    WCHAR character;
+    RECT_F location;
+
+    BasicCharacter() = default;
+    BasicCharacter(const BasicCharacter& copy) = default;
+};
+
+class BasicCharLine
+{
+    friend class TTextElement;
+    UINT height;
+    UINT totalWidth;
+    bool isCarryOver;
+public:
+    BasicCharLine() = default;
+    BasicCharLine(const BasicCharLine& copy) = default;
+    TDataArray<BasicCharacter> characters;
 };
 
 class _TC_GRAPH TTextElement :
@@ -26,13 +50,19 @@ protected:
     RECT_F bounds;
     bool wrap;
 
+    TDataArray<BasicCharLine> lines;
+
+    TextFormattingDetails formattingDetails;
+
 public:
     TTextElement(TrecPointer<DrawingBoard> board);
 
 
     static bool InitializeText();
-    static bool RetrieveFont(const TString& name, FT_Face& face);
+    bool RetrieveFont(const TString& name, FT_Face& face);
     static void ClearFonts();
+
+    void SetBounds(RECT_F bounds);
 
     virtual void ReCreateLayout();
 };
