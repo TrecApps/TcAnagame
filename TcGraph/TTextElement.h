@@ -6,6 +6,14 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+using tc_line_spacing = enum class tc_line_spacing
+{
+    left = 0,
+    right = 1,
+    center = 2,
+    justified = 3
+};
+
 class _TC_GRAPH TextFormattingDetails
 {
 public:
@@ -14,6 +22,7 @@ public:
 
     float fontSize;
     UCHAR formatTweaks;
+    tc_line_spacing defaultLineSPacing;
 };
 
 class BasicCharacter
@@ -21,8 +30,14 @@ class BasicCharacter
 public:
     WCHAR character;
     RECT_F location;
+    TColor textColor;
+    TrecPointer<TColor> backgroundColor;
+    UCHAR format;
 
-    BasicCharacter() = default;
+    int GetWeightStrength()const;
+    void SetWeightStrength(int weight);
+
+    BasicCharacter();
     BasicCharacter(const BasicCharacter& copy) = default;
 };
 
@@ -32,10 +47,19 @@ class BasicCharLine
     UINT height;
     UINT totalWidth;
     bool isCarryOver;
+    float ceilingPadding;
+    float floorPadding;
+    UCHAR attributes;
 public:
-    BasicCharLine() = default;
+    BasicCharLine();
     BasicCharLine(const BasicCharLine& copy) = default;
     TDataArray<BasicCharacter> characters;
+
+    void SetLineSpacing(tc_line_spacing spacing);
+    tc_line_spacing GetLineSpacing() const;
+
+    void SetVerticalPadding(float value, bool isFloor = true);
+    float GetVerticalPadding(bool isFloor = true) const;
 };
 
 class _TC_GRAPH TTextElement :
@@ -55,7 +79,7 @@ protected:
     TextFormattingDetails formattingDetails;
 
 public:
-    TTextElement(TrecPointer<DrawingBoard> board);
+    explicit TTextElement(TrecPointer<DrawingBoard> board);
 
 
     static bool InitializeText();

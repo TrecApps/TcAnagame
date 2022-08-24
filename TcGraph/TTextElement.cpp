@@ -10,6 +10,32 @@ TString fontDirectory(L"/usr/share/fonts/truetype/");
 TString fontDirectory(L"/System/Library/Fonts/Supplemental/");
 #endif // _WINDOWS
 
+#define FONT_WEIGHT_ARRAY_SIZE 9
+
+const int hundredMinWeight[FONT_WEIGHT_ARRAY_SIZE] = {
+	850,
+	750,
+	650,
+	550,
+	450,
+	350,
+	250,
+	150,
+	50
+};
+
+const int resultWeight[FONT_WEIGHT_ARRAY_SIZE] = {
+	4,
+	3,
+	2,
+	1,
+	0,
+	-1,
+	-2,
+	-3,
+	-4
+};
+
 static TDataMap<FT_Face> fontMap;
 
 TTextElement::TTextElement(TrecPointer<DrawingBoard> board): drawingBoard(board)
@@ -85,3 +111,65 @@ TextFormattingDetails::TextFormattingDetails():
 {
 }
 
+BasicCharLine::BasicCharLine()
+{
+	height = totalWidth = 0;
+	isCarryOver = false;
+}
+
+void BasicCharLine::SetLineSpacing(tc_line_spacing spacing)
+{
+	attributes = (attributes & 0b11111100) + static_cast<UCHAR>(spacing);
+}
+
+tc_line_spacing BasicCharLine::GetLineSpacing() const
+{
+	return static_cast<tc_line_spacing>(attributes & 0x3);
+}
+
+void BasicCharLine::SetVerticalPadding(float value, bool isFloor)
+{
+	if (isFloor)
+		this->floorPadding = value;
+	else this->ceilingPadding = value;
+}
+
+float BasicCharLine::GetVerticalPadding(bool isFloor) const
+{
+
+	return max( 0.0f, isFloor ? floorPadding : ceilingPadding);
+}
+
+int BasicCharacter::GetWeightStrength() const 
+{
+	bool negative = format & 0x8;
+	int ret = format & 0x7;
+	if (ret > 4)
+		ret = 4; // Max value is 4
+	if (negative) ret = (-ret);
+	return ret;
+}
+
+void BasicCharacter::SetWeightStrength(int weight)
+{
+	for (UINT Rust = 0; Rust < FONT_WEIGHT_ARRAY_SIZE; Rust++)
+	{
+		if (weight > hundredMinWeight[Rust])
+		{
+			weight = resultWeight[Rust];
+			break;
+		}
+	}
+
+	bool negative = weight & 0x8;
+	format = (format & 0xf0) + (weight & 0x7);
+	if (negative)
+		format |= 0x8;
+}
+
+BasicCharacter::BasicCharacter()
+{
+	character = 0;
+	location = { 0,0,0,0 };
+	format = 0;
+}
