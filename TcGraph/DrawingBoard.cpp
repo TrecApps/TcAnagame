@@ -1,12 +1,10 @@
 #include "TColorBrush.h"
+#include <cassert>
 
 DrawingBoard::DrawingBoard(GLFWwindow* window)
 {
 	if (!window) throw 0;
 	this->window = window;
-
-	mode2d = false;
-	set2D();
 
 	defaultClearColor.SetColor(L"white");
 }
@@ -52,19 +50,34 @@ void DrawingBoard::ConfirmDraw()
 	glfwSwapBuffers(window);
 }
 
-void DrawingBoard::set2D()
+void DrawingBoard::SetShader(TrecPointer<TShader> shader, shader_type shaderType)
 {
-	if (mode2d)
+	if (shader.Get() && currentShader.Get() == shader.Get())
 		return;
-
-	glMatrixMode(GL_PROJECTION); // Tell opengl that we are doing project matrix work
-	glLoadIdentity(); // Clear the matrix
-	glOrtho(-9.0, 9.0, -9.0, 9.0, 0.0, 30.0); // Setup an Ortho view
-	glMatrixMode(GL_MODELVIEW); // Tell opengl that we are doing model matrix work. (drawing)
-	glLoadIdentity(); // Clear the model matrix
-
-	mode2d = true;
+	switch (shaderType)
+	{
+	case shader_type::shader_3d:
+		assert(shader.Get());
+		currentShader = shader;
+		break;
+	case shader_type::shader_2d:
+		//if(!shader2D.Get())
+		//
+		break;
+	case shader_type::shader_write:
+		if (!shaderWrite.Get())
+			shaderWrite = TrecPointerKey::GetNewTrecPointerAlt<TShader, TFreeTypeShader>();
+		currentShader = shaderWrite;
+	}
+	this->shaderType = shaderType;
+	currentShader->Use();
 }
+
+TrecPointer<TShader> DrawingBoard::GenerateShader(TrecPointer<TFileShell> shaderFile)
+{
+	return TShader::GenerateShader(shaderFile);
+}
+
 
 TrecPointer<TBrush> DrawingBoard::GetSolidColorBrush(const TColor& color) const
 {
