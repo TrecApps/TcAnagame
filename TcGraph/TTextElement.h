@@ -5,6 +5,10 @@
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include FT_GLYPH_H
+#include FT_OUTLINE_H
+#include FT_BITMAP_H
+#include FT_STROKER_H
 
 using tc_line_spacing = enum class tc_line_spacing
 {
@@ -29,8 +33,11 @@ public:
 
     float fontSize;
     UCHAR formatTweaks;
-    tc_line_spacing defaultLineSPacing;
+    TString font;
+    tc_line_spacing defaultLineSpacing;
     tc_text_spacing textSpacing;
+    TColor defaultTextColor;
+    TrecPointer<TColor> defaultBackgroundColor;
 };
 
 class BasicCharacter
@@ -38,8 +45,8 @@ class BasicCharacter
 public:
     WCHAR character;
     RECT_F location;
-    TColor textColor;
     TrecPointer<TColor> backgroundColor;
+    FT_Bitmap bitmap;
     UCHAR format;
 
     int GetWeightStrength()const;
@@ -47,16 +54,19 @@ public:
 
     BasicCharacter();
     BasicCharacter(const BasicCharacter& copy) = default;
+    ~BasicCharacter();
 };
 
 class BasicCharLine
 {
     friend class TTextElement;
-    UINT height;
-    UINT totalWidth;
+    float top;
+    float height;
+    float totalWidth;
     bool isCarryOver;
     float ceilingPadding;
     float floorPadding;
+
     UCHAR attributes;
 public:
     BasicCharLine();
@@ -85,6 +95,10 @@ protected:
     TDataArray<BasicCharLine> lines;
 
     TextFormattingDetails formattingDetails;
+
+    void AppendLine(BasicCharLine& line, float& y);
+
+    void JustifyLine(BasicCharLine& line, float difference);
 
 public:
     explicit TTextElement(TrecPointer<DrawingBoard> board);
