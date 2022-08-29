@@ -177,3 +177,150 @@ TrecPointer<TTypeVariable> TUnionType::GetTypeAt(UINT index) const
 {
     return index < subTypes.Size() ? subTypes[index] : TrecPointer<TTypeVariable>();
 }
+
+TClassType::Field::Field(TrecPointer<TTypeVariable> type, TDataArray<TrecPointer<TVariable>>& metadata, UCHAR access, UCHAR feature)
+{
+    this->access = access;
+    this->feature = feature;
+    this->type = type;
+
+
+    for (UINT Rust = 0; Rust < metadata.Size(); Rust++)
+    {
+        if (metadata[Rust].Get())
+            this->metadata.push_back(metadata[Rust]);
+    }
+}
+
+TClassType::Field::Field()
+{
+    access = feature = 0;
+}
+
+TClassType::Field::Field(const Field& copy)
+{
+    this->access = copy.access;
+    this->feature = copy.feature;
+    this->metadata = copy.metadata;
+    this->type = copy.type;
+}
+
+TrecPointer<TTypeVariable> TClassType::Field::GetType() const
+{
+    return type;
+}
+
+UINT TClassType::Field::GetMetadataCount() const
+{
+    return metadata.Size();
+}
+
+TrecPointer<TVariable> TClassType::Field::GetMetadata(UINT index) const
+{
+    return index < metadata.Size() ? metadata[index] : TrecPointer<TVariable>();
+}
+
+bool TClassType::Field::IsPublic() const
+{
+    return !(access & 0b00001100);
+}
+
+bool TClassType::Field::IsReadPublic() const
+{
+    return (access & 0b00000011) != 3;
+}
+
+bool TClassType::Field::IsSubclassAccessible() const
+{
+    return !(access & 0b00001100);
+}
+
+bool TClassType::Field::IsSubclassReadAccessible() const
+{
+    return ((access & 0b00001100) >> 2) != 3;
+}
+
+bool TClassType::Field::IsModuleAccessible() const
+{
+    return !(access & 0b00110000);
+}
+
+bool TClassType::Field::IsModuleReadAccessible() const
+{
+    return ((access & 0b00110000) >> 4) != 3;
+}
+
+bool TClassType::Field::IsObjectAccessible() const
+{
+    return !(access & 0b11000000);
+}
+
+bool TClassType::Field::IsObjectReadAccessible() const
+{
+    return ((access & 0b11000000) >> 6) != 3;;
+}
+
+bool TClassType::Field::IsStatic() const
+{
+    return feature & 0x1;
+}
+
+bool TClassType::Field::IsConst() const
+{
+    return feature & 0x2;
+}
+
+bool TClassType::Field::IsMutable() const
+{
+    return !IsConst() && (feature & 0x4);
+}
+
+TClassType::Parameter::Parameter(TrecPointer<TTypeVariable> type, TDataArray<TrecPointer<TVariable>>& metadata, const TString& name, TrecPointer<TVariable> defaultValue)
+{
+    this->type = type;
+    this->name.Set(name);
+    this->defaultValue = defaultValue;
+
+    for (UINT Rust = 0; Rust < metadata.Size(); Rust++)
+    {
+        if (metadata[Rust].Get())
+            this->metadata.push_back(metadata[Rust]);
+    }
+}
+
+TClassType::Parameter::Parameter()
+{
+}
+
+TClassType::Parameter::Parameter(const Parameter& copy)
+{
+    this->defaultValue = copy.defaultValue;
+    this->name.Set(copy.name);
+    this->metadata = copy.metadata;
+    this->type = copy.type;
+}
+
+UINT TClassType::Parameter::GetMetadataCount() const
+{
+    return metadata.Size();
+}
+
+TrecPointer<TVariable> TClassType::Parameter::GetMetadata(UINT index) const
+{
+    return index < metadata.Size() ? metadata[index] : TrecPointer<TVariable>();
+}
+
+TString TClassType::Parameter::GetName() const
+{
+    return name;
+}
+
+TrecPointer<TTypeVariable> TClassType::Parameter::GetType() const
+{
+    return type;
+}
+
+TrecPointer<TVariable> TClassType::Parameter::GetDefaultValue() const
+{
+    return defaultValue;
+}

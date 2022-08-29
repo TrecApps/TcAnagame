@@ -1,6 +1,7 @@
 #pragma once
 #include "TObject.h"
 #include "TDataArray.h"
+#include "TString.h"
 
 using type_category = enum class type_category
 {
@@ -116,5 +117,65 @@ public:
 
 class TClassType : public TTypeVariable
 {
+public:
+    class Field
+    {
+        friend class Field;
+        TrecPointer<TTypeVariable> type;
+        UCHAR access;
+        UCHAR feature;
+        TDataArray<TrecPointer<TVariable>> metadata;
+    public:
+        Field(TrecPointer<TTypeVariable> type, TDataArray<TrecPointer<TVariable>>& metadata, UCHAR access = 0, UCHAR feature = 0);
+        Field();
+        Field(const Field& copy);
 
+        TrecPointer<TTypeVariable> GetType() const;
+
+        UINT GetMetadataCount()const;
+        TrecPointer<TVariable> GetMetadata(UINT index) const;
+
+        bool IsPublic() const;
+        bool IsReadPublic() const;
+
+        bool IsSubclassAccessible() const;
+        bool IsSubclassReadAccessible() const;
+
+        bool IsModuleAccessible() const;
+        bool IsModuleReadAccessible() const;
+
+        bool IsObjectAccessible() const;
+        bool IsObjectReadAccessible() const;
+
+        bool IsStatic() const;
+        bool IsConst() const;   // Needs to be set up in either the constructor/class-set-up
+        bool IsMutable() const; // The field can be updated, even if the object itself is considered "const"
+    };
+
+    class Parameter
+    {
+        TrecPointer<TTypeVariable> type;
+        TString name;
+        TrecPointer<TVariable> defaultValue;
+        TDataArray<TrecPointer<TVariable>> metadata;
+    public:
+        Parameter(TrecPointer<TTypeVariable> type, TDataArray<TrecPointer<TVariable>>& metadata, const TString& name, TrecPointer<TVariable> defaultValue);
+        Parameter();
+        Parameter(const Parameter& copy);
+
+        UINT GetMetadataCount()const;
+        TrecPointer<TVariable> GetMetadata(UINT index) const;
+
+        TString GetName() const;
+        TrecPointer<TTypeVariable> GetType() const;
+        TrecPointer<TVariable> GetDefaultValue() const;
+
+
+
+    };
+
+    class Method
+    {
+
+    };
 };
