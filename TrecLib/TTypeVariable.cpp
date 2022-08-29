@@ -324,3 +324,238 @@ TrecPointer<TVariable> TClassType::Parameter::GetDefaultValue() const
 {
     return defaultValue;
 }
+
+TClassType::Method::Method()
+{
+    accessFeature = 0;
+}
+
+TClassType::Method::Method(
+    TrecPointer<TTypeVariable> returnType,
+    TDataArray<Parameter>& parameters,
+    TDataArray<TrecPointer<TTypeVariable>>& throws,
+    TDataArray<TrecPointer<TVariable>>& metadata,
+    UCHAR accessFeature,
+    method_mode methodMode)
+{
+    this->returnType = returnType;
+    this->parameters = parameters;
+
+    this->accessFeature = static_cast<USHORT>(accessFeature) + (static_cast<USHORT>(methodMode) << 8); 
+
+    for (UINT Rust = 0; Rust < metadata.Size(); Rust++)
+    {
+        if (metadata[Rust].Get())
+            this->metadata.push_back(metadata[Rust]);
+    }
+
+    for (UINT Rust = 0; Rust < throws.Size(); Rust++)
+    {
+        if (throws[Rust].Get())
+            this->throws.push_back(throws[Rust]);
+    }
+}
+
+TClassType::Method::Method(const Method& copy)
+{
+    this->returnType = returnType;
+    this->parameters = parameters;
+    this->throws = throws;
+    this->accessFeature = accessFeature;
+    this->metadata = metadata;
+}
+
+UINT TClassType::Method::GetMetadataCount() const
+{
+    return metadata.Size();
+}
+
+TrecPointer<TVariable> TClassType::Method::GetMetadata(UINT index) const
+{
+    return TrecPointer<TVariable>();
+}
+
+UINT TClassType::Method::GetThrowsCount() const
+{
+    return throws.Size();
+}
+
+TrecPointer<TTypeVariable> TClassType::Method::GetThrows(UINT index) const
+{
+    return index < throws.Size() ? throws[index] : TrecPointer<TTypeVariable>();
+}
+
+UINT TClassType::Method::GetParametersCount() const
+{
+    return parameters.Size();
+}
+
+TClassType::Parameter TClassType::Method::GetParameter(UINT index) const
+{
+    return index < parameters.Size() ? parameters[index] : Parameter();
+}
+
+TrecPointer<TTypeVariable> TClassType::Method::GetReturnType() const
+{
+    return returnType;
+}
+
+bool TClassType::Method::IsPublic() const
+{
+    return !(accessFeature & 0x1);
+}
+
+bool TClassType::Method::IsSubclassAccessible() const
+{
+    return !(accessFeature & 0x2);
+}
+
+bool TClassType::Method::IsModuleAccessible() const
+{
+    return !(accessFeature & 0x4);
+}
+
+bool TClassType::Method::IsObjectAccessible() const
+{
+    return !(accessFeature & 0x8);
+}
+
+bool TClassType::Method::IsStatic() const
+{
+    return (accessFeature & 0xf);
+}
+
+bool TClassType::Method::IsConst() const
+{
+    return accessFeature & 0x10;
+}
+
+TClassType::method_mode TClassType::Method::GetMethodMode() const
+{
+    return static_cast<method_mode>(this->accessFeature >> 8);
+}
+
+TClassType::TClassType()
+{
+}
+
+TClassType::TClassType(TDataMap<Field>& fields,
+    TDataMap<Method>& methods,
+    TDataMap<Method>& constructors,
+    TrecPointer<TClassType> mainParent,
+    TDataArray<TrecPointer<TClassType>>& otherParents,
+    TDataMap<TrecPointer<TTypeVariable>>& nestedTypes,
+    TDataArray<TrecPointer<TVariable>>& metadata)
+{
+    this->constructors = constructors;
+    this->fields = fields;
+    this->methods = methods;
+    this->mainParent = mainParent;
+    this->otherParents = otherParents;
+    this->nestedTypes = nestedTypes;
+    this->metadata = metadata;
+}
+
+TClassType::TClassType(const TClassType& copy) :
+    constructors(copy.constructors),
+    fields(copy.fields),
+    methods(copy.methods),
+    nestedTypes(copy.nestedTypes)
+{
+    this->mainParent = copy.mainParent;
+    this->otherParents = copy.otherParents;
+    this->metadata = metadata;
+}
+
+UINT TClassType::GetFieldCount() const
+{
+    return fields.count();
+}
+
+bool TClassType::GetFieldAt(UINT index, TString& name, Field& field) const
+{
+    TDataEntry<Field> entry;
+    bool ret = fields.GetEntryAt(index, entry);
+    if (ret)
+    {
+        name.Set(entry.key);
+        field = entry.object;
+    }
+    return ret;
+}
+
+UINT TClassType::GetMethodCount() const
+{
+    return methods.count();
+}
+
+bool TClassType::GetMethodAt(UINT index, TString& name, Method& field) const
+{
+    TDataEntry<Method> entry;
+    bool ret = methods.GetEntryAt(index, entry);
+    if (ret)
+    {
+        name.Set(entry.key);
+        field = entry.object;
+    }
+    return ret;
+}
+
+UINT TClassType::GetConstructorCount() const
+{
+    return constructors.count();
+}
+
+bool TClassType::GetConstructorAt(UINT index, TString& name, Method& field) const
+{
+    TDataEntry<Method> entry;
+    bool ret = constructors.GetEntryAt(index, entry);
+    if (ret)
+    {
+        name.Set(entry.key);
+        field = entry.object;
+    }
+    return ret;
+}
+
+TrecPointer<TClassType> TClassType::GetMainParent() const
+{
+    return mainParent;
+}
+
+UINT TClassType::GetOtherParentCount() const
+{
+    return otherParents.Size();
+}
+
+TrecPointer<TClassType> TClassType::GetOtherParent(UINT index) const
+{
+    return index < otherParents.Size() ? otherParents[index] : TrecPointer<TClassType>();
+}
+
+UINT TClassType::GetNestedTypeCount() const
+{
+    return nestedTypes.count();
+}
+
+bool TClassType::GetNestedTypeAt(UINT index, TString& name, TrecPointer<TTypeVariable>& field) const
+{
+    TDataEntry<TrecPointer<TTypeVariable>> entry;
+    bool ret = nestedTypes.GetEntryAt(index, entry);
+    if (ret)
+    {
+        name.Set(entry.key);
+        field = entry.object;
+    }
+    return ret;
+}
+
+UINT TClassType::GetMetadataCount() const
+{
+    return metadata.Size();
+}
+
+TrecPointer<TVariable> TClassType::GetMetadata(UINT index) const
+{
+    return index < metadata.Size() ? metadata[index] : TrecPointer<TVariable>();
+}

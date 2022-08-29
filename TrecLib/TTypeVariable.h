@@ -1,6 +1,7 @@
 #pragma once
 #include "TObject.h"
 #include "TDataArray.h"
+#include "TDataMap.h"
 #include "TString.h"
 
 using type_category = enum class type_category
@@ -174,8 +175,94 @@ public:
 
     };
 
+    using method_mode = enum class method_mode
+    {
+        fixed,      // Method not virtual
+        virtual_,   // Method is virtual (meaning object comes with a pointer to it)
+        override_,  // Method is virtual and overrides a virtual method in a base class
+        abstract_,  // Method is virtual and requires a subclass to implement it
+        final_      // Method is virtual and cannot be overridden
+    };
+
     class Method
     {
+        TrecPointer<TTypeVariable> returnType;
+        TDataArray<Parameter> parameters;
+        USHORT accessFeature;
+        TDataArray<TrecPointer<TTypeVariable>> throws;
+        TDataArray<TrecPointer<TVariable>> metadata;
 
+    public:
+        Method();
+        Method(TrecPointer<TTypeVariable> returnType,
+            TDataArray<Parameter>& parameters,
+            TDataArray<TrecPointer<TTypeVariable>>& throws,
+            TDataArray<TrecPointer<TVariable>>& metadata,
+            UCHAR accessFeature = 0,
+            method_mode methodMode = method_mode::virtual_);
+        Method(const Method& copy);
+
+        UINT GetMetadataCount() const;
+        TrecPointer<TVariable> GetMetadata(UINT index) const;
+
+        UINT GetThrowsCount() const;
+        TrecPointer<TTypeVariable> GetThrows(UINT index) const;
+
+        UINT GetParametersCount() const;
+        Parameter GetParameter(UINT index) const;
+
+        TrecPointer<TTypeVariable> GetReturnType() const;
+
+        bool IsPublic() const;
+        bool IsSubclassAccessible() const;
+        bool IsModuleAccessible() const;
+        bool IsObjectAccessible() const;
+
+        bool IsStatic() const;
+        bool IsConst() const;   // Whether the 
+
+        method_mode GetMethodMode() const;
+        
     };
+private:
+
+    TDataMap<Field> fields;
+    TDataMap<Method> methods, constructors;
+
+    TrecPointer<TClassType> mainParent;
+    TDataArray<TrecPointer<TClassType>> otherParents;
+
+    TDataMap<TrecPointer<TTypeVariable>> nestedTypes;
+
+    TDataArray<TrecPointer<TVariable>> metadata;
+
+public:
+    TClassType();
+    TClassType(TDataMap<Field>& fields,
+        TDataMap<Method>& methods,
+        TDataMap<Method>& constructors,
+        TrecPointer<TClassType> mainParent,
+        TDataArray<TrecPointer<TClassType>>& otherParents,
+        TDataMap<TrecPointer<TTypeVariable>>& nestedTypes,
+        TDataArray<TrecPointer<TVariable>>& metadata);
+    TClassType(const TClassType& copy);
+
+    UINT GetFieldCount() const;
+    bool GetFieldAt(UINT index, TString& name, Field& field) const;
+
+    UINT GetMethodCount() const;
+    bool GetMethodAt(UINT index, TString& name, Method& field) const;
+
+    UINT GetConstructorCount() const;
+    bool GetConstructorAt(UINT index, TString& name, Method& field) const;
+
+    TrecPointer<TClassType> GetMainParent() const;
+    UINT GetOtherParentCount() const;
+    TrecPointer<TClassType> GetOtherParent(UINT index) const;
+
+    UINT GetNestedTypeCount() const;
+    bool GetNestedTypeAt(UINT index, TString& name, TrecPointer<TTypeVariable>& field) const;
+
+    UINT GetMetadataCount() const;
+    TrecPointer<TVariable> GetMetadata(UINT index) const;
 };
