@@ -1,5 +1,11 @@
 #include "TColorBrush.h"
+#include "TImageBrush.h"
 #include <cassert>
+
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 
 DrawingBoard::DrawingBoard(GLFWwindow* window)
 {
@@ -64,6 +70,10 @@ void DrawingBoard::SetShader(TrecPointer<TShader> shader, shader_type shaderType
 		//if(!shader2D.Get())
 		//
 		break;
+	case shader_type::shader_texture:
+		if (!shaderTex2D.Get())
+			shaderTex2D = TrecPointerKey::GetNewTrecPointerAlt<TShader, Texture2DShader>();
+		currentShader = shaderTex2D;
 	case shader_type::shader_write:
 		if (!shaderWrite.Get())
 			shaderWrite = TrecPointerKey::GetNewTrecPointerAlt<TShader, TFreeTypeShader>();
@@ -87,4 +97,42 @@ TrecPointer<TBrush> DrawingBoard::GetSolidColorBrush(const TColor& color) const
 	ret->window = self;
 	ret->brushType = brush_type::brush_type_solid;
 	return TrecPointerKey::ConvertPointer<TColorBrush, TBrush>(ret);
+}
+
+TrecPointer<TBrush> DrawingBoard::GetImageBrush(TrecPointer<TFileShell> file) const
+{
+	if (!file.Get())
+		return TrecPointer<TBrush>();
+	TrecPointer<TImageBrush> ret = TrecPointerKey::GetNewTrecPointer<TImageBrush>();
+
+	ret->data = stbi_load(
+		file->GetPath().GetRegString().c_str(),
+		&ret->width,
+		&ret->height,
+		&ret->channelCount,
+		0);
+
+	if (!ret->data)
+		return TrecPointer<TBrush>();
+
+	GLenum sourceChannel;
+
+	switch (ret->channelCount)
+	{
+	case 3:
+		sourceChannel = GL_RGB;
+		break;
+	case 4:
+		sourceChannel = GL_RGBA;
+		break;
+	default:
+		return TrecPointer<TBrush>();
+	}
+
+	glGenTextures(1, &(ret->textureId));
+	glBindTexture(GL_TEXTURE_2D, ret->textureId);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ret->width, ret->height, 0, sourceChannel, GL_UNSIGNED_BYTE, ret->data);
+
+	return TrecPointerKey::ConvertPointer<TImageBrush, TBrush>(ret);
 }

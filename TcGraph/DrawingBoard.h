@@ -6,6 +6,7 @@
 using shader_type = enum class shader_type {
     shader_2d,
     shader_write,
+    shader_texture,
     shader_3d
 };
 
@@ -21,6 +22,7 @@ class _TC_GRAPH DrawingBoard :
 
     TrecPointer<TShader> shader2D;
     TrecPointer<TShader> shaderWrite;
+    TrecPointer<TShader> shaderTex2D;
 
 protected:
     
@@ -40,5 +42,6 @@ public:
     TrecPointer<TShader> GenerateShader(TrecPointer<TFileShell> shaderFile);
 
     TrecPointer<TBrush> GetSolidColorBrush(const TColor& color) const;
+    TrecPointer<TBrush> GetImageBrush(TrecPointer<TFileShell> file) const;
 };
 

@@ -24,3 +24,8 @@ class TFreeTypeShader : public TShader
 public:
     TFreeTypeShader();
 };
+
+class Texture2DShader : public TShader
+{
+public: Texture2DShader();
+};

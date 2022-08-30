@@ -48,6 +48,9 @@
     <ClInclude Include="TShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TImageBrush.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -75,6 +78,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TImageBrush.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
