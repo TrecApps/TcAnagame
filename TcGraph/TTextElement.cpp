@@ -1,4 +1,6 @@
+#include <GL/glew.h>
 #include "TTextElement.h"
+#include "TImageBrush.h"
 
 FT_Library  freeTypeLibrary;
 
@@ -38,6 +40,13 @@ const int resultWeight[FONT_WEIGHT_ARRAY_SIZE] = {
 
 static TDataMap<FT_Face> fontMap;
 
+int powerOf2(int value)
+{
+	int ret = 1;
+	while (ret < value) ret <<= 1;
+	return ret;
+}
+
 void TTextElement::AppendLine(BasicCharLine& curLine, float& y)
 {
 	curLine.totalWidth = 0.0f;
@@ -56,6 +65,29 @@ void TTextElement::AppendLine(BasicCharLine& curLine, float& y)
 
 void TTextElement::JustifyLine(BasicCharLine& line, float difference)
 {
+}
+
+UCHAR* TTextElement::textInGlFormat(FT_Bitmap& bitmap, int& targetWidth, int targetHeight)
+{
+	targetWidth = powerOf2(bitmap.width);
+	targetHeight = powerOf2(bitmap.rows);
+
+	UCHAR* ret = new UCHAR[targetWidth * targetHeight * 4];
+
+	UINT bitmapDataCount = 0;
+
+	for (int j = 0; j < targetHeight; j++) {
+		for (int i = 0; i < targetWidth; i++) {
+
+			if (i < (bitmap.width * 4))
+			{
+				ret[j * i] = bitmap.buffer[bitmapDataCount++];
+			}
+			else
+				ret[j * i] = 0;
+		}
+	}
+	return ret;
 }
 
 TTextElement::TTextElement(TrecPointer<DrawingBoard> board): drawingBoard(board)
@@ -165,7 +197,7 @@ void TTextElement::ReCreateLayout()
 		FT_UInt glyphIndex = FT_Get_Char_Index(curFace, ch.character);
 		if(!glyphIndex)continue;
 
-		if (FT_Load_Glyph(curFace, glyphIndex, FT_LOAD_DEFAULT))
+		if (FT_Load_Glyph(curFace, glyphIndex, FT_LOAD_COLOR))
 			continue;
 
 		if(FT_Render_Glyph(curFace->glyph, FT_RENDER_MODE_NORMAL))continue;
@@ -270,6 +302,51 @@ void TTextElement::ReCreateLayout()
 			BasicCharacter& ch = lines[Rust].characters[C];
 			ch.location.left += bottomDifference;
 			ch.location.right += bottomDifference;
+		}
+	}
+}
+
+void TTextElement::OnDraw(TrecPointer<TVariable> dataText)
+{
+	if (!drawingBoard.Get())
+		return;
+	float* verticies = TImageBrush::GeneratePictureVertices(this->bounds, this->bounds);
+	if (!verticies)
+		return;
+
+	drawingBoard->SetShader(TrecPointer<TShader>(), shader_type::shader_texture);
+
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+
+	unsigned int VBO;
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float[32]), verticies, GL_STATIC_DRAW);
+
+	glBindVertexArray(VBO);
+
+
+	for (UINT Rust = 0; Rust < lines.Size(); Rust++)
+	{
+		BasicCharLine& line = lines[Rust];
+		for (UINT C = 0; C < line.characters.Size(); C++)
+		{
+			BasicCharacter& ch = line.characters[C];
+			int width = 0, height = 0;
+			UCHAR* charData = textInGlFormat(ch.bitmap, width, height);
+
+			UINT textId = 0;
+			glGenTextures(1, &textId);
+			glBindTexture(GL_TEXTURE_2D, textId);
+
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, charData);
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+			delete[] charData;
+			charData = nullptr;
+
+			glDeleteTextures(1, &textId);
 		}
 	}
 }

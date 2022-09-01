@@ -27,7 +27,7 @@ brush_type TImageBrush::GetBrushType()
 	return brush_type::brush_type_bitmap;
 }
 
-float* GeneratePictureVertices(const RECT_F& picLocation, const RECT_F& clipLocation)
+float* TImageBrush::GeneratePictureVertices(const RECT_F& picLocation, const RECT_F& clipLocation)
 {
 	float width = picLocation.right - picLocation.left;
 	float height = picLocation.top - picLocation.bottom;

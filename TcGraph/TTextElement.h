@@ -100,6 +100,8 @@ protected:
 
     void JustifyLine(BasicCharLine& line, float difference);
 
+    UCHAR* textInGlFormat(FT_Bitmap& bitmap, int& targetWidth, int targetHeight);
+
 public:
     explicit TTextElement(TrecPointer<DrawingBoard> board);
 
@@ -111,5 +113,6 @@ public:
     void SetBounds(RECT_F bounds);
 
     virtual void ReCreateLayout();
+    virtual void OnDraw(TrecPointer<TVariable> dataText);
 };
 

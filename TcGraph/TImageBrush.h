@@ -21,6 +21,8 @@ class TImageBrush :
 public:
     ~TImageBrush();
 
+    static float* GeneratePictureVertices(const RECT_F& picLocation, const RECT_F& clipLocation);
+
     brush_type GetBrushType() override;
 
     void FillRectangle(const RECT_F& location);
