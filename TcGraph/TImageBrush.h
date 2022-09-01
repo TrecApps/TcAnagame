@@ -1,6 +1,7 @@
 #pragma once
 #include "TBrush.h"
 #include "DrawingBoard.h"
+#include "GraphicsDef.h"
 
 
 
@@ -17,5 +18,8 @@ class TImageBrush :
 
 public:
     ~TImageBrush();
+
+    void FillRectangle(const RECT_F& location);
+    void FillRectangle(const RECT_F& picLocation, const RECT_F& clipLocation);
 };
 

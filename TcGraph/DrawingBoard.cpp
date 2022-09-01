@@ -5,6 +5,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#include <GL/glew.h>
 
 
 DrawingBoard::DrawingBoard(GLFWwindow* window)
@@ -133,6 +134,6 @@ TrecPointer<TBrush> DrawingBoard::GetImageBrush(TrecPointer<TFileShell> file) co
 	glBindTexture(GL_TEXTURE_2D, ret->textureId);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ret->width, ret->height, 0, sourceChannel, GL_UNSIGNED_BYTE, ret->data);
-
+	glGenerateMipmap(GL_TEXTURE_2D);
 	return TrecPointerKey::ConvertPointer<TImageBrush, TBrush>(ret);
 }

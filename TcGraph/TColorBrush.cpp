@@ -30,7 +30,7 @@ void TColorBrush::DrawRectangle(const RECT_F& r, float thickness)
     TrecPointer<DrawingBoard> board = TrecPointerKey::TrecFromSoft<>(window);
     if (!board.Get())
         return;
-    board->set2D();
+    board->SetShader(TrecPointer<TShader>(), shader_type::shader_2d);
     glBegin(GL_LINES);
 
     glLineWidth(thickness);
@@ -65,7 +65,7 @@ void TColorBrush::FillRectangle(const RECT_F& r)
 {    TrecPointer<DrawingBoard> board = TrecPointerKey::TrecFromSoft<>(window);
     if (!board.Get())
         return;
-    board->set2D();
+    board->SetShader(TrecPointer<TShader>(), shader_type::shader_2d);
     TColor color;
     if (brushType == brush_type::brush_type_solid)
     {
@@ -111,7 +111,7 @@ void TColorBrush::DrawLine(const VERTEX_2D& p1, const VERTEX_2D& p2, float )
     TrecPointer<DrawingBoard> board = TrecPointerKey::TrecFromSoft<>(window);
     if (!board.Get())
         return;
-    board->set2D();
+    board->SetShader(TrecPointer<TShader>(), shader_type::shader_2d);
     TColor color(GetColor());
 
     glBegin(GL_LINES);

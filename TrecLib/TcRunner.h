@@ -135,7 +135,7 @@ public:
 
     virtual bool SetAsync() = 0;
 
-    void Run(ReturnObject& ret);
+    virtual void Run(ReturnObject& ret);
 };
 
 class TcAsyncVariable : public TVariable
