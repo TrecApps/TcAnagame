@@ -30,6 +30,25 @@ bool TVidPlayer::Initialize()
     return avFrame && avPacket;
 }
 
+void TVidPlayer::RunDetails(ReturnObject& ret)
+{
+}
+
+TrecPointer<TVariable> TVidPlayer::Clone()
+{
+    return TrecPointer<TVariable>();
+}
+
+runner_block_mode TVidPlayer::GetBlockMode()
+{
+    return runner_block_mode::async;
+}
+
+bool TVidPlayer::SetAsync()
+{
+    return false;
+}
+
 TVidPlayer::~TVidPlayer()
 {
     avformat_close_input(&avFormatContext);

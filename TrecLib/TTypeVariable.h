@@ -24,6 +24,12 @@ public:
     UINT Get4Value() override;
 
     UINT GetSize() override;
+
+    TrecPointer<TVariable> ToString();
+
+    TrecPointer<TVariable> ToString(TrecPointer<TVariable> detail);
+        
+    TrecPointer<TVariable> Clone();
 };
 
 class TArrayType : public TTypeVariable

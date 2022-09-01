@@ -64,7 +64,7 @@ public:
 
 };
 
-class VariableHolder : public TVObject
+class _TREC_LIB_DLL VariableHolder : public TVObject
 {
 public:
     VariableHolder();
@@ -103,7 +103,7 @@ public:
 
 
 
-class TcRunner :
+class _TREC_LIB_DLL TcRunner :
     public TVariable
 {
 protected:
@@ -118,6 +118,8 @@ protected:
     virtual void RunDetails(ReturnObject& ret) = 0;
     
 public:
+
+    var_type GetVarType() override;
 
     TcRunner() = default;
 
@@ -136,6 +138,14 @@ public:
     virtual bool SetAsync() = 0;
 
     virtual void Run(ReturnObject& ret);
+
+    virtual TrecPointer<TVariable> ToString() override;
+
+    virtual TrecPointer<TVariable> ToString(TrecPointer<TVariable> detail) override;
+
+    virtual UINT Get4Value() override;
+
+    virtual UINT GetSize() override;
 };
 
 class TcAsyncVariable : public TVariable

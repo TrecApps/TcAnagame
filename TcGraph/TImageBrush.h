@@ -16,8 +16,12 @@ class TImageBrush :
 
     UCHAR* data;
 
+    void GenerateImageData(TrecPointer<TFileShell> file);
+
 public:
     ~TImageBrush();
+
+    brush_type GetBrushType() override;
 
     void FillRectangle(const RECT_F& location);
     void FillRectangle(const RECT_F& picLocation, const RECT_F& clipLocation);

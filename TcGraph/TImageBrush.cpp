@@ -1,14 +1,30 @@
+#include <GL/glew.h>
 #include "TImageBrush.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
-#include <GL/glew.h>
+
+
+void TImageBrush::GenerateImageData(TrecPointer<TFileShell> file)
+{
+	data = stbi_load(
+		file->GetPath().GetRegString().c_str(),
+		&width,
+		&height,
+		&channelCount,
+		0);
+}
 
 TImageBrush::~TImageBrush()
 {
 	if (data)
 		stbi_image_free(data);
 	data = nullptr;
+}
+
+brush_type TImageBrush::GetBrushType()
+{
+	return brush_type::brush_type_bitmap;
 }
 
 float* GeneratePictureVertices(const RECT_F& picLocation, const RECT_F& clipLocation)

@@ -57,6 +57,11 @@ ReturnObject& ReturnObject::operator=(const ReturnObject& copy)
 	return *this;
 }
 
+var_type TcRunner::GetVarType()
+{
+	return var_type::runner;
+}
+
 void TcRunner::GetParameterSpecs(TDataArray<VariableHolder>& specs)
 {
 	specs = variableSpecs;
@@ -95,6 +100,25 @@ void TcRunner::Run(ReturnObject& ret)
 	}
 	else
 		RunDetails(ret);
+}
+
+TrecPointer<TVariable> TcRunner::ToString()
+{
+	return TrecPointer<TVariable>();
+}
+
+TrecPointer<TVariable> TcRunner::ToString(TrecPointer<TVariable> detail)
+{
+	return ToString();
+}
+
+UINT TcRunner::Get4Value()
+{
+	return 0;
+}
+
+UINT TcRunner::GetSize() {
+	return 0;
 }
 
 var_type TcAsyncVariable::GetVarType()

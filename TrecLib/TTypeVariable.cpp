@@ -24,6 +24,21 @@ UINT TTypeVariable::GetSize()
     return 0;
 }
 
+TrecPointer<TVariable> TTypeVariable::ToString()
+{
+    return TrecPointer<TVariable>();
+}
+
+TrecPointer<TVariable> TTypeVariable::ToString(TrecPointer<TVariable> detail)
+{
+    return TrecPointer<TVariable>();
+}
+
+TrecPointer<TVariable> TTypeVariable::Clone()
+{
+    return TrecPointerKey::TrecFromSoft<TVariable>(this->vSelf);
+}
+
 type_category TArrayType::GetTypeCategory()
 {
     return type_category::array_type;

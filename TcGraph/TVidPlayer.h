@@ -21,6 +21,8 @@ using TAvCodec = struct TAvCodec {
 class TVidPlayer :
     public TcRunner
 {
+    friend class TrecPointerKey;
+
     AVFormatContext* avFormatContext;
     AVFrame* avFrame;
     AVPacket* avPacket;
@@ -30,7 +32,15 @@ class TVidPlayer :
 
     TDataArray<TAvCodec> videoStreams;
     TDataArray<TAvCodec> audioStreams;
+
+protected:
+    void RunDetails(ReturnObject& ret) override;
 public:
+    TrecPointer<TVariable> Clone()override;
+    runner_block_mode GetBlockMode()override;
+    bool SetAsync() override;
+
+
 
     ~TVidPlayer()override;
 
