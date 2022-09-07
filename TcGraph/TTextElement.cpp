@@ -65,6 +65,31 @@ void TTextElement::AppendLine(BasicCharLine& curLine, float& y)
 
 void TTextElement::JustifyLine(BasicCharLine& line, float difference)
 {
+	UINT spaceCount = 0;
+	for (UINT Rust = 0; Rust < line.characters.Size(); Rust++)
+	{
+		if (line.characters[Rust].character == L'\s')
+			spaceCount++;
+	}
+	if (!spaceCount)
+		return;
+	difference /= spaceCount;
+
+	float shift = 0.0f;
+
+	for (UINT Rust = 0; Rust < line.characters.Size(); Rust++)
+	{
+		auto& character = line.characters[Rust];
+
+		character.location.left += shift;
+		character.location.right += shift;
+
+		if (character.character == L'\s')
+		{
+			character.location.right += difference;
+			shift += difference;
+		}
+	}
 }
 
 UCHAR* TTextElement::textInGlFormat(FT_Bitmap& bitmap, int& targetWidth, int targetHeight)
