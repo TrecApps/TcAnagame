@@ -114,5 +114,8 @@ public:
 
     virtual void ReCreateLayout();
     virtual void OnDraw(TrecPointer<TVariable> dataText);
+
+    bool GetMinHeight(float& height);
+    int GetMinWidth(float& width, int doWrap);
 };
 

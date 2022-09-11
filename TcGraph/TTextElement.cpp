@@ -376,6 +376,70 @@ void TTextElement::OnDraw(TrecPointer<TVariable> dataText)
 	}
 }
 
+bool TTextElement::GetMinHeight(float& height)
+{
+	float top = INFINITY;
+	float bottom = 0.0f;
+
+	for (UINT Rust = 0; Rust < lines.Size(); Rust++)
+	{
+		auto& line = lines[Rust].characters;
+		for (UINT C = 0; C < line.Size(); C++)
+		{
+			auto& ch = line[C];
+			if (top > ch.location.top)
+				top = ch.location.top;
+
+			if (bottom < ch.location.bottom)
+				bottom = ch.location.top;
+		}
+	}
+
+	if(!bottom || top == INFINITY || top > bottom)
+	return false;
+
+	height = bottom - top;
+	return true;
+}
+
+void updateWidth(float& base, float& compare)
+{
+	base += compare;
+	compare = 0.0f;
+}
+
+int TTextElement::GetMinWidth(float& width, int doWrap)
+{
+	bool assumeWrap = false;
+
+	if (!doWrap)
+		assumeWrap = wrap;
+	if (doWrap > 0)
+		assumeWrap = true;
+
+	width = 0.0f;
+
+	for (UINT Rust = 0; Rust < lines.Size(); Rust++)
+	{
+		auto& line = lines[Rust].characters;
+		float curWidth = 0;
+
+		for (UINT C = 0; C < line.Size(); C++)
+		{
+			auto& ch = line[C];
+			if (IsWhitespace(ch.character) && assumeWrap)
+			{
+				updateWidth(width, curWidth);
+				continue;
+			}
+			curWidth += (ch.location.right - ch.location.left);
+		}
+		updateWidth(width, curWidth);
+	}
+
+	return wrap ? 1 : -1;
+}
+
 TextFormattingDetails::TextFormattingDetails():
 	fontSize(16.0f),
 	formatTweaks(0),
