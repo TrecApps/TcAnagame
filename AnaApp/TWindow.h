@@ -8,8 +8,12 @@ class TWindow :
     friend class TInstance;
     TPoint mousePoint;
 protected:
+    bool needsRefresh, needsConstantRefresh;
+
     TWindow(GLFWwindow* window);
     bool IsWindow(GLFWwindow* test);
+
+    void OnDraw();
 
 public:
 
@@ -22,5 +26,6 @@ public:
     void OnFocus();
     void OnLoseFocus();
     void OnResize(int w, int h);
+    bool Close();
 };
 

@@ -24,17 +24,25 @@ class TInstance :
     GLFWwindowfocusfun focusFunction;
     GLFWwindowsizefun resizeFunction;
 
+    GLFWwindowclosefun closeFunction;
+
     TrecPointer<TWindow> GetWindow(GLFWwindow* win);
+
+    UINT windowCount;
 
 public:
     TInstance();
     ~TInstance();
 
+    void DoDraw();
+
     int GetGlfwInitResult();
+
+    UINT HasWindows();
 
     UINT GenerateWindow(TrecPointer<TWindow>& window, TrecPointer<TFileShell> uiInterface, const TString& name, t_window_type type = t_window_type::t_window_type_plain);
 
-    void SetCallbacks(GLFWcharfun, GLFWcursorposfun, GLFWkeyfun, GLFWmousebuttonfun, GLFWscrollfun, GLFWwindowfocusfun, GLFWwindowsizefun);
+    void SetCallbacks(GLFWcharfun, GLFWcursorposfun, GLFWkeyfun, GLFWmousebuttonfun, GLFWscrollfun, GLFWwindowfocusfun, GLFWwindowsizefun, GLFWwindowclosefun);
 
     void OnChar(GLFWwindow* win, UINT ch);
     void OnMouseMove(GLFWwindow* window, double xpos, double ypos);
@@ -46,5 +54,6 @@ public:
     void OnFocus(GLFWwindow* window);
     void OnLoseFocus(GLFWwindow* window);
     void OnWindowResize(GLFWwindow* window, int w, int h);
+    void OnWindowClose(GLFWwindow* window);
 };
 

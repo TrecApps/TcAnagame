@@ -8,6 +8,7 @@ void onMouseClick(GLFWwindow* window, int button, int action, int mods);
 void onScroll(GLFWwindow* window, double xoffset, double yoffset);
 void onFocus(GLFWwindow* window, int focused);
 void onWindowResize(GLFWwindow* window, int width, int height);
+void onWindowClose(GLFWwindow* window);
 
 int main()
 {
@@ -16,6 +17,8 @@ int main()
 	if (!mainInstance->GetGlfwInitResult())
 		return -1;
 
+	mainInstance->SetCallbacks(onChar, onMouseMove, nullptr, onMouseClick, onScroll, onFocus, onWindowResize, onWindowClose);
+	
 	TrecPointer<TWindow> mainWindow;
 
 	mainInstance->GenerateWindow(mainWindow, TrecPointer<TFileShell>(), L"");
@@ -26,11 +29,14 @@ int main()
 		return -2;
 	}
 
+	while (mainInstance->HasWindows())
+	{
+		mainInstance->DoDraw();
+	}
 
-	mainInstance->SetCallbacks(onChar, onMouseMove, nullptr, onMouseClick, onScroll, onFocus, onWindowResize);
 
 
-	
+	mainInstance.Nullify();
 
 	return 0;
 }
@@ -73,4 +79,9 @@ void onFocus(GLFWwindow* window, int focused)
 void onWindowResize(GLFWwindow* window, int width, int height)
 {
 	mainInstance->OnWindowResize(window, width, height);
+}
+
+void onWindowClose(GLFWwindow* window)
+{
+	mainInstance->OnWindowClose(window);
 }

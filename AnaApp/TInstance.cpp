@@ -22,6 +22,8 @@ TInstance::TInstance()
 	scrollFunction = nullptr;
 	focusFunction = nullptr;
 	resizeFunction = nullptr;
+
+	windowCount = 0;
 }
 
 TInstance::~TInstance()
@@ -30,9 +32,23 @@ TInstance::~TInstance()
 		glfwTerminate();
 }
 
+void TInstance::DoDraw()
+{
+	for (UINT Rust = 0; Rust < windows.Size(); Rust++)
+	{
+		if (windows[Rust].Get())
+			windows[Rust]->OnDraw();
+	}
+}
+
 int TInstance::GetGlfwInitResult()
 {
 	return glfwInitResult;
+}
+
+UINT TInstance::HasWindows()
+{
+	return windowCount;
 }
 
 UINT TInstance::GenerateWindow(TrecPointer<TWindow>& window, TrecPointer<TFileShell> uiInterface, const TString& name, t_window_type type)
@@ -72,6 +88,8 @@ UINT TInstance::GenerateWindow(TrecPointer<TWindow>& window, TrecPointer<TFileSh
 	if (Rust == windows.Size())
 		windows.push_back(window);
 
+	windowCount++;
+
 	if (charFunction)
 		glfwSetCharCallback(glfwWindow, charFunction);
 	if (cursorFunction)
@@ -93,7 +111,7 @@ UINT TInstance::GenerateWindow(TrecPointer<TWindow>& window, TrecPointer<TFileSh
 void TInstance::SetCallbacks(GLFWcharfun charFun, GLFWcursorposfun cursorFun,
 	GLFWkeyfun keyFun, GLFWmousebuttonfun mouseFun,
 	GLFWscrollfun scrollFun, GLFWwindowfocusfun focusFun,
-	GLFWwindowsizefun resizeFun) {
+	GLFWwindowsizefun resizeFun, GLFWwindowclosefun closeFun) {
 
 	charFunction = charFun;
 	cursorFunction = cursorFun;
@@ -102,6 +120,7 @@ void TInstance::SetCallbacks(GLFWcharfun charFun, GLFWcursorposfun cursorFun,
 	scrollFunction = scrollFun;
 	focusFunction = focusFun;
 	resizeFunction = resizeFun;
+	closeFunction = closeFun;
 }
 
 void TInstance::OnChar(GLFWwindow* win, UINT ch)
@@ -169,5 +188,21 @@ void TInstance::OnWindowResize(GLFWwindow* window, int w, int h)
 	auto win = GetWindow(window);
 	if (win.Get())
 		win->OnResize(w, h);
+}
+
+void TInstance::OnWindowClose(GLFWwindow* window)
+{
+	if (!window)
+		return;
+	for (UINT Rust = 0; Rust < windows.Size(); Rust++)
+	{
+		if (!windows[Rust].Get()) continue;
+		if (windows[Rust]->IsWindow(window) && windows[Rust]->Close())
+		{
+			windowCount--;
+			windows[Rust].Nullify();
+			return;
+		}
+	}
 }
 
