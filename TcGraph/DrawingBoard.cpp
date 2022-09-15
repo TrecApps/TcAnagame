@@ -12,6 +12,18 @@ DrawingBoard::DrawingBoard(GLFWwindow* window)
 	defaultClearColor.SetColor(L"white");
 }
 
+bool DrawingBoard::IsContained(const TPoint& point, const RECT_F& loc)
+{
+
+	return (loc.bottom >= loc.top) &&
+		(loc.right >= loc.left) &&
+
+		(point.x >= loc.left) &&
+		(loc.right >= point.x) &&
+		(point.y >= loc.top) &&
+		(loc.bottom >= point.y);
+}
+
 bool DrawingBoard::GetDisplayResolution(int& width, int& height)
 {
 	GLFWmonitor* mon = glfwGetWindowMonitor(window);

@@ -2,6 +2,7 @@
 
 #include "TBrush.h"
 #include "TShader.h"
+#include <TPoint.h>
 
 
 using shader_type = enum class shader_type {
@@ -32,6 +33,9 @@ protected:
 
     
 public:
+
+    static bool IsContained(const TPoint& point, const RECT_F& loc);
+
     bool GetDisplayResolution(int& width, int& height);
 
     ~DrawingBoard() override;

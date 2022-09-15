@@ -4,6 +4,7 @@
 #include "GraphicsDef.h"
 
 #include <ft2build.h>
+#include <TPoint.h>
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
 #include FT_OUTLINE_H
@@ -68,6 +69,9 @@ class BasicCharLine
     float floorPadding;
 
     UCHAR attributes;
+
+    UINT strIndex;
+
 public:
     BasicCharLine();
     BasicCharLine(const BasicCharLine& copy) = default;
@@ -78,6 +82,23 @@ public:
 
     void SetVerticalPadding(float value, bool isFloor = true);
     float GetVerticalPadding(bool isFloor = true) const;
+};
+
+class _TC_GRAPH HighlightRange
+{
+public:
+    HighlightRange();
+    HighlightRange(const HighlightRange& range);
+
+    bool beginSet, endSet;
+    UINT begin, end;
+
+    void Reset();
+    bool GetCarotLocation(UINT& loc);
+    bool GetHighlightRange(UINT& begin, UINT& end);
+
+    void SetBegin(UINT begin);
+    bool SetEnd(UINT end);
 };
 
 class _TC_GRAPH TTextElement :
@@ -96,11 +117,21 @@ protected:
 
     TextFormattingDetails formattingDetails;
 
+    HighlightRange highlightRange;
+    bool isClickDown;
+
     void AppendLine(BasicCharLine& line, float& y);
 
     void JustifyLine(BasicCharLine& line, float difference);
 
     UCHAR* textInGlFormat(FT_Bitmap& bitmap, int& targetWidth, int targetHeight);
+
+    bool HitTestPoint(
+       const TPoint& point,
+        _Out_ BOOL& isTrailingHit,
+        _Out_ BOOL& isInside,
+        _Out_ UINT& position
+        );
 
 public:
     explicit TTextElement(TrecPointer<DrawingBoard> board);
@@ -117,5 +148,9 @@ public:
 
     bool GetMinHeight(float& height);
     int GetMinWidth(float& width, int doWrap);
+
+    virtual bool OnCLickDown(const TPoint& point);
+    virtual bool OnCLickUp(const TPoint& point);
+    virtual bool OnMouseMove(const TPoint& point);
 };
 

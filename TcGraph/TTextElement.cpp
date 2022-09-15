@@ -115,9 +115,49 @@ UCHAR* TTextElement::textInGlFormat(FT_Bitmap& bitmap, int& targetWidth, int tar
 	return ret;
 }
 
+bool TTextElement::HitTestPoint(const TPoint& point, BOOL& isTrailingHit, BOOL& isInside, UINT& position)
+{
+	if(!DrawingBoard::IsContained(point, this->bounds))
+		return false;
+
+	for (UINT Rust = 0; Rust < this->lines.Size(); Rust++)
+	{
+		auto& line = lines[Rust];
+		if (point.y >= line.top && point.y <= (line.top + line.height))
+		{
+			if (!line.characters.Size())
+			{
+				isTrailingHit = true;
+				isInside = false;
+				position = line.strIndex;
+				return true;
+			}
+
+			for (UINT C = 0; C < line.characters.Size(); C++)
+			{
+				auto& ch = line.characters[C];
+				if (!DrawingBoard::IsContained(point, ch.location))
+					continue;
+				isInside = true;
+				position = line.strIndex + C;
+				isTrailingHit = (ch.location.right - point.x) < (point.x - ch.location.left);
+				return true;
+			}
+
+			isInside = false;
+			isTrailingHit = true;
+			position = line.strIndex + line.characters.Size();
+			return true;
+		}
+	}
+
+	return false;
+}
+
 TTextElement::TTextElement(TrecPointer<DrawingBoard> board): drawingBoard(board)
 {
 	wrap = true;
+	isClickDown = false;
 	bounds.bottom = bounds.left = bounds.right = bounds.top = 0.0f;
 
 	text = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(
@@ -201,7 +241,7 @@ void TTextElement::ReCreateLayout()
 	float x = bounds.left;
 	float y = bounds.top;
 	WCHAR prevChar = L'\0';
-
+	UINT startIndex = 0;
 	for (UINT Rust = 0; Rust < theText.GetSize() && y < bounds.bottom; Rust++)
 	{
 		BasicCharacter ch;
@@ -209,12 +249,18 @@ void TTextElement::ReCreateLayout()
 
 		if (ch.character == L'\r')
 		{
+			curLine.strIndex = startIndex;
+			startIndex = Rust;
 			AppendLine(curLine, y);
 		}
 		if (ch.character == L'\n')
 		{
 			if (prevChar != L'\r')
+			{
+				curLine.strIndex = startIndex;
+				startIndex = Rust;
 				AppendLine(curLine, y);
+			}
 		}
 
 		prevChar = ch.character;
@@ -254,6 +300,8 @@ void TTextElement::ReCreateLayout()
 		{
 			if (wrap)
 			{
+				curLine.strIndex = startIndex;
+				startIndex = Rust;
 				AppendLine(curLine, y);
 				curLine.isCarryOver = true;
 			}
@@ -262,6 +310,7 @@ void TTextElement::ReCreateLayout()
 
 	if (!theText.EndsWith(L'\n'))
 	{
+		curLine.strIndex = startIndex;
 		AppendLine(curLine, y);
 	}
 
@@ -440,6 +489,94 @@ int TTextElement::GetMinWidth(float& width, int doWrap)
 	return wrap ? 1 : -1;
 }
 
+bool TTextElement::OnCLickDown(const TPoint& point)
+{
+	if (DrawingBoard::IsContained(point, bounds))
+	{
+		this->highlightRange.Reset();
+
+		UINT mets = 0;
+		BOOL trailing = FALSE, inside = FALSE;
+		if (HitTestPoint(point, trailing, inside, mets))
+		{
+			UINT pos = trailing ? 1 : 0;
+			pos += mets;
+
+			this->highlightRange.SetBegin(pos);
+			isClickDown = true;
+		}
+
+
+		return true;
+	}
+	return false;
+}
+
+bool TTextElement::OnCLickUp(const TPoint& point)
+{
+	isClickDown = false;
+	if (DrawingBoard::IsContained(point, bounds))
+	{
+		UINT mets = 0;
+		BOOL trailing = FALSE, inside = FALSE;
+		if (HitTestPoint(point, trailing, inside, mets))
+		{
+			UINT pos = trailing ? 1 : 0;
+			pos += mets;
+			UINT start = 0, end = 0;
+			/*if (this->highlightRange.GetHighlightRange(start, end))
+				this->mainLayout->SetDrawingEffect(nullptr, DWRITE_TEXT_RANGE{ start, end - start });*/
+
+			this->highlightRange.SetEnd(pos);
+
+			// Range Highlighter
+			if (this->highlightRange.GetHighlightRange(start, end))
+			{
+				//TrecPointer<TBrush> newB = drawingBoard->GetBrush(TColor(this->basicDetails.defaultBackgroundColor));
+				//TDoubleBrushHolder* dHolder = new TDoubleBrushHolder(this->basicDetails.color->GetUnderlyingBrush().Get(), newB->GetUnderlyingBrush().Get());
+				//this->mainLayout->SetDrawingEffect(dHolder, DWRITE_TEXT_RANGE{ start, end - start });
+				//dHolder->Release();
+				//dHolder = nullptr;
+			}
+		}
+
+		return true;
+	}
+	return false;
+}
+
+bool TTextElement::OnMouseMove(const TPoint& point)
+{
+	if (DrawingBoard::IsContained(point, bounds))
+	{
+		UINT mets = 0;
+		BOOL trailing = FALSE, inside = FALSE;
+		if (isClickDown && HitTestPoint(point, trailing, inside, mets))
+		{
+			UINT pos = trailing ? 1 : 0;
+			pos += mets;
+			UINT start = 0, end = 0;
+			//if (this->highlightRange.GetHighlightRange(start, end))
+			//	this->mainLayout->SetDrawingEffect(nullptr, DWRITE_TEXT_RANGE{ start, end - start });
+
+			this->highlightRange.SetEnd(pos);
+
+			// Range Highlighter
+			if (this->highlightRange.GetHighlightRange(start, end))
+			{
+				//TrecPointer<TBrush> newB = drawingBoard->GetBrush(TColor(this->basicDetails.defaultBackgroundColor));
+				//TDoubleBrushHolder* dHolder = new TDoubleBrushHolder(this->basicDetails.color->GetUnderlyingBrush().Get(), newB->GetUnderlyingBrush().Get());
+				//this->mainLayout->SetDrawingEffect(dHolder, DWRITE_TEXT_RANGE{ start, end - start });
+				//dHolder->Release();
+				//dHolder = nullptr;
+			}
+		}
+		return true;
+
+	}
+	return false;
+}
+
 TextFormattingDetails::TextFormattingDetails():
 	fontSize(16.0f),
 	formatTweaks(0),
@@ -451,6 +588,7 @@ TextFormattingDetails::TextFormattingDetails():
 
 BasicCharLine::BasicCharLine()
 {
+	top = 0;
 	height = totalWidth = 0;
 	isCarryOver = false;
 
@@ -519,4 +657,63 @@ BasicCharacter::BasicCharacter()
 BasicCharacter::~BasicCharacter()
 {
 	FT_Bitmap_Done(freeTypeLibrary, &bitmap);
+}
+
+
+
+HighlightRange::HighlightRange()
+{
+	Reset();
+}
+
+HighlightRange::HighlightRange(const HighlightRange& range)
+{
+	begin = range.begin;
+	end = range.end;
+	beginSet = range.beginSet;
+	endSet = range.endSet;
+}
+
+void HighlightRange::Reset()
+{
+	this->begin = this->end = 0;
+	this->beginSet = this->endSet = false;
+}
+
+bool HighlightRange::GetCarotLocation(UINT& loc)
+{
+	bool ret = begin == end && beginSet && endSet;
+	if (ret)
+		loc = begin;
+	return ret;
+}
+
+bool HighlightRange::GetHighlightRange(UINT& begin, UINT& end)
+{
+	if (!beginSet || !endSet || (this->begin == this->end))
+		return false;
+	begin = this->begin;
+	end = this->end;
+	if (end < begin)
+	{
+		UINT temp = end;
+		end = begin;
+		begin = temp;
+	}
+	return true;
+}
+
+void HighlightRange::SetBegin(UINT begin)
+{
+	Reset();
+	this->begin = begin;
+	this->beginSet = true;
+}
+
+bool HighlightRange::SetEnd(UINT end)
+{
+	if (!beginSet)
+		return false;
+	this->end = end;
+	this->endSet = true;
 }
