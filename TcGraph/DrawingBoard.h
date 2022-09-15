@@ -14,7 +14,6 @@ using shader_type = enum class shader_type {
 class _TC_GRAPH DrawingBoard :
     public TVObject
 {
-    GLFWwindow* window;
     TrecPointerSoft<DrawingBoard> self;
     TColor defaultClearColor;
 
@@ -26,7 +25,8 @@ class _TC_GRAPH DrawingBoard :
     TrecPointer<TShader> shaderTex2D;
 
 protected:
-    
+
+    GLFWwindow* window;
     explicit DrawingBoard(GLFWwindow* window);
 
 

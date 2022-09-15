@@ -69,6 +69,9 @@
     <ClInclude Include="TTypeVariable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TPoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -108,6 +111,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TTypeVariable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TPoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -154,6 +154,7 @@
     <ClInclude Include="TObject.h" />
     <ClInclude Include="TObjectNode.h" />
     <ClInclude Include="TObjectVariable.h" />
+    <ClInclude Include="TPoint.h" />
     <ClInclude Include="TrecLib.h" />
     <ClInclude Include="TrecPointer.h" />
     <ClInclude Include="TString.h" />
@@ -175,6 +176,7 @@
     <ClCompile Include="TObject.cpp" />
     <ClCompile Include="TObjectNode.cpp" />
     <ClCompile Include="TObjectVariable.cpp" />
+    <ClCompile Include="TPoint.cpp" />
     <ClCompile Include="TrecPointer.cpp" />
     <ClCompile Include="TString.cpp" />
     <ClCompile Include="TTypeVariable.cpp" />

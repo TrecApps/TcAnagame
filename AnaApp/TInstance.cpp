@@ -1,6 +1,16 @@
 #include <GLFW/glfw3.h>
 #include "TInstance.h"
 
+TrecPointer<TWindow> TInstance::GetWindow(GLFWwindow* win)
+{
+	for (UINT Rust = 0; Rust < windows.Size(); Rust++)
+	{
+		if (windows[Rust].Get() && windows[Rust]->IsWindow(win))
+			return windows[Rust];
+	}
+	return TrecPointer<TWindow>();
+}
+
 TInstance::TInstance()
 {
 	glfwInitResult = glfwInit();
@@ -92,5 +102,72 @@ void TInstance::SetCallbacks(GLFWcharfun charFun, GLFWcursorposfun cursorFun,
 	scrollFunction = scrollFun;
 	focusFunction = focusFun;
 	resizeFunction = resizeFun;
+}
+
+void TInstance::OnChar(GLFWwindow* win, UINT ch)
+{
+}
+
+void TInstance::OnMouseMove(GLFWwindow* window, double xpos, double ypos)
+{
+	auto win = GetWindow(window);
+	if (win.Get())
+		win->OnMouseMove(xpos, ypos);
+}
+
+void TInstance::OnLButtonDown(GLFWwindow* window, int mods)
+{
+	auto win = GetWindow(window);
+	if (win.Get())
+		win->OnLButtonDown(mods);
+}
+
+void TInstance::OnLButtonUp(GLFWwindow* window, int mods)
+{
+	auto win = GetWindow(window);
+	if (win.Get())
+		win->OnLButtonUp(mods);
+}
+
+void TInstance::OnRButtonDown(GLFWwindow* window, int mods)
+{
+	auto win = GetWindow(window);
+	if (win.Get())
+		win->OnRButtonDown(mods);
+}
+
+void TInstance::OnRButtonUp(GLFWwindow* window, int mods)
+{
+	auto win = GetWindow(window);
+	if (win.Get())
+		win->OnLButtonUp(mods);
+}
+
+void TInstance::OnScroll(GLFWwindow* window, double x, double y)
+{
+	auto win = GetWindow(window);
+	if (win.Get())
+		win->OnScroll(x, y);
+}
+
+void TInstance::OnFocus(GLFWwindow* window)
+{
+	auto win = GetWindow(window);
+	if (win.Get())
+		win->OnFocus();
+}
+
+void TInstance::OnLoseFocus(GLFWwindow* window)
+{
+	auto win = GetWindow(window);
+	if (win.Get())
+		win->OnLoseFocus();
+}
+
+void TInstance::OnWindowResize(GLFWwindow* window, int w, int h)
+{
+	auto win = GetWindow(window);
+	if (win.Get())
+		win->OnResize(w, h);
 }
 
