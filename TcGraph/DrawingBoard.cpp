@@ -12,6 +12,20 @@ DrawingBoard::DrawingBoard(GLFWwindow* window)
 	defaultClearColor.SetColor(L"white");
 }
 
+TrecPointer<TBrush> DrawingBoard::GetHighlightBrush()
+{
+	if (!textHighlight.Get())
+	{
+		TColor color(L"lightyellow");
+		// To-Do: get actual color from property
+
+		// End To-Do
+
+		textHighlight = GetSolidColorBrush(color);
+	}
+	return textHighlight;
+}
+
 bool DrawingBoard::IsContained(const TPoint& point, const RECT_F& loc)
 {
 

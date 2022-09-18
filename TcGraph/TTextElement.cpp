@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 #include "TTextElement.h"
 #include "TImageBrush.h"
+#include "TColorBrush.h"
 
 FT_Library  freeTypeLibrary;
 
@@ -45,6 +46,32 @@ int powerOf2(int value)
 	int ret = 1;
 	while (ret < value) ret <<= 1;
 	return ret;
+}
+
+void TTextElement::ClearHighlight()
+{
+	for (UINT Rust = 0; Rust < lines.Size(); Rust++)
+	{
+		auto& line = lines[Rust];
+		for (UINT C = 0; C < line.characters.Size(); C++)
+		{
+			line.characters[C].isHighlighted = false;
+		}
+	}
+}
+
+void TTextElement::SetHighlight(UINT start, UINT end)
+{
+	ClearHighlight();
+	for (UINT Rust = 0; Rust < lines.Size(); Rust++)
+	{
+		auto& line = lines[Rust];
+		if (line.strIndex > end)
+			return;
+		
+		for (UINT C = start - line.strIndex; C < line.characters.Size() && C < end - line.strIndex; C++)
+			line.characters[C].isHighlighted = true;
+	}
 }
 
 void TTextElement::AppendLine(BasicCharLine& curLine, float& y)
@@ -387,6 +414,31 @@ void TTextElement::OnDraw(TrecPointer<TVariable> dataText)
 	float* verticies = TImageBrush::GeneratePictureVertices(this->bounds, this->bounds);
 	if (!verticies)
 		return;
+	// First, Draw the Backgrounds or highlights
+	for (UINT Rust = 0; Rust < lines.Size(); Rust++)
+	{
+		BasicCharLine& line = lines[Rust];
+		for (UINT C = 0; C < line.characters.Size(); C++)
+		{
+			BasicCharacter& ch = line.characters[C];
+
+			if (ch.isHighlighted)
+			{
+				auto brush = drawingBoard->GetHighlightBrush();
+				auto solidBrush = TrecPointerKey::ConvertPointer<TBrush, TColorBrush>(brush);
+				solidBrush->FillRectangle(ch.location);
+			}
+			else if (ch.backgroundColor.Get())
+			{
+				auto brush = drawingBoard->GetSolidColorBrush(*ch.backgroundColor.Get());
+				auto solidBrush = TrecPointerKey::ConvertPointer<TBrush, TColorBrush>(brush);
+				solidBrush->FillRectangle(ch.location);
+			}
+
+		}
+	}
+
+
 
 	drawingBoard->SetShader(TrecPointer<TShader>(), shader_type::shader_texture);
 
@@ -399,7 +451,6 @@ void TTextElement::OnDraw(TrecPointer<TVariable> dataText)
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float[32]), verticies, GL_STATIC_DRAW);
 
 	glBindVertexArray(VBO);
-
 
 	for (UINT Rust = 0; Rust < lines.Size(); Rust++)
 	{
@@ -532,11 +583,7 @@ bool TTextElement::OnCLickUp(const TPoint& point)
 			// Range Highlighter
 			if (this->highlightRange.GetHighlightRange(start, end))
 			{
-				//TrecPointer<TBrush> newB = drawingBoard->GetBrush(TColor(this->basicDetails.defaultBackgroundColor));
-				//TDoubleBrushHolder* dHolder = new TDoubleBrushHolder(this->basicDetails.color->GetUnderlyingBrush().Get(), newB->GetUnderlyingBrush().Get());
-				//this->mainLayout->SetDrawingEffect(dHolder, DWRITE_TEXT_RANGE{ start, end - start });
-				//dHolder->Release();
-				//dHolder = nullptr;
+				this->SetHighlight(start, end);
 			}
 		}
 
@@ -564,11 +611,7 @@ bool TTextElement::OnMouseMove(const TPoint& point)
 			// Range Highlighter
 			if (this->highlightRange.GetHighlightRange(start, end))
 			{
-				//TrecPointer<TBrush> newB = drawingBoard->GetBrush(TColor(this->basicDetails.defaultBackgroundColor));
-				//TDoubleBrushHolder* dHolder = new TDoubleBrushHolder(this->basicDetails.color->GetUnderlyingBrush().Get(), newB->GetUnderlyingBrush().Get());
-				//this->mainLayout->SetDrawingEffect(dHolder, DWRITE_TEXT_RANGE{ start, end - start });
-				//dHolder->Release();
-				//dHolder = nullptr;
+				this->SetHighlight(start, end);
 			}
 		}
 		return true;
@@ -651,6 +694,7 @@ BasicCharacter::BasicCharacter()
 	character = 0;
 	location = { 0,0,0,0 };
 	format = 0;
+	isHighlighted = false;
 	FT_Bitmap_Init(&bitmap);
 }
 

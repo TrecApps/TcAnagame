@@ -25,6 +25,8 @@ class _TC_GRAPH DrawingBoard :
     TrecPointer<TShader> shaderWrite;
     TrecPointer<TShader> shaderTex2D;
 
+    TrecPointer<TBrush> textHighlight;
+
 protected:
 
     GLFWwindow* window;
@@ -33,6 +35,8 @@ protected:
 
     
 public:
+
+    TrecPointer<TBrush> GetHighlightBrush();
 
     static bool IsContained(const TPoint& point, const RECT_F& loc);
 

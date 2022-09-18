@@ -32,6 +32,7 @@ int main()
 	while (mainInstance->HasWindows())
 	{
 		mainInstance->DoDraw();
+		glfwPollEvents();
 	}
 
 

@@ -49,6 +49,7 @@ public:
     TrecPointer<TColor> backgroundColor;
     FT_Bitmap bitmap;
     UCHAR format;
+    bool isHighlighted;
 
     int GetWeightStrength()const;
     void SetWeightStrength(int weight);
@@ -107,6 +108,9 @@ class _TC_GRAPH TTextElement :
     friend class TrecPointerKey;
 
 protected:
+    void ClearHighlight();
+    void SetHighlight(UINT start, UINT end);
+
     TrecPointer<DrawingBoard> drawingBoard;
     TrecPointer<TStringVariable> text;
 
