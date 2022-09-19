@@ -3,7 +3,7 @@
 #include "TBrush.h"
 #include "TShader.h"
 #include <TPoint.h>
-
+#include "GraphicsDef.h"
 
 using shader_type = enum class shader_type {
     shader_2d,

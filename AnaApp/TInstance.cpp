@@ -64,7 +64,7 @@ UINT TInstance::GenerateWindow(TrecPointer<TWindow>& window, TrecPointer<TFileSh
 	if (!glfwWindow)
 		return 1;
 
-	TrecPointer<DrawingBoard> board = TrecPointerKey::GetNewSelfTrecPointerAlt<DrawingBoard, TWindow>(glfwWindow);
+	TrecPointer<DrawingBoard> board = TrecPointerKey::GetNewTrecPointerAlt<DrawingBoard, TWindow>(glfwWindow);
 
 	// To-Do: Other Initialization
 

@@ -1,12 +1,12 @@
 #pragma once
 #include <TString.h>
-
+#include "TcGraph.h"
 
 using color_struct = struct color_struct {
 	float r, b, g, a;
 };
 
-class TColor :
+class _TC_GRAPH TColor :
     public TVObject
 {
 public:

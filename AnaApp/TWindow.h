@@ -2,10 +2,14 @@
 #include <TString.h>
 #include <DrawingBoard.h>
 #include <TPoint.h>
-class TWindow :
+#include "AnaApp.h"
+
+
+class _ANA_APP TWindow :
     public DrawingBoard
 {
     friend class TInstance;
+    friend class TrecPointerKey;
     TPoint mousePoint;
 protected:
     bool needsRefresh, needsConstantRefresh;

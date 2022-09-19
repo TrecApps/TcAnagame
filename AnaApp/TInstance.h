@@ -2,6 +2,7 @@
 #include <TString.h>
 #include "TWindow.h"
 #include <GLFW/glfw3.h>
+#include "AnaApp.h"
 
 using t_window_type = enum class t_window_type
 {
@@ -10,7 +11,7 @@ using t_window_type = enum class t_window_type
     t_window_type_web     // Window Optimized for Web-Browsing
 };
 
-class TInstance :
+class _ANA_APP TInstance :
     public TVObject
 {
     int glfwInitResult;

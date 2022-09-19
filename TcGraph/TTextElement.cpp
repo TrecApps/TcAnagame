@@ -639,7 +639,8 @@ bool TTextElement::OnInputChar(WCHAR ch, UINT count)
 
 bool TTextElement::SetText(const TString& text)
 {
-	this->text = TrecPointerKey::GetNewSelfTrecPointer<TStringVariable>(text);
+	this->text = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>( 
+		TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(text));
 	ReCreateLayout();
 	return true;
 }
