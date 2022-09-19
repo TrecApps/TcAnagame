@@ -36,6 +36,8 @@ protected:
     
 public:
 
+    GLFWwindow* GetGlfwWindow();
+
     TrecPointer<TBrush> GetHighlightBrush();
 
     static bool IsContained(const TPoint& point, const RECT_F& loc);

@@ -153,6 +153,7 @@
     <ClInclude Include="TColor.h" />
     <ClInclude Include="TColorBrush.h" />
     <ClInclude Include="TImageBrush.h" />
+    <ClInclude Include="TInputTextElement.h" />
     <ClInclude Include="TShader.h" />
     <ClInclude Include="TTextElement.h" />
     <ClInclude Include="TVidPlayer.h" />
@@ -170,6 +171,7 @@
     <ClCompile Include="TColor.cpp" />
     <ClCompile Include="TColorBrush.cpp" />
     <ClCompile Include="TImageBrush.cpp" />
+    <ClCompile Include="TInputTextElement.cpp" />
     <ClCompile Include="TShader.cpp" />
     <ClCompile Include="TTextElement.cpp" />
     <ClCompile Include="TVidPlayer.cpp" />

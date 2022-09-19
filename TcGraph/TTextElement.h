@@ -26,6 +26,12 @@ using tc_text_spacing = enum class tc_text_spacing
     bottom = 2
 };
 
+using control_text_mode = enum class control_text_mode {
+    ctm_cut,
+    ctm_copy,
+    ctm_paste
+};
+
 class _TC_GRAPH TextFormattingDetails
 {
 public:
@@ -62,6 +68,7 @@ public:
 class BasicCharLine
 {
     friend class TTextElement;
+    friend class TInputTextElement;
     float top;
     float height;
     float totalWidth;
@@ -146,6 +153,7 @@ public:
     static void ClearFonts();
 
     void SetBounds(RECT_F bounds);
+    RECT_F GetBounds();
 
     virtual void ReCreateLayout();
     virtual void OnDraw(TrecPointer<TVariable> dataText);
@@ -156,5 +164,15 @@ public:
     virtual bool OnCLickDown(const TPoint& point);
     virtual bool OnCLickUp(const TPoint& point);
     virtual bool OnMouseMove(const TPoint& point);
+    virtual void OnCutCopyPaste(control_text_mode mode);
+    virtual bool OnInputChar(WCHAR ch, UINT count);
+
+    virtual bool SetText(const TString& text);
+    virtual void GetText(TString& text);
+    virtual bool LockText(bool doLock);
+    virtual bool TakesInput();
+    virtual bool CanTakeInput();
+
+    virtual void OnLoseFocus();
 };
 

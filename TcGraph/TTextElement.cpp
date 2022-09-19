@@ -248,6 +248,11 @@ void TTextElement::SetBounds(RECT_F bounds1)
 	ReCreateLayout();
 }
 
+RECT_F TTextElement::GetBounds()
+{
+	return bounds;
+}
+
 void TTextElement::ReCreateLayout()
 {
 	lines.RemoveAll();
@@ -575,8 +580,7 @@ bool TTextElement::OnCLickUp(const TPoint& point)
 			UINT pos = trailing ? 1 : 0;
 			pos += mets;
 			UINT start = 0, end = 0;
-			/*if (this->highlightRange.GetHighlightRange(start, end))
-				this->mainLayout->SetDrawingEffect(nullptr, DWRITE_TEXT_RANGE{ start, end - start });*/
+			ClearHighlight();
 
 			this->highlightRange.SetEnd(pos);
 
@@ -618,6 +622,52 @@ bool TTextElement::OnMouseMove(const TPoint& point)
 
 	}
 	return false;
+}
+
+void TTextElement::OnCutCopyPaste(control_text_mode mode)
+{
+	UINT begin = 0;
+	UINT end = 0;
+	if (highlightRange.GetHighlightRange(begin, end) && (mode == control_text_mode::ctm_cut || mode == control_text_mode::ctm_copy))
+		glfwSetClipboardString(nullptr, text->GetString().SubString(begin, end).GetRegString().c_str());
+}
+
+bool TTextElement::OnInputChar(WCHAR ch, UINT count)
+{
+	return false;
+}
+
+bool TTextElement::SetText(const TString& text)
+{
+	this->text = TrecPointerKey::GetNewSelfTrecPointer<TStringVariable>(text);
+	ReCreateLayout();
+	return true;
+}
+
+void TTextElement::GetText(TString& text)
+{
+	text.Empty();
+	if (this->text.Get())
+		text.Set(this->text->GetString());
+}
+
+bool TTextElement::LockText(bool doLock)
+{
+	return false;
+}
+
+bool TTextElement::TakesInput()
+{
+	return false;
+}
+
+bool TTextElement::CanTakeInput()
+{
+	return false;
+}
+
+void TTextElement::OnLoseFocus()
+{
 }
 
 TextFormattingDetails::TextFormattingDetails():

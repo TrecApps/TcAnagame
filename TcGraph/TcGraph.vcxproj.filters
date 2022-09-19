@@ -51,6 +51,9 @@
     <ClInclude Include="TImageBrush.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TInputTextElement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -81,6 +84,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TImageBrush.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TInputTextElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

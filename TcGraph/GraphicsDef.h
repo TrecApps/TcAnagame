@@ -9,7 +9,7 @@ using RECT_L = struct {
 };
 
 using VERTEX_2D = struct {
-    float x, y;
+    double x, y;
 };
 
 using ROUNDED_RECT_F = struct {

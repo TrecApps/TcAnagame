@@ -12,6 +12,11 @@ DrawingBoard::DrawingBoard(GLFWwindow* window)
 	defaultClearColor.SetColor(L"white");
 }
 
+GLFWwindow* DrawingBoard::GetGlfwWindow()
+{
+	return window;
+}
+
 TrecPointer<TBrush> DrawingBoard::GetHighlightBrush()
 {
 	if (!textHighlight.Get())
