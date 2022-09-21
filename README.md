@@ -111,6 +111,17 @@ This dependency is intended to Provide Video Encoding/Decoding Support
 Command: `./vcpkg install ffmpeg:x64-windows` (Note: If you are focused on Building a 32-bit Version, omit the `:x64-windows` from the command
 Dependency Name (Folder Name to copy to): `ffmpeg`
 
+#### DLLs
+
+Once your project builds, you'll want to move the various DLLs from your dependencies into your build directory in order to get the program to run. 
+
+For Freetype, the DLL can be found in your `{freetype_download}/objs/{win32 or x64}/Debug` folder.
+
+For the other dependencies, they can be found in `cloneDir/{dependency}/bin` folders
+
+If, when running your program, it complains about not having the `zlib1.dll` file available, I find that Git Bash comes with a working copy of the DLL you can copy into your project's directory.
+
+
 ### Linux/Mac
 
 I have not attempted to Clone this Repository or build it on a Mac or Linux Machine. However, if you're interested in contributing to this project and making sure this code compiles on those platforms, I have previous made an Attempt here "https://github.com/TrecApps/Anagame_x/" you can look to for inspiration
