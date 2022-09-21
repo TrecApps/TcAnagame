@@ -71,6 +71,8 @@ Go into this Folder and copy the File Folders into a place next to your TcAnagam
 ./TcAnagame/{Folder Contents}
 ./{Dependency Name}/{Copied Folders} (Check the dependency sub-sections for what "Dependency Name" should be...
 
+Note: FreeType has a slightly different Procedure than the other dependencies
+
 #### GLFW
 
 This Dependency is used to ensure that OpenGL can be used in a Windowed-Environment
@@ -87,10 +89,20 @@ Dependency Name (Folder Name to copy to): `GLEW`
 
 #### FreeType 2.0
 
-This Dependency is being used to Provide Text Management support
+This Dependency is being used to Provide Text Management support. Howver, the version of FreeType supplied by `vcpkg` lists *bz2.dll* as a dependency, which may or may not be available on your computer. So follow these steps to get FreeType 2.0 Properly integrated into your computer.
 
-Command: `./vcpkg install freetype:x64-windows` (Note: If you are focused on Building a 32-bit Version, omit the `:x64-windows` from the command
-Dependency Name (Folder Name to copy to): `Freetype_2.0`
+1. Go to https://sourceforge.net/projects/freetype/files/freetype2/ and download the latest version.
+2. Unzip the File.
+3. In `Builds/windows/visualc`, open up the solution. If Visual Studio requests to update the project, say yes.
+4. By default, the setting will be x86. If you're targeting 32-bit, you can leave it. Otherwise, make sure to set the project to x64.
+5. Build the Project
+
+Note: for the next few steps, we'll assume you cloned Anagame from a folder called `cloneDir`
+
+6. Copy the contents of `{freetype_download}/include` to `cloneDir/Freetype_2.0/include`
+7. Copy or move the `freetype.lib` file from `{freetype_download}/objs/{win32 or x64}/Debug` folder to `cloneDir/Freetype_2.0/lib`
+
+Your project should build.
 
 #### ffmpeg
 
