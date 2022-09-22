@@ -1,7 +1,7 @@
 #pragma once
 #include "DrawingBoard.h"
 #include "GraphicsDef.h"
-class TColorBrush :
+class _TC_GRAPH TColorBrush :
     public TBrush
 {
     friend class DrawingBoard;
@@ -14,7 +14,7 @@ public:
 
 	/**
 	 * number of colors stored in the Brush
-	 */
+	 */ 
 	UINT GetMaxColors();
 
 

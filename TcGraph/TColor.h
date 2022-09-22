@@ -23,6 +23,12 @@ public:
 
 	TColor(const TString& colorStr);
 
+	TColor(UINT hex);
+
+	TColor(UINT hex, float alpha);
+
+	void SetColor(UINT hex, float alpha);
+
 	void SetColor(const TString& colorStr);
 
 	void SetColor(float r, float g, float b);

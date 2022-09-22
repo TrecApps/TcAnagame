@@ -93,6 +93,23 @@ TColor::TColor(const TString& colorStr)
 	SetColor(colorStr);
 }
 
+TColor::TColor(UINT hex)
+{
+	SetColor(hex, 1.0f);
+}
+
+TColor::TColor(UINT hex, float alpha) {
+	SetColor(hex, alpha);
+}
+
+void TColor::SetColor(UINT hex, float alpha) {
+	this->color.a = alpha > 1.0f ? 1.0f : alpha;
+
+	this->color.r = static_cast<float>((hex & 0x00ff0000) >> 16) / 255.f;
+	this->color.g = static_cast<float>((hex & 0x0000ff00) >> 8) / 255.f;
+	this->color.b = static_cast<float>((hex & 0x000000ff) >> 0) / 255.f;
+}
+
 void TColor::SetColor(const TString& colorStr)
 {
 	bool worked;
