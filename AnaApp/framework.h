@@ -4,4 +4,4 @@
 // Windows Header Files
 #include <windows.h>
 
-#ifdef _WINDOWS
+#endif _WINDOWS

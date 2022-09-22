@@ -13,7 +13,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AnaCode", "AnaCode\AnaCode.vcxproj", "{D09769B3-6BBB-4C81-A0E8-7216B5800226}"
 	ProjectSection(ProjectDependencies) = postProject
 		{08ABAA05-EE9E-4C55-9E7D-9049268F8427} = {08ABAA05-EE9E-4C55-9E7D-9049268F8427}
-		{3C42CA11-51F0-4334-8672-5F2F75950CCF} = {3C42CA11-51F0-4334-8672-5F2F75950CCF}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AnaApp", "AnaApp\AnaApp.vcxproj", "{D71B6652-AAD3-4089-9F9C-8747D7CCB38C}"
@@ -33,6 +32,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Anagame-Central", "Anagame-
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AnaWidget", "AnaWidget\AnaWidget.vcxproj", "{654DB2FD-67D3-4996-86DA-7063DE6E2843}"
+	ProjectSection(ProjectDependencies) = postProject
+		{08ABAA05-EE9E-4C55-9E7D-9049268F8427} = {08ABAA05-EE9E-4C55-9E7D-9049268F8427}
+		{3C42CA11-51F0-4334-8672-5F2F75950CCF} = {3C42CA11-51F0-4334-8672-5F2F75950CCF}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
