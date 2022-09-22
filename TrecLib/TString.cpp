@@ -1,6 +1,14 @@
 #include "TString.h"
 #include <cassert>
 
+#ifndef _WINDOWS
+#include <cstring>
+#include <stdlib.h>
+#include <cwchar>
+#include <wctype.h>
+#include <stdarg.h>
+#endif
+
 
 static TDataArray<WCHAR> whiteChar;
 

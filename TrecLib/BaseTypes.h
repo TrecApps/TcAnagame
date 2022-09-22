@@ -1,6 +1,7 @@
 #pragma once
 
-
+#ifndef AG_BASE_TYPES
+#define AG_BASE_TYPES
 
 #ifdef _WINDOWS
 #include <Windows.h>
@@ -21,4 +22,14 @@ using ThreadBlocker = pthread_mutex_t;
 #define TcInitLock(section)			pthread_mutex_init(section, nullptr)
 #define TcRemoveLock(section)		pthread_mutex_destroy(section)
 
+#define UINT    unsigned int
+#define USHORT  unsigned short
+#define ULONG64 unsigned long long
+#define UCHAR   unsigned char
+#define TCHAR   WCHAR
+#define LONG64  long long
+#define WCHAR   wchar_t
+
 #endif
+
+#endif // AG_BASE_TYPES

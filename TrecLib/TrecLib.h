@@ -12,4 +12,5 @@
 
 #elif defined(__linux__) || (defined (__APPLE__) && defined (__MACH__))
 #define _TREC_LIB_DLL
+
 #endif
