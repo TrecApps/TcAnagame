@@ -1,5 +1,6 @@
 #include "TPage.h"
 #include <TColorBrush.h>
+#include <cstring>
 #define BOX_SIZE 20
 TColor end_box(0x00000066), body_box(0x00000011), middle_box_click(0x00000099), middle_box(0x00000033);
 

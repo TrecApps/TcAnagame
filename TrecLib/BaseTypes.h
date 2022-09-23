@@ -30,6 +30,7 @@ using ThreadBlocker = pthread_mutex_t;
 #define ULONG64   unsigned long long
 #define UCHAR     unsigned char
 #define TCHAR     WCHAR
+#define LONG      long
 #define LONG64    long long
 #define LONGLONG  long long
 #define WCHAR     wchar_t
