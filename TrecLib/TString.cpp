@@ -1,18 +1,27 @@
 #include "TString.h"
 #include <cassert>
 #include <stdlib.h>
+
+
 #ifndef _WINDOWS
+
+
 #include <cstring>
 
 #include <cwchar>
 #include <wctype.h>
 #include <stdarg.h>
+
+#ifndef min
+#define min(a,b)            (((a) < (b)) ? (a) : (b))
+#endif
+
 #endif
 
 #ifdef _WINDOWS
 #define TC_MBSTOWCS(retSize, size, dest, source) mbstowcs_s(&retSize, dest, size, source, size);
 #elif defined(__linux__) || (defined (__APPLE__) && defined (__MACH__))
-#define TC_MBSTOWCS(retSize, size, dest, source) 
+#define TC_MBSTOWCS(retSize, size, dest, source) retSize = mbstowcs(dest, source, size);
 #endif
 
 
@@ -256,6 +265,7 @@ TString::TString(const TString* orig)
 	string[size] = L'\0';
 }
 
+
 TString::TString(const char* cps)
 {
 	fillWhiteChar();
@@ -269,8 +279,8 @@ TString::TString(const char* cps)
 	capacity = strlen(cps) + 1;
 	string = new WCHAR[capacity];
 	size = capacity - 1;
-
-	MultiByteToWideChar(CP_ACP, 0, cps, size, string, size);
+	size_t s = 0;
+	TC_MBSTOWCS(s, size, string, cps);
 	string[capacity - 1] = L'\0';
 }
 
@@ -306,16 +316,11 @@ TString::TString(std::string& str)
 {
 	fillWhiteChar();
 
-	int sizeNeeded = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, 0, 0);
-	int e = 0;
-	if (!sizeNeeded)
-	{
-		e = GetLastError();
-	}
+	size_t sizeNeeded = 0;
+	
+	
 
-	assert(sizeNeeded > 0);
-
-	capacity = sizeNeeded + 1;
+	capacity = str.size() + 1;
 
 	string = new WCHAR[capacity];
 
@@ -323,7 +328,7 @@ TString::TString(std::string& str)
 
 	size = str.size();
 
-	MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, string, capacity);
+	TC_MBSTOWCS(sizeNeeded, size, string, str.c_str());
 }
 
 TString::TString(WCHAR c)
