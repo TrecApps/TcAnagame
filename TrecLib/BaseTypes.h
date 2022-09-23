@@ -22,6 +22,8 @@ using ThreadBlocker = pthread_mutex_t;
 #define TcInitLock(section)			pthread_mutex_init(section, nullptr)
 #define TcRemoveLock(section)		pthread_mutex_destroy(section)
 
+#define UNREFERENCED_PARAMETER(P)          (P)
+
 #define UINT    unsigned int
 #define USHORT  unsigned short
 #define ULONG64 unsigned long long
