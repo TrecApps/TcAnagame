@@ -250,7 +250,6 @@ public:
 
 	int FindLastOneOf(const TString& chars, int start = -1) const;
 
-	bool SetAsEnvironmentVariable(TString& var);
 
 	UINT CountFinds(const TString& query, int stop = -1) const;
 

@@ -1,12 +1,18 @@
 #include "TString.h"
 #include <cassert>
-
+#include <stdlib.h>
 #ifndef _WINDOWS
 #include <cstring>
-#include <stdlib.h>
+
 #include <cwchar>
 #include <wctype.h>
 #include <stdarg.h>
+#endif
+
+#ifdef _WINDOWS
+#define TC_MBSTOWCS(retSize, size, dest, source) mbstowcs_s(&retSize, dest, size, source, size);
+#elif defined(__linux__) || (defined (__APPLE__) && defined (__MACH__))
+#define TC_MBSTOWCS(retSize, size, dest, source) 
 #endif
 
 
@@ -278,7 +284,7 @@ TString::TString(const WCHAR* wcps)
 		return;
 	}
 
-	size = lstrlenW(wcps);
+	size = wcslen(wcps);
 	capacity = size + 1;
 	string = new WCHAR[capacity];
 	memcpy(string, wcps, size * sizeof(WCHAR));
@@ -1327,12 +1333,13 @@ float ConvertHueToRGB(float p, float q, int hue)
 
 }
 
+
 WCHAR ReturnCharType(char c)
 {
 	WCHAR w[] = { L'0',L'\0' };
 	size_t conv = 0;
 	char charTo[] = { c, '\0' };
-	mbstowcs_s(&conv, w, 2, charTo, 1);
+	TC_MBSTOWCS(conv, 1, w, charTo);
 	return w[0];
 }
 
@@ -1341,7 +1348,7 @@ WCHAR ReturnWCharType(char c)
 	WCHAR w[] = { L'0',L'\0' };
 	size_t conv = 0;
 	char charTo[] = { c, '\0' };
-	mbstowcs_s(&conv, w, 2, charTo, 1);
+	TC_MBSTOWCS(conv, 1, w, charTo);
 	return w[0];
 }
 
@@ -1368,7 +1375,7 @@ int TString::Compare(const TString& other) const
 int TString::Compare(const WCHAR* other) const
 {
 	TObjectLocker threadLock(&thread);
-	int min = min(size, lstrlenW(other));
+	int min = min(size, wcslen(other));
 	for (int c = 0; c < min; c++)
 	{
 		if (string[c] < other[c])
@@ -1381,8 +1388,8 @@ int TString::Compare(const WCHAR* other) const
 		}
 	}
 
-	if (size == lstrlenW(other)) { return 0; }
-	if (size > lstrlenW(other)) { return size; }
+	if (size == wcslen(other)) { return 0; }
+	if (size > wcslen(other)) { return size; }
 	return static_cast<int>(-1);
 }
 
@@ -1690,35 +1697,6 @@ int TString::FindLastOneOf(const TString& chars, int start) const
 	return -1;
 }
 
-bool TString::SetAsEnvironmentVariable(TString& var)
-{
-	TObjectLocker threadLock(&thread);
-	WCHAR* newString = new WCHAR[1000];
-
-	int newSize = GetEnvironmentVariableW(var.string, newString, 999);
-
-	if (!newSize)
-	{
-		return false;
-	}
-	WCHAR* newString2 = new WCHAR[newSize + 1];
-	for (int c = 0; c < newSize + 1; c++)
-	{
-		newString2[c] = newString[c];
-	}
-
-	if (string)
-		delete[] string;
-	string = newString2;
-	string[newSize] = L'\0';
-
-	size = newSize;
-	capacity = size + 1;
-
-	delete[] newString;
-
-	return true;
-}
 
 UINT TString::CountFinds(const TString& query, int stop) const
 {
