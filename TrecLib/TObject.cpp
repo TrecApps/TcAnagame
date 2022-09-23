@@ -30,12 +30,12 @@ TObject::~TObject()
 void TObject::ThreadLock() const
 {
 
-	EnterCriticalSection(&thread);
+	TcLockObject(&thread);
 }
 
 void TObject::ThreadRelease() const
 {
-	LeaveCriticalSection(&thread);
+	TcUnlockObject(&thread);
 
 }
 
