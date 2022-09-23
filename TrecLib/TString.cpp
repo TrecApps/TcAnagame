@@ -19,9 +19,15 @@
 #endif
 
 #ifdef _WINDOWS
-#define TC_MBSTOWCS(retSize, size, dest, source) mbstowcs_s(&retSize, dest, size, source, size);
+
+#define TC_MBSTOWCS(retSize, size, dest, source) mbstowcs_s(&retSize, dest, size, source, size)
+#define TC_WCSTOMBS(size, dest, source, winFlag) WideCharToMultiByte(CP_ACP, 0, source, size, dest, size, NULL, &winFlag)
+
 #elif defined(__linux__) || (defined (__APPLE__) && defined (__MACH__))
+
 #define TC_MBSTOWCS(retSize, size, dest, source) retSize = mbstowcs(dest, source, size);
+#define TC_WCSTOMBS(retSize, size, dest, source) wcstombs(dest, source, size)
+
 #endif
 
 
@@ -776,12 +782,15 @@ bool TString::IsEmpty() const
 	return size == 0;
 }
 
+
+
 std::string TString::GetRegString()
 {
 	TObjectLocker threadLock(&thread);
 	std::string reg;
 	char* regString = new char[size + 1];
 	BOOL bFlag = FALSE;
+	TC_WCSTOMBS(size, regString, string, bFlag);
 	WideCharToMultiByte(CP_ACP, 0, string, size, regString, size, NULL, &bFlag);
 
 	regString[size] = '\0';

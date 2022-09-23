@@ -29,6 +29,7 @@ using ThreadBlocker = pthread_mutex_t;
 #define TCHAR   WCHAR
 #define LONG64  long long
 #define WCHAR   wchar_t
+#define BOOL    int
 
 #endif
 
