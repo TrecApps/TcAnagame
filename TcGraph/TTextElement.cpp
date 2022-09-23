@@ -80,7 +80,7 @@ void TTextElement::AppendLine(BasicCharLine& curLine, float& y)
 	for (UINT C = 0; C < curLine.characters.Size(); C++)
 	{
 		BasicCharacter tempChar(curLine.characters[C]);
-		curLine.height = max(curLine.height, tempChar.location.bottom - tempChar.location.top);
+		curLine.height = std::max(curLine.height, tempChar.location.bottom - tempChar.location.top);
 		curLine.totalWidth += (tempChar.location.right - tempChar.location.left);
 	}
 	curLine.top = y;
@@ -483,7 +483,7 @@ void TTextElement::OnDraw(TrecPointer<TVariable> dataText)
 
 bool TTextElement::GetMinHeight(float& height)
 {
-	float top = INFINITY;
+	float top = std::numeric_limits<float>::infinity();
 	float bottom = 0.0f;
 
 	for (UINT Rust = 0; Rust < lines.Size(); Rust++)
@@ -500,7 +500,7 @@ bool TTextElement::GetMinHeight(float& height)
 		}
 	}
 
-	if(!bottom || top == INFINITY || top > bottom)
+	if(!bottom || top == std::numeric_limits<double>::infinity() || top > bottom)
 	return false;
 
 	height = bottom - top;
@@ -710,7 +710,7 @@ void BasicCharLine::SetVerticalPadding(float value, bool isFloor)
 float BasicCharLine::GetVerticalPadding(bool isFloor) const
 {
 
-	return max( 0.0f, isFloor ? floorPadding : ceilingPadding);
+	return std::max( 0.0f, isFloor ? floorPadding : ceilingPadding);
 }
 
 int BasicCharacter::GetWeightStrength() const 

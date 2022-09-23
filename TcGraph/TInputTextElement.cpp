@@ -205,19 +205,19 @@ bool TInputTextElement::OnInputChar(WCHAR ch, UINT count)
 		{
 			switch (ch)
 			{
-			case VK_BACK:
+			case 0x08: // Back
 				if (carotLoc && !didDelete)
 					strText.Delete(--carotLoc);
 				break;
-			case VK_OEM_PERIOD:
+			case 0xBE: // OEM-Period
 				strText.Insert(carotLoc++, L'.');
 				break;
-			case VK_SUBTRACT:
+			case 0x6D: // Subtract
 				if (ch == L'm')
 					goto def;
 				strText.Insert(carotLoc++, L'-');
 				break;
-			case VK_DIVIDE:
+			case 0x6F: // Divide
 				if (ch == L'o')
 					goto def;
 				strText.Insert(carotLoc++, L'/');

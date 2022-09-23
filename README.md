@@ -138,6 +138,8 @@ You will need to Install Dependencies to your Linux environment before you begin
 
 #### GLFW
 
+This Dependency is used to ensure that OpenGL can be used in a Windowed-Environment
+
 1. From `cloneDir`, clone GLFW by typing `git clone https://github.com/glfw/glfw.git`
 2. cd into the `glfw` folder.
 3. Run `sudo apt-get install cmake xorg-dev libglu1-mesa-dev`. You'll need them to build glfw
@@ -146,10 +148,28 @@ You will need to Install Dependencies to your Linux environment before you begin
 
 #### Freetype 2.0
 
+This Dependency is being used to Provide Text Management support.
+
 1. From 'cloneDir', clone FreeType by typing `git clone Https://gitlab.freedesktop.org/freetype/freetype.git` (Note: you might need to run `git config --global http.sslVerify false`)
 2. cd into the resulting `freetype` folder
 3. Run `make ; sudo make install`
 
+#### GLEW
+
+This Dependency is used to ensure that OpenGL shaders can be referenced in code
+
+1. Download the most recent version of Glew from here: `https://sourceforge.net/projects/glew/`
+2. Extract the Compressed file to `cloneDir`
+3. cd into the extraxted folder
+4. Run `make ; sudo make install`
+
 #### FFMPEG
 
-As of right now, no attempt has been made to install **ffmpeg**
+This dependency is intended to Provide Video Encoding/Decoding Support
+
+Note: this WILL take time
+
+1. From `cloneDir`, clone ffmpeg via `git clone https://github.com/FFmpeg/FFmpeg.git`
+2. cd into `FFmpeg`
+3. Run `./configure` , this is needed to enable the make process to work (without complaining that `/tests/Makfile` can't be found, in my case)
+4. Run `make ; sudo make install`

@@ -1,5 +1,5 @@
 # Instructions for compiling Anagame's TrecLib in a Linux Environment
-INC=-I../TrecLib 
+INC=-I../TrecLib -I../../stb -I/usr/include/freetype2
 LIB=-L../Debug
 CC	= g++
 CFLAGS  = $(INC) $(LIB) -Wall -Wextra -fpermissive -std=c++17 -g -c

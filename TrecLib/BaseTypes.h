@@ -37,6 +37,8 @@ using ThreadBlocker = pthread_mutex_t;
 #define TRUE      1
 #define FALSE     0
 #define CHAR      char
+#define BYTE      unsigned char
+#define byte      BYTE
 
 #endif
 

@@ -137,13 +137,22 @@ protected:
 
     UCHAR* textInGlFormat(FT_Bitmap& bitmap, int& targetWidth, int targetHeight);
 
+
+#ifdef _WINDOWS
     bool HitTestPoint(
        const TPoint& point,
         _Out_ BOOL& isTrailingHit,
         _Out_ BOOL& isInside,
         _Out_ UINT& position
         );
-
+#elif defined(__linux__) || (defined (__APPLE__) && defined (__MACH__))
+    bool HitTestPoint(
+       const TPoint& point,
+        BOOL& isTrailingHit,
+        BOOL& isInside,
+        UINT& position
+        );
+#endif
 public:
     explicit TTextElement(TrecPointer<DrawingBoard> board);
 
