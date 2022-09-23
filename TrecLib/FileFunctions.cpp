@@ -40,6 +40,7 @@ UINT TcWideCharToMultiByte(const WCHAR* source, UINT sourceSize, char* target)
 
 
 #elif defined(__linux__) || (defined (__APPLE__) && defined (__MACH__))
+#include <stdlib.h>
 void TcFileRead(FILE_HANDLE fileName, UCHAR* bytes, DWORD sizeToRead, DWORD& bytesRead)
 {
 	bytesRead = read(fileName, bytes, sizeToRead);
