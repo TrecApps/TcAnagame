@@ -22,6 +22,8 @@ using FILE_ATTS = WIN32_FILE_ATTRIBUTE_DATA;
 #include <mach-o/dyld.h>
 #endif
 
+#include <fcntl.h>
+
 using FILE_HANDLE = int;
 
 using FILETIME = timespec;

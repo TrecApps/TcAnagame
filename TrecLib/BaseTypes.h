@@ -24,16 +24,18 @@ using ThreadBlocker = pthread_mutex_t;
 
 #define UNREFERENCED_PARAMETER(P)          (P)
 
-#define UINT    unsigned int
-#define USHORT  unsigned short
-#define ULONG64 unsigned long long
-#define UCHAR   unsigned char
-#define TCHAR   WCHAR
-#define LONG64  long long
-#define WCHAR   wchar_t
-#define BOOL    int
-#define TRUE    1
-#define FALSE   0
+#define UINT      unsigned int
+#define USHORT    unsigned short
+#define ULONGLONG unsigned long long
+#define ULONG64   unsigned long long
+#define UCHAR     unsigned char
+#define TCHAR     WCHAR
+#define LONG64    long long
+#define LONGLONG  long long
+#define WCHAR     wchar_t
+#define BOOL      int
+#define TRUE      1
+#define FALSE     0
 
 #endif
 

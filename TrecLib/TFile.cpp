@@ -607,7 +607,7 @@ bool TFile::TFileShell::IsReadOnly()
 	Refresh();
 #ifdef _WINDOWS
 	bool ret = fileInfo.dwFileAttributes & FILE_ATTRIBUTE_READONLY;
-#elif 
+#elif defined(__linux__) || (defined (__APPLE__) && defined (__MACH__))
 	if (deleted)
 		return false;
 	bool ret = access(path.GetRegString().c_str(), W_OK);
