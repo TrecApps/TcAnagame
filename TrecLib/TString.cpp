@@ -791,7 +791,6 @@ std::string TString::GetRegString()
 	char* regString = new char[size + 1];
 	BOOL bFlag = FALSE;
 	TC_WCSTOMBS(size, regString, string, bFlag);
-	WideCharToMultiByte(CP_ACP, 0, string, size, regString, size, NULL, &bFlag);
 
 	regString[size] = '\0';
 	reg = regString;
