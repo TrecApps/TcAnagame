@@ -30,6 +30,8 @@ using ThreadBlocker = pthread_mutex_t;
 #define LONG64  long long
 #define WCHAR   wchar_t
 #define BOOL    int
+#define TRUE    1
+#define FALSE   0
 
 #endif
 

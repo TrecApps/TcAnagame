@@ -26,7 +26,7 @@
 #elif defined(__linux__) || (defined (__APPLE__) && defined (__MACH__))
 
 #define TC_MBSTOWCS(retSize, size, dest, source) retSize = mbstowcs(dest, source, size);
-#define TC_WCSTOMBS(retSize, size, dest, source) wcstombs(dest, source, size)
+#define TC_WCSTOMBS(size, dest, source, winFlag) wcstombs(dest, source, size)
 
 #endif
 
