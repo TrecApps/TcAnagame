@@ -143,9 +143,9 @@ void InitializeDirectories()
 #include <cstring>
 WCHAR slasher = L'/';
 
-#define CREATE_TIME st_birthtimespec
-#define LAST_ACCESS st_atimespec
-#define LAST_WRITE st_mtimespec
+#define CREATE_TIME st_ctim
+#define LAST_ACCESS st_atim
+#define LAST_WRITE st_mtim
 
 #define IS_ARCHIVE false
 #define IS_ENCRYPTED false
