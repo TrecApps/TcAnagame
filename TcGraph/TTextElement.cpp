@@ -80,7 +80,11 @@ void TTextElement::AppendLine(BasicCharLine& curLine, float& y)
 	for (UINT C = 0; C < curLine.characters.Size(); C++)
 	{
 		BasicCharacter tempChar(curLine.characters[C]);
+#ifdef _WINDOWS
+		curLine.height = max(curLine.height, tempChar.location.bottom - tempChar.location.top);
+#elif defined(__linux__) || (defined (__APPLE__) && defined (__MACH__))
 		curLine.height = std::max(curLine.height, tempChar.location.bottom - tempChar.location.top);
+#endif
 		curLine.totalWidth += (tempChar.location.right - tempChar.location.left);
 	}
 	curLine.top = y;
@@ -709,8 +713,11 @@ void BasicCharLine::SetVerticalPadding(float value, bool isFloor)
 
 float BasicCharLine::GetVerticalPadding(bool isFloor) const
 {
-
+#if _WINDOWS
+	return max(0.0f, isFloor ? floorPadding : ceilingPadding);
+#elif defined(__linux__) || (defined (__APPLE__) && defined (__MACH__))
 	return std::max( 0.0f, isFloor ? floorPadding : ceilingPadding);
+#endif
 }
 
 int BasicCharacter::GetWeightStrength() const 
