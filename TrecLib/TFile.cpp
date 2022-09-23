@@ -748,30 +748,7 @@ TDataArray<TrecPointer<TFile::TFileShell>> TDirectory::GetFileListing()
 	TObjectLocker lock(&thread);
 	TDataArray<TrecPointer<TFileShell>> ret;
 
-	HANDLE fileBrowser = 0;
-	WIN32_FIND_DATAW data;
-
-	fileBrowser = FindFirstFileExW(path.GetConstantBuffer().getBuffer(),
-		FindExInfoStandard,
-		&data,
-		FindExSearchNameMatch,
-		nullptr,
-		0);
-
-	if (fileBrowser == INVALID_HANDLE_VALUE)
-	{
-		return ret;
-	}
-	TString newPath;
-
-	do
-	{
-		newPath.Set(this->path + data.cFileName);
-		ret.push_back(TFileShell::GetFileInfo(newPath));
-	} while (FindNextFileW(fileBrowser, &data));
-
-	FindClose(fileBrowser);
-	fileBrowser = 0;
+	GetFileListing(ret);
 
 	return ret;
 }

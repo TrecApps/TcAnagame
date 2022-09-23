@@ -26,15 +26,17 @@ using FILE_ATTS = WIN32_FILE_ATTRIBUTE_DATA;
 #define ZeroMemory(Destination,Length) memset((Destination),0,(Length))
 using FILE_HANDLE = int;
 
-using FILETIME = timespec;
-using FILE_ATTS = struct stat;
+#define FILETIME  timespec
+#define FILE_ATTS struct stat
+
 #define NULL_FILE_HANDLE  -1
 
 #define INVALID_FILE_HANDLE(handle)							handle < 0
+#define INVALID_HANDLE_VALUE								-1
 #define NULL_FILE_HANDLE									-1
 #define DWORD ssize_t 
 #define TcFileOpen(fileName,readWrite,sharing,atts)			open(fileName.GetRegString().c_str(), readWrite | sharing | atts, S_IRGRP)
-#define TfMakeDirectory(filename)							mkdir(filename.GetRegString().c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+#define TcMakeDirectory(filename)							mkdir(filename.GetRegString().c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 
 #endif
 
