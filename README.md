@@ -1,5 +1,7 @@
 # TcAnagame
 
+Note: Regardless of which directory you cloned the project in, this README will refer to that directory as `cloneDir`
+
 ## Overview
 
 This Project is an effort to create a version of the [Anagame Project](https://github.com/TrecApps/AnaGame) that 
@@ -124,4 +126,30 @@ If, when running your program, it complains about not having the `zlib1.dll` fil
 
 ### Linux/Mac
 
-I have not attempted to Clone this Repository or build it on a Mac or Linux Machine. However, if you're interested in contributing to this project and making sure this code compiles on those platforms, I have previous made an Attempt here "https://github.com/TrecApps/Anagame_x/" you can look to for inspiration
+I have not attempted to Clone this Repository or build it on a Mac. However, if you're interested in contributing to this project and making sure this code compiles on those platforms, I have previous made an Attempt here "https://github.com/TrecApps/Anagame_x/" you can look to for inspiration
+
+### Linux
+
+Note: Currently, I have not managed to build a working compilation process. However, I did begin the process of one.
+
+Clone the project in any directory you wish.
+
+You will need to Install Dependencies to your Linux environment before you begin (for reference, I was using Ubuntu).
+
+#### GLFW
+
+1. From `cloneDir`, clone GLFW by typing `git clone https://github.com/glfw/glfw.git`
+2. cd into the `glfw` folder.
+3. Run `sudo apt-get install cmake xorg-dev libglu1-mesa-dev`. You'll need them to build glfw
+4. Run `cmake -G "Unix Makefiles"`
+5. Run `make ; sudo make install`
+
+#### Freetype 2.0
+
+1. From 'cloneDir', clone FreeType by typing `git clone Https://gitlab.freedesktop.org/freetype/freetype.git` (Note: you might need to run `git config --global http.sslVerify false`)
+2. cd into the resulting `freetype` folder
+3. Run `make ; sudo make install`
+
+#### FFMPEG
+
+As of right now, no attempt has been made to install **ffmpeg**
