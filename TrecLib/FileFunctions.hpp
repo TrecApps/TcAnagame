@@ -17,11 +17,12 @@ using FILE_ATTS = WIN32_FILE_ATTRIBUTE_DATA;
 #include <sys/stat.h>
 #include <unistd.h>
 #include <dirent.h>
+#include "BaseTypes.h"
 #if __APPLE__
 #include <mach-o/dyld.h>
 #endif
 
-using FILE_HANDLE = int
+using FILE_HANDLE = int;
 
 using FILETIME = timespec;
 using FILE_ATTS = struct stat;
