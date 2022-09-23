@@ -140,7 +140,7 @@ void InitializeDirectories()
 
 
 #elif defined(__linux__) || (defined (__APPLE__) && defined (__MACH__))
-
+#include <cstring>
 WCHAR slasher = L'/';
 
 #define CREATE_TIME st_birthtimespec
@@ -806,10 +806,16 @@ bool TFile::Open(TrecPointer<TFileShell> file, UINT nOpenFlags)
 	ConvertFlags(nOpenFlags, readWrite, sharing, atts);
 
 	// If no attribute for opening is specified, use the value most likely to succeed
-	if (!atts)
+	if (!atts) {
+#ifdef _WINDOWS
 		atts = OPEN_ALWAYS;
+#elif defined(__linux__) || (defined (__APPLE__) && defined (__MACH__))
+		atts = O_CREAT;
+#endif
+	}
 	TString newFileName(file->GetPath());
-	fileHandle = CreateFileW(newFileName.GetConstantBuffer().getBuffer(), readWrite, sharing, nullptr, atts, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+	fileHandle = TcFileOpen(newFileName, readWrite, sharing, atts);
 
 
 	if (fileHandle == INVALID_HANDLE_VALUE)
@@ -1606,14 +1612,14 @@ FileEncodingType TFile::DeduceEncodingType()
 	UINT bytes = Read(&twoBytes, 30);
 
 	SeekToBegin();
-
+#ifdef _WINDOWS
 	int value = IS_TEXT_UNICODE_UNICODE_MASK |
 		IS_TEXT_UNICODE_REVERSE_MASK |
 		IS_TEXT_UNICODE_NOT_UNICODE_MASK |
 		IS_TEXT_UNICODE_NOT_ASCII_MASK;
 
 
-#ifdef _WINDOWS
+
 	if (!IsTextUnicode(&twoBytes, bytes, &value))
 	{
 		// Tests have failed, so we have to rely on our own assessment
@@ -1669,8 +1675,9 @@ FileEncodingType TFile::DeduceEncodingType()
 		{
 			return FileEncodingType::fet_unknown;
 		}
-	}
 #ifdef _WINDOWS
+	}
+
 	else
 	{
 		if (value & IS_TEXT_UNICODE_STATISTICS ||

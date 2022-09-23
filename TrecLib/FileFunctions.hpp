@@ -23,7 +23,7 @@ using FILE_ATTS = WIN32_FILE_ATTRIBUTE_DATA;
 #endif
 
 #include <fcntl.h>
-
+#define ZeroMemory(Destination,Length) memset((Destination),0,(Length))
 using FILE_HANDLE = int;
 
 using FILETIME = timespec;
