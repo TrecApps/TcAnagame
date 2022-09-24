@@ -11,7 +11,7 @@ extern "C" {
 
 using TAvCodec = struct TAvCodec {
     AVCodecParameters* av_codec_params;
-    AVCodec* av_codec;
+    const AVCodec* av_codec;
     int width;
     int height;
     AVCodecContext* av_codec_ctx;

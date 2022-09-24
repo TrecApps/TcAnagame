@@ -818,4 +818,5 @@ bool HighlightRange::SetEnd(UINT end)
 		return false;
 	this->end = end;
 	this->endSet = true;
+    return true;
 }
