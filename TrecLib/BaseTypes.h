@@ -39,8 +39,12 @@ using ThreadBlocker = pthread_mutex_t;
 #define FALSE     0
 #define CHAR      char
 #define BYTE      unsigned char
-#define byte      BYTE
 
+
+#endif
+
+#ifdef __linux__
+#define byte      BYTE
 #endif
 
 #endif // AG_BASE_TYPES

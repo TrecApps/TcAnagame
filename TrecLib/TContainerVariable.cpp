@@ -239,7 +239,7 @@ TrecPointer<TVariable> TJsonVariable::ToString()
     for (UINT Rust = 0;values.GetEntryAt(Rust, var); Rust++)
     {
         if (Rust) ret.AppendChar(L',');
-        ret.AppendFormat(L"\"%ws\" : %ws", var.key.GetConstantBuffer().getBuffer(), TStringVariable::Extract(var.object, L"null"));
+        ret.AppendFormat(L"\"%ws\" : %ws", var.key.GetConstantBuffer().getBuffer(), TStringVariable::Extract(var.object, L"null").GetConstantBuffer().getBuffer());
     }
     ret.AppendChar(L'}');
     return TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(ret);

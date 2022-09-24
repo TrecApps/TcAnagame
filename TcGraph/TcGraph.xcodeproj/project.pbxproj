@@ -1,0 +1,356 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1CCB25D228DF5CBA00C605E8 /* DrawingBoard.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CCB25BD28DF5CBA00C605E8 /* DrawingBoard.h */; };
+		1CCB25D328DF5CBA00C605E8 /* TColorBrush.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CCB25BE28DF5CBA00C605E8 /* TColorBrush.h */; };
+		1CCB25D428DF5CBA00C605E8 /* TVidPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CCB25BF28DF5CBA00C605E8 /* TVidPlayer.h */; };
+		1CCB25D528DF5CBA00C605E8 /* TTextElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CCB25C028DF5CBA00C605E8 /* TTextElement.cpp */; };
+		1CCB25D628DF5CBA00C605E8 /* TColor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CCB25C128DF5CBA00C605E8 /* TColor.cpp */; };
+		1CCB25D728DF5CBA00C605E8 /* TBrush.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CCB25C228DF5CBA00C605E8 /* TBrush.cpp */; };
+		1CCB25D828DF5CBA00C605E8 /* TTextElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CCB25C328DF5CBA00C605E8 /* TTextElement.h */; };
+		1CCB25D928DF5CBA00C605E8 /* TImageBrush.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CCB25C428DF5CBA00C605E8 /* TImageBrush.h */; };
+		1CCB25DA28DF5CBA00C605E8 /* DrawingBoard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CCB25C528DF5CBA00C605E8 /* DrawingBoard.cpp */; };
+		1CCB25DB28DF5CBA00C605E8 /* TVidPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CCB25C628DF5CBA00C605E8 /* TVidPlayer.cpp */; };
+		1CCB25DC28DF5CBA00C605E8 /* TImageBrush.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CCB25C728DF5CBA00C605E8 /* TImageBrush.cpp */; };
+		1CCB25DD28DF5CBA00C605E8 /* TcGraph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CCB25C828DF5CBA00C605E8 /* TcGraph.cpp */; };
+		1CCB25DE28DF5CBA00C605E8 /* TShader.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CCB25C928DF5CBA00C605E8 /* TShader.h */; };
+		1CCB25DF28DF5CBA00C605E8 /* TBrush.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CCB25CA28DF5CBA00C605E8 /* TBrush.h */; };
+		1CCB25E028DF5CBA00C605E8 /* TColorBrush.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CCB25CB28DF5CBA00C605E8 /* TColorBrush.cpp */; };
+		1CCB25E128DF5CBA00C605E8 /* TInputTextElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CCB25CC28DF5CBA00C605E8 /* TInputTextElement.cpp */; };
+		1CCB25E228DF5CBA00C605E8 /* TShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CCB25CD28DF5CBA00C605E8 /* TShader.cpp */; };
+		1CCB25E328DF5CBA00C605E8 /* TColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CCB25CE28DF5CBA00C605E8 /* TColor.h */; };
+		1CCB25E428DF5CBA00C605E8 /* GraphicsDef.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CCB25CF28DF5CBA00C605E8 /* GraphicsDef.h */; };
+		1CCB25E528DF5CBA00C605E8 /* TcGraph.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CCB25D028DF5CBA00C605E8 /* TcGraph.h */; };
+		1CCB25E628DF5CBA00C605E8 /* TInputTextElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CCB25D128DF5CBA00C605E8 /* TInputTextElement.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1CCB25B628DF5BEA00C605E8 /* libTcGraph.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libTcGraph.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		1CCB25BD28DF5CBA00C605E8 /* DrawingBoard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DrawingBoard.h; sourceTree = "<group>"; };
+		1CCB25BE28DF5CBA00C605E8 /* TColorBrush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TColorBrush.h; sourceTree = "<group>"; };
+		1CCB25BF28DF5CBA00C605E8 /* TVidPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVidPlayer.h; sourceTree = "<group>"; };
+		1CCB25C028DF5CBA00C605E8 /* TTextElement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TTextElement.cpp; sourceTree = "<group>"; };
+		1CCB25C128DF5CBA00C605E8 /* TColor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TColor.cpp; sourceTree = "<group>"; };
+		1CCB25C228DF5CBA00C605E8 /* TBrush.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TBrush.cpp; sourceTree = "<group>"; };
+		1CCB25C328DF5CBA00C605E8 /* TTextElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TTextElement.h; sourceTree = "<group>"; };
+		1CCB25C428DF5CBA00C605E8 /* TImageBrush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TImageBrush.h; sourceTree = "<group>"; };
+		1CCB25C528DF5CBA00C605E8 /* DrawingBoard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DrawingBoard.cpp; sourceTree = "<group>"; };
+		1CCB25C628DF5CBA00C605E8 /* TVidPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TVidPlayer.cpp; sourceTree = "<group>"; };
+		1CCB25C728DF5CBA00C605E8 /* TImageBrush.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TImageBrush.cpp; sourceTree = "<group>"; };
+		1CCB25C828DF5CBA00C605E8 /* TcGraph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TcGraph.cpp; sourceTree = "<group>"; };
+		1CCB25C928DF5CBA00C605E8 /* TShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TShader.h; sourceTree = "<group>"; };
+		1CCB25CA28DF5CBA00C605E8 /* TBrush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBrush.h; sourceTree = "<group>"; };
+		1CCB25CB28DF5CBA00C605E8 /* TColorBrush.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TColorBrush.cpp; sourceTree = "<group>"; };
+		1CCB25CC28DF5CBA00C605E8 /* TInputTextElement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TInputTextElement.cpp; sourceTree = "<group>"; };
+		1CCB25CD28DF5CBA00C605E8 /* TShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TShader.cpp; sourceTree = "<group>"; };
+		1CCB25CE28DF5CBA00C605E8 /* TColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TColor.h; sourceTree = "<group>"; };
+		1CCB25CF28DF5CBA00C605E8 /* GraphicsDef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GraphicsDef.h; sourceTree = "<group>"; };
+		1CCB25D028DF5CBA00C605E8 /* TcGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TcGraph.h; sourceTree = "<group>"; };
+		1CCB25D128DF5CBA00C605E8 /* TInputTextElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TInputTextElement.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1CCB25B428DF5BEA00C605E8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1CCB25AD28DF5BEA00C605E8 = {
+			isa = PBXGroup;
+			children = (
+				1CCB25C528DF5CBA00C605E8 /* DrawingBoard.cpp */,
+				1CCB25BD28DF5CBA00C605E8 /* DrawingBoard.h */,
+				1CCB25CF28DF5CBA00C605E8 /* GraphicsDef.h */,
+				1CCB25C228DF5CBA00C605E8 /* TBrush.cpp */,
+				1CCB25CA28DF5CBA00C605E8 /* TBrush.h */,
+				1CCB25C828DF5CBA00C605E8 /* TcGraph.cpp */,
+				1CCB25D028DF5CBA00C605E8 /* TcGraph.h */,
+				1CCB25C128DF5CBA00C605E8 /* TColor.cpp */,
+				1CCB25CE28DF5CBA00C605E8 /* TColor.h */,
+				1CCB25CB28DF5CBA00C605E8 /* TColorBrush.cpp */,
+				1CCB25BE28DF5CBA00C605E8 /* TColorBrush.h */,
+				1CCB25C728DF5CBA00C605E8 /* TImageBrush.cpp */,
+				1CCB25C428DF5CBA00C605E8 /* TImageBrush.h */,
+				1CCB25CC28DF5CBA00C605E8 /* TInputTextElement.cpp */,
+				1CCB25D128DF5CBA00C605E8 /* TInputTextElement.h */,
+				1CCB25CD28DF5CBA00C605E8 /* TShader.cpp */,
+				1CCB25C928DF5CBA00C605E8 /* TShader.h */,
+				1CCB25C028DF5CBA00C605E8 /* TTextElement.cpp */,
+				1CCB25C328DF5CBA00C605E8 /* TTextElement.h */,
+				1CCB25C628DF5CBA00C605E8 /* TVidPlayer.cpp */,
+				1CCB25BF28DF5CBA00C605E8 /* TVidPlayer.h */,
+				1CCB25B728DF5BEA00C605E8 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		1CCB25B728DF5BEA00C605E8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1CCB25B628DF5BEA00C605E8 /* libTcGraph.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		1CCB25B228DF5BEA00C605E8 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1CCB25E428DF5CBA00C605E8 /* GraphicsDef.h in Headers */,
+				1CCB25D928DF5CBA00C605E8 /* TImageBrush.h in Headers */,
+				1CCB25E628DF5CBA00C605E8 /* TInputTextElement.h in Headers */,
+				1CCB25E328DF5CBA00C605E8 /* TColor.h in Headers */,
+				1CCB25D328DF5CBA00C605E8 /* TColorBrush.h in Headers */,
+				1CCB25D228DF5CBA00C605E8 /* DrawingBoard.h in Headers */,
+				1CCB25D428DF5CBA00C605E8 /* TVidPlayer.h in Headers */,
+				1CCB25E528DF5CBA00C605E8 /* TcGraph.h in Headers */,
+				1CCB25DF28DF5CBA00C605E8 /* TBrush.h in Headers */,
+				1CCB25DE28DF5CBA00C605E8 /* TShader.h in Headers */,
+				1CCB25D828DF5CBA00C605E8 /* TTextElement.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		1CCB25B528DF5BEA00C605E8 /* TcGraph */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1CCB25BA28DF5BEA00C605E8 /* Build configuration list for PBXNativeTarget "TcGraph" */;
+			buildPhases = (
+				1CCB25B228DF5BEA00C605E8 /* Headers */,
+				1CCB25B328DF5BEA00C605E8 /* Sources */,
+				1CCB25B428DF5BEA00C605E8 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TcGraph;
+			productName = TcGraph;
+			productReference = 1CCB25B628DF5BEA00C605E8 /* libTcGraph.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1CCB25AE28DF5BEA00C605E8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1400;
+				TargetAttributes = {
+					1CCB25B528DF5BEA00C605E8 = {
+						CreatedOnToolsVersion = 14.0;
+					};
+				};
+			};
+			buildConfigurationList = 1CCB25B128DF5BEA00C605E8 /* Build configuration list for PBXProject "TcGraph" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 1CCB25AD28DF5BEA00C605E8;
+			productRefGroup = 1CCB25B728DF5BEA00C605E8 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1CCB25B528DF5BEA00C605E8 /* TcGraph */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1CCB25B328DF5BEA00C605E8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1CCB25D628DF5CBA00C605E8 /* TColor.cpp in Sources */,
+				1CCB25DA28DF5CBA00C605E8 /* DrawingBoard.cpp in Sources */,
+				1CCB25DD28DF5CBA00C605E8 /* TcGraph.cpp in Sources */,
+				1CCB25E228DF5CBA00C605E8 /* TShader.cpp in Sources */,
+				1CCB25E128DF5CBA00C605E8 /* TInputTextElement.cpp in Sources */,
+				1CCB25DB28DF5CBA00C605E8 /* TVidPlayer.cpp in Sources */,
+				1CCB25D728DF5CBA00C605E8 /* TBrush.cpp in Sources */,
+				1CCB25D528DF5CBA00C605E8 /* TTextElement.cpp in Sources */,
+				1CCB25DC28DF5CBA00C605E8 /* TImageBrush.cpp in Sources */,
+				1CCB25E028DF5CBA00C605E8 /* TColorBrush.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1CCB25B828DF5BEA00C605E8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.3;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		1CCB25B928DF5BEA00C605E8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		1CCB25BB28DF5BEA00C605E8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		1CCB25BC28DF5BEA00C605E8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1CCB25B128DF5BEA00C605E8 /* Build configuration list for PBXProject "TcGraph" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1CCB25B828DF5BEA00C605E8 /* Debug */,
+				1CCB25B928DF5BEA00C605E8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1CCB25BA28DF5BEA00C605E8 /* Build configuration list for PBXNativeTarget "TcGraph" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1CCB25BB28DF5BEA00C605E8 /* Debug */,
+				1CCB25BC28DF5BEA00C605E8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1CCB25AE28DF5BEA00C605E8 /* Project object */;
+}
