@@ -675,6 +675,19 @@ void TTextElement::OnLoseFocus()
 {
 }
 
+void TTextElement::SetBasicFormatting(TextFormattingDetails& details)
+{
+	this->formattingDetails = details;
+}
+void TTextElement::SetHorizontalAllignment(tc_line_spacing s)
+{
+	formattingDetails.defaultLineSpacing = s;
+}
+void TTextElement::SetVerticalAllignment(tc_text_spacing s)
+{
+	formattingDetails.textSpacing = s;
+}
+
 TextFormattingDetails::TextFormattingDetails():
 	fontSize(16.0f),
 	formatTweaks(0),

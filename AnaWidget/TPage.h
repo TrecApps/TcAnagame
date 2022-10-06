@@ -37,7 +37,7 @@ using R_Message_Type = enum class R_Message_Type
 	On_SubmitDrag		// Added to Event-Cred when a Page is being dragged around
 };
 
-class _ANA_WIDGET EventArgs
+class _ANA_WIDGET EventArgs : public TObject
 {
 public:
 	EventArgs();
@@ -58,7 +58,7 @@ public:
 	RECT_F newSize, oldSize;
 };
 
-class _ANA_WIDGET Dimensions
+class _ANA_WIDGET Dimensions: public TObject
 {
 public:
 	Dimensions();
@@ -257,3 +257,4 @@ protected:
 	float rotate;
 };
 
+RECT_F ConvertStringToD2D1Rect(const TString& str);

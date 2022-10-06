@@ -27,6 +27,9 @@
     <ClInclude Include="AnaWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TControl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -36,6 +39,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TPage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TControl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,6 +1,6 @@
 #pragma once
 #include "TTextElement.h"
-class TInputTextElement :
+class _TC_GRAPH TInputTextElement :
     public TTextElement
 {
     friend class TrecPointerKey;

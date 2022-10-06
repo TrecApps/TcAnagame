@@ -5,7 +5,7 @@
 
 
 
-class TImageBrush :
+class _TC_GRAPH TImageBrush :
     public TBrush
 {
     friend class DrawingBoard;

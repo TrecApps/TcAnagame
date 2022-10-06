@@ -47,7 +47,7 @@ public:
     TrecPointer<TColor> defaultBackgroundColor;
 };
 
-class BasicCharacter
+class _TC_GRAPH BasicCharacter
 {
 public:
     WCHAR character;
@@ -65,7 +65,7 @@ public:
     ~BasicCharacter();
 };
 
-class BasicCharLine
+class _TC_GRAPH BasicCharLine
 {
     friend class TTextElement;
     friend class TInputTextElement;
@@ -183,5 +183,9 @@ public:
     virtual bool CanTakeInput();
 
     virtual void OnLoseFocus();
+
+    virtual void SetBasicFormatting(TextFormattingDetails& details);
+    virtual void SetHorizontalAllignment(tc_line_spacing);
+    virtual void SetVerticalAllignment(tc_text_spacing);
 };
 

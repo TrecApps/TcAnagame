@@ -52,4 +52,3 @@ public:
 private:
 	color_struct color;
 };
-
