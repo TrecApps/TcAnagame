@@ -41,14 +41,18 @@ UINT TcWideCharToMultiByte(const WCHAR* source, UINT sourceSize, char* target)
 
 #elif defined(__linux__) || (defined (__APPLE__) && defined (__MACH__))
 #include <stdlib.h>
+
+void TcFileWrite(FILE_HANDLE fileName, const UCHAR* bytes, DWORD sizeToRead, DWORD& bytesRead)
+{
+    bytesRead = write(fileName, bytes, sizeToRead);
+}
+
 void TcFileRead(FILE_HANDLE fileName, UCHAR* bytes, DWORD sizeToRead, DWORD& bytesRead)
 {
 	bytesRead = read(fileName, bytes, sizeToRead);
 }
-void TcFileWrite(FILE_HANDLE fileName, UCHAR* bytes, DWORD sizeToRead, DWORD& bytesRead)
-{
-	bytesRead = write(fileName, bytes, sizeToRead);
-}
+
+
 
 void TcFileClose(FILE_HANDLE& fileName)
 {

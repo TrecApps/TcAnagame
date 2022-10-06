@@ -91,7 +91,7 @@ TrecPointer<TVidPlayer> TVidPlayer::GetPlayer(TrecPointer<TFileShell> file)
     for (UINT Rust = 0; Rust < avFormatContext->nb_streams; Rust++)
     {
         AVCodecParameters* av_codec_params = avFormatContext->streams[Rust]->codecpar;
-        AVCodec* av_codec = avcodec_find_decoder(av_codec_params->codec_id);
+        const AVCodec* av_codec = avcodec_find_decoder(av_codec_params->codec_id);
         if (!av_codec)
             continue;
 

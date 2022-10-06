@@ -223,7 +223,7 @@ TColor GetColorFromHashtag(const TString& color, bool& worked)
 	if (w)
 	{
 		worked = true;
-		byte vals[4];
+		unsigned char vals[4];
 		vals[0] = (hexValue & 0xff000000) >> 24;
 		vals[1] = (hexValue & 0x00ff0000) >> 16;
 		vals[2] = (hexValue & 0x0000ff00) >> 8;
@@ -241,6 +241,7 @@ TColor GetColorFromHashtag(const TString& color, bool& worked)
 		else
 			return TColor(f1, f2, f3);
 	}
+    return TColor();
 }
 
 TColor GetColorFromRgb(const TString& color, bool& worked)
@@ -308,6 +309,7 @@ TColor GetColorFromRgba(const TString& color, bool& worked)
 			return TColor(rgbf[0], rgbf[1], rgbf[2], rgbf[3]);
 		}
 	}
+    return TColor();
 }
 
 TColor GetColorFromHsl(const TString& color, bool& worked)
@@ -353,7 +355,7 @@ TColor GetColorFromHsl(const TString& color, bool& worked)
 			hueToRgb(p, q, hslf[0]),
 			hueToRgb(p, q, hslf[0] - 1.0f / 3.0f));
 	}
-	
+    return TColor();
 }
 
 TColor GetColorFromHsla(const TString& color, bool& worked)
@@ -407,7 +409,7 @@ TColor GetColorFromHsla(const TString& color, bool& worked)
 			hueToRgb(p, q, hslf[0] - 1.0f / 3.0f),
 			hslf[3] / (usePercent ? 100.0f : 255.0f));
 	}
-	
+    return TColor();
 }
 
 TColor TColor::GetColorFromString(const TString& color, bool& worked)

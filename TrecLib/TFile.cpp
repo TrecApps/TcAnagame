@@ -143,9 +143,19 @@ void InitializeDirectories()
 #include <cstring>
 WCHAR slasher = L'/';
 
+#ifdef __linix__
+
 #define CREATE_TIME st_ctim
 #define LAST_ACCESS st_atim
 #define LAST_WRITE st_mtim
+
+#elif (defined (__APPLE__) && defined (__MACH__))
+
+#define CREATE_TIME st_birthtimespec
+#define LAST_ACCESS st_atimespec
+#define LAST_WRITE st_mtimespec
+
+#endif
 
 #define IS_ARCHIVE false
 #define IS_ENCRYPTED false
@@ -1566,7 +1576,7 @@ void TFile::Write(const void* buffer, UINT count)
 	}
 	DWORD size = 0;
 
-	TcFileWrite(fileHandle, (UCHAR*)buffer, count, size);
+	TcFileWrite(fileHandle, (UCHAR*)buffer, static_cast<DWORD>(count), size);
 
 	position += size;
 
