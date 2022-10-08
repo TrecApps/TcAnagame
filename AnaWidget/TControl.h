@@ -139,9 +139,10 @@ private:
 };
 
 
-class TControl :
+class _ANA_WIDGET TControl :
     public TPage
 {
+public:
 	void AddAttribute(const TString& att, const TString& value);
 	TControl(TrecPointer<DrawingBoard> drawingBoard, TDataMap<TDataMap<TString>> styles);
 

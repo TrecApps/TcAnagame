@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\..\GLFW\include;..\AnaApp;..\TrecLib;..\TcGraph;..\AnaCode;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\Freetype_2.0\include;..\AnaWidget;..\..\GLFW\include;..\AnaApp;..\TrecLib;..\TcGraph;..\AnaCode;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\GLFW\lib;..\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -112,7 +112,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>TrecLib.lib;TcGraph.lib;AnaApp.lib;glfw3dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>TrecLib.lib;TcGraph.lib;AnaApp.lib;glfw3dll.lib;AnaWidget.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

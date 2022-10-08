@@ -3,6 +3,7 @@
 #include <DrawingBoard.h>
 #include <TPoint.h>
 #include "AnaApp.h"
+#include <TPage.h>
 
 
 class _ANA_APP TWindow :
@@ -19,7 +20,17 @@ protected:
 
     void OnDraw();
 
+    TrecPointer<TPage> mainPage;
+    TrecPointer<TPage::TScrollBar> currentScrollBar;
+
+    RECT_F area;
+
+
+    void HandleWindowEvents(TDataArray<TPage::EventID_Cred>& cred);
+
 public:
+
+    void SetMainPage(TrecPointer<TPage> mainPage);
 
     void OnMouseMove(double x, double y);
     void OnLButtonDown(int mods);
@@ -31,5 +42,7 @@ public:
     void OnLoseFocus();
     void OnResize(int w, int h);
     bool Close();
+
+    RECT_F GetArea();
 };
 
