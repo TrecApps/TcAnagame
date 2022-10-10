@@ -281,11 +281,16 @@ TString::TString(const char* cps)
 		Empty();
 		return;
 	}
-
-	capacity = strlen(cps) + 1;
-	string = new WCHAR[capacity];
-	size = capacity - 1;
+	
 	size_t s = 0;
+
+	TC_MBSTOWCS(s, 0, nullptr, cps);
+
+	size = s;
+	capacity = size + 1;
+
+	string = new WCHAR[capacity];
+	
 	TC_MBSTOWCS(s, size, string, cps);
 	string[capacity - 1] = L'\0';
 }
@@ -894,8 +899,8 @@ void TString::Set(const TString& t)
 		delete[] string;
 	
 	string = new WCHAR[t.capacity];
-	this->capacity = capacity;
-	this->size = size;
+	this->capacity = t.capacity;
+	this->size = t.size;
 	for (UINT Rust = 0; Rust < capacity; Rust++)
 		string[Rust] = t.string[Rust];
 

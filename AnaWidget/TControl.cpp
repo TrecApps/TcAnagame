@@ -457,7 +457,7 @@ bool TControl::onCreate(const RECT_F& loc, TrecPointer<TFileShell> d)
 
 
 	OnCreateStyle(attributes, d);
-	this->SetUpTextElement();
+	//this->SetUpTextElement();
 	if (border.Get())
 		border->onCreate(area);
 	if (content.Get())

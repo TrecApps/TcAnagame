@@ -27,7 +27,8 @@ void TWindow::OnDraw()
     {
         this->BeginDraw();
 
-
+        if (mainPage.Get())
+            mainPage->Draw(TrecPointer<TVariable>());
 
         this->ConfirmDraw();
     }

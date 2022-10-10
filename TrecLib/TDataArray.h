@@ -12,7 +12,7 @@
 *
 * SuperClass: TDataArrayBase - common base class for all TDataArrays
 */
-template<typename T> class _TREC_LIB_DLL TDataArray 
+template<typename T> class _TREC_LIB_DLL TDataArray : public TCoreObject
 {
 	friend class TDataArray<T>;
 

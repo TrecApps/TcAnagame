@@ -123,6 +123,7 @@ void TColor::SetColor(float r, float g, float b)
 	color.r = r;
 	color.g = g;
 	color.b = b;
+	color.a = 1.0;
 	ThreadRelease();
 }
 

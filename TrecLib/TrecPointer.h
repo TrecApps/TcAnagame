@@ -182,13 +182,13 @@ public:
 	explicit TrecPointerSoft(const TrecPointer<T>& copy)
 	{
 		pointer = copy.pointer;
-		Increment();
+		IncrementSoft();
 	}
 
 	TrecPointerSoft(const TrecPointerSoft<T>& copy)
 	{
 		pointer = copy.pointer;
-		Increment();
+		IncrementSoft();
 	}
 
 	TrecPointerSoft()

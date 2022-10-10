@@ -61,7 +61,7 @@ public:
     void SetWeightStrength(int weight);
 
     BasicCharacter();
-    BasicCharacter(const BasicCharacter& copy) = default;
+    BasicCharacter(const BasicCharacter& copy);
     ~BasicCharacter();
 };
 

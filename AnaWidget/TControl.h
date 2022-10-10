@@ -63,7 +63,7 @@ typedef enum class TShape {
  * Class: TControlComponent
  * Purpose: Draws the Border of a Given TControl
  */
-class _ANA_WIDGET TControlComponent : TObject
+class _ANA_WIDGET TControlComponent : public TObject
 {
 	friend class TControl;
 	friend class TControlComponent;

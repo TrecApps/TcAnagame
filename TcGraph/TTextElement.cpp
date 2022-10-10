@@ -2,6 +2,7 @@
 #include "TTextElement.h"
 #include "TImageBrush.h"
 #include "TColorBrush.h"
+#include <cassert>
 
 FT_Library  freeTypeLibrary;
 
@@ -187,6 +188,8 @@ bool TTextElement::HitTestPoint(const TPoint& point, BOOL& isTrailingHit, BOOL& 
 
 TTextElement::TTextElement(TrecPointer<DrawingBoard> board): drawingBoard(board)
 {
+	assert(InitializeText());
+
 	wrap = true;
 	isClickDown = false;
 	bounds.bottom = bounds.left = bounds.right = bounds.top = 0.0f;
@@ -767,6 +770,18 @@ BasicCharacter::BasicCharacter()
 	format = 0;
 	isHighlighted = false;
 	FT_Bitmap_Init(&bitmap);
+}
+
+BasicCharacter::BasicCharacter(const BasicCharacter& copy)
+{
+	FT_Bitmap_Init(&bitmap);
+	FT_Bitmap_Copy(freeTypeLibrary, &copy.bitmap, &bitmap);
+
+	backgroundColor = copy.backgroundColor;
+	character = copy.character;
+	format = copy.format;
+	isHighlighted = copy.isHighlighted;
+	location = copy.location;
 }
 
 BasicCharacter::~BasicCharacter()

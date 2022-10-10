@@ -105,6 +105,9 @@ UINT TInstance::GenerateWindow(TrecPointer<TWindow>& window, TrecPointer<TFileSh
 	if (resizeFunction)
 		glfwSetWindowSizeCallback(glfwWindow, resizeFunction);
 
+	if (closeFunction)
+		glfwSetWindowCloseCallback(glfwWindow, closeFunction);
+
 	return Rust;
 }
 
