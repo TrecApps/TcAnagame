@@ -200,6 +200,8 @@ TTextElement::TTextElement(TrecPointer<DrawingBoard> board): drawingBoard(board)
 
 bool TTextElement::InitializeText()
 {
+	if (freeTypeLibrary)
+		return true;
 	FT_Error error = FT_Init_FreeType(&freeTypeLibrary);
 
 
@@ -230,7 +232,7 @@ bool TTextElement::RetrieveFont(const TString& name, FT_Face& face)
 	{
 		int width = 300;
 		int height = 300;
-		drawingBoard->GetDisplayResolution(width, height);
+		//drawingBoard->GetDisplayResolution(width, height);
 		FT_Set_Char_Size(face, 0, 16*64, width, height);
 		fontMap.addEntry(name, face);
 	}

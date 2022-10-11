@@ -1,5 +1,22 @@
 #include "TColorBrush.h"
 
+bool TColorBrush::NormalizeRect(RECT_F& output, const RECT_F& input, TrecPointer<DrawingBoard> board)
+{
+    if(!board.Get())
+        return false;
+
+    auto r = board->GetArea();
+    r.bottom /= 2.0f;
+    r.right /= 2.0f;
+
+    output.right = (input.right / r.right) - 1.0f;
+    output.left = (input.left / r.right) - 1.0f;
+    output.bottom = -((input.bottom / r.bottom) - 1.0f);
+    output.top = -((input.top / r.bottom) - 1.0f);
+
+    return true;
+}
+
 brush_type TColorBrush::GetBrushType()
 {
     return brushType;

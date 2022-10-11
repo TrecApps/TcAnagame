@@ -32,9 +32,12 @@ protected:
     GLFWwindow* window;
     explicit DrawingBoard(GLFWwindow* window);
 
-
+    RECT_F area;
     
 public:
+    void SetSelf(TrecPointer<DrawingBoard> s);
+
+    RECT_F GetArea();
 
     GLFWwindow* GetGlfwWindow();
 

@@ -634,14 +634,15 @@ bool TControl::HandlesEvents()
 
 void TControl::Draw(TrecPointer<TVariable> object)
 {
-	if (!isActive)
+	RECT_F useArea = { 0,0,0,0 };
+	if (!isActive || !TColorBrush::NormalizeRect(useArea, area, this->drawingBoard))
 		return;
 	if (content.Get())
-		content->onDraw(area);
+		content->onDraw(useArea);
 	if (text.Get())
 		text->OnDraw(object);
 	if (border.Get())
-		border->onDraw(area);
+		border->onDraw(useArea);
 }
 
 void TControl::OnRButtonUp(UINT nFlags, const TPoint& point, message_output& mOut, TDataArray<EventID_Cred>& pages)

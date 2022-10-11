@@ -23,9 +23,6 @@ protected:
     TrecPointer<TPage> mainPage;
     TrecPointer<TPage::TScrollBar> currentScrollBar;
 
-    RECT_F area;
-
-
     void HandleWindowEvents(TDataArray<TPage::EventID_Cred>& cred);
 
 public:
@@ -43,6 +40,5 @@ public:
     void OnResize(int w, int h);
     bool Close();
 
-    RECT_F GetArea();
 };
 

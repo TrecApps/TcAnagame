@@ -10,6 +10,27 @@ DrawingBoard::DrawingBoard(GLFWwindow* window)
 	this->window = window;
 
 	defaultClearColor.SetColor(L"white");
+
+	int w = 0;
+	int h = 0;
+	area.top = h;
+	area.left = w;
+	glfwGetWindowSize(window, &w, &h);
+
+	area.bottom = h;
+	area.right = w;
+}
+
+void DrawingBoard::SetSelf(TrecPointer<DrawingBoard> s)
+{
+	if (this != s.Get())
+		throw 1;
+	self = TrecPointerKey::SoftFromTrec<>(s);
+}
+
+RECT_F DrawingBoard::GetArea()
+{
+	return area;
 }
 
 GLFWwindow* DrawingBoard::GetGlfwWindow()
@@ -95,9 +116,12 @@ void DrawingBoard::SetShader(TrecPointer<TShader> shader, shader_type shaderType
 		currentShader = shader;
 		break;
 	case shader_type::shader_2d:
-		//if(!shader2D.Get())
-		//
-		break;
+		if (currentShader.Get())
+		{
+			glUseProgram(0);
+			currentShader.Nullify();
+		}
+		return;
 	case shader_type::shader_texture:
 		if (!shaderTex2D.Get())
 			shaderTex2D = TrecPointerKey::GetNewTrecPointerAlt<TShader, Texture2DShader>();
@@ -108,7 +132,8 @@ void DrawingBoard::SetShader(TrecPointer<TShader> shader, shader_type shaderType
 		currentShader = shaderWrite;
 	}
 	this->shaderType = shaderType;
-	currentShader->Use();
+	if(currentShader.Get())
+		currentShader->Use();
 }
 
 TrecPointer<TShader> DrawingBoard::GenerateShader(TrecPointer<TFileShell> shaderFile)

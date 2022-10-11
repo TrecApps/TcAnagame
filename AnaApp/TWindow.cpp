@@ -1,19 +1,10 @@
 #include "pch.h"
 #include "TWindow.h"
 
-TWindow::TWindow(GLFWwindow* window): DrawingBoard(window)
+TWindow::TWindow(GLFWwindow* window) : DrawingBoard(window)
 {
     needsRefresh = true;
     needsConstantRefresh = false;
-
-    int w = 0; 
-    int h = 0;
-    area.top = h;
-    area.left = w;
-    glfwGetWindowSize(window, &w, &h);
-
-    area.bottom = h;
-    area.right = w;
 }
 
 bool TWindow::IsWindow(GLFWwindow* test)
@@ -172,7 +163,3 @@ bool TWindow::Close()
     return true;
 }
 
-RECT_F TWindow::GetArea()
-{
-    return area;
-}
