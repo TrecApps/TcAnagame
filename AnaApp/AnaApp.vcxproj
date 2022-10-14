@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\AnaWidget;..\..\GLFW\include;..\TrecLib;..\TcGraph;..\AnaCode;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\GLFW\lib;..\x64\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\GLEW;..\AnaWidget;..\..\GLFW\include;..\TrecLib;..\TcGraph;..\..\glm;..\AnaCode;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\GLEW\lib;..\..\GLFW\lib;..\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -121,7 +121,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>TcGraph.lib;TrecLib.lib;AnaWidget.lib;glfw3dll.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>TcGraph.lib;TrecLib.lib;AnaWidget.lib;glfw3dll.lib;OpenGL32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

@@ -1,6 +1,7 @@
 #include <GLFW/glfw3.h>
 #include "TInstance.h"
 
+
 TrecPointer<TWindow> TInstance::GetWindow(GLFWwindow* win)
 {
 	for (UINT Rust = 0; Rust < windows.Size(); Rust++)
@@ -13,7 +14,12 @@ TrecPointer<TWindow> TInstance::GetWindow(GLFWwindow* win)
 
 TInstance::TInstance()
 {
+
+
+
 	glfwInitResult = glfwInit();
+
+
 
 	charFunction = nullptr;
 	cursorFunction = nullptr;

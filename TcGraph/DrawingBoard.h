@@ -4,6 +4,8 @@
 #include "TShader.h"
 #include <TPoint.h>
 #include "GraphicsDef.h"
+#include <map>
+#include <glm/gtc/matrix_transform.hpp>
 
 using shader_type = enum class shader_type {
     shader_2d,
@@ -28,6 +30,7 @@ class _TC_GRAPH DrawingBoard :
     TrecPointer<TBrush> textHighlight;
 
 protected:
+    glm::mat4 orthoProjection; 
 
     GLFWwindow* window;
     explicit DrawingBoard(GLFWwindow* window);
@@ -35,6 +38,8 @@ protected:
     RECT_F area;
     
 public:
+    GLuint GetTextureShaderId();
+
     void SetSelf(TrecPointer<DrawingBoard> s);
 
     RECT_F GetArea();

@@ -2,7 +2,9 @@
 #include "TColorBrush.h"
 #include "TImageBrush.h"
 #include <cassert>
-
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 DrawingBoard::DrawingBoard(GLFWwindow* window)
 {
@@ -19,6 +21,17 @@ DrawingBoard::DrawingBoard(GLFWwindow* window)
 
 	area.bottom = h;
 	area.right = w;
+	orthoProjection = glm::ortho(0.0f, static_cast<float>(area.right), 0.0f, static_cast<float>(area.bottom));
+
+	shaderType = shader_type::shader_2d;
+	glfwMakeContextCurrent(window);
+}
+
+GLuint DrawingBoard::GetTextureShaderId()
+{
+	if (!shaderTex2D.Get())
+		shaderTex2D = TrecPointerKey::GetNewTrecPointerAlt<TShader, Texture2DShader>();
+	return shaderTex2D->GetShaderId();
 }
 
 void DrawingBoard::SetSelf(TrecPointer<DrawingBoard> s)
@@ -126,10 +139,13 @@ void DrawingBoard::SetShader(TrecPointer<TShader> shader, shader_type shaderType
 		if (!shaderTex2D.Get())
 			shaderTex2D = TrecPointerKey::GetNewTrecPointerAlt<TShader, Texture2DShader>();
 		currentShader = shaderTex2D;
+
 	case shader_type::shader_write:
 		if (!shaderWrite.Get())
 			shaderWrite = TrecPointerKey::GetNewTrecPointerAlt<TShader, TFreeTypeShader>();
 		currentShader = shaderWrite;
+		glUniformMatrix4fv(glGetUniformLocation(shaderWrite->GetShaderId(), "projection"), 1, GL_FALSE, 
+			glm::value_ptr(orthoProjection));
 	}
 	this->shaderType = shaderType;
 	if(currentShader.Get())

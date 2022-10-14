@@ -38,23 +38,24 @@ float* TImageBrush::GeneratePictureVertices(const RECT_F& picLocation, const REC
 	float rightDif = (picLocation.right - clipLocation.right) / width;
 
 	if (width < 0 ||
-		height < 0 ||
+		height < 0 /*||
 		topDif < 0 ||
 		leftDif < 0 ||
 		bottomDif < 0 ||
-		rightDif < 0)
+		rightDif < 0*/)
 		return nullptr;
 
-	float* vertices = new float[32] {
-		// positions                                     // colors           // texture coords
-		clipLocation.right, clipLocation.top   , 0.0f,   1.0f, 0.0f, 0.0f,   1.0f - rightDif, 1.0f - topDif	,  // top right
-		clipLocation.right, clipLocation.bottom, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f - rightDif, bottomDif		,  // bottom right
-		clipLocation.left,  clipLocation.bottom, 0.0f,   0.0f, 0.0f, 1.0f,   leftDif		, bottomDif		,  // bottom left
-		clipLocation.left,  clipLocation.top   , 0.0f,   1.0f, 1.0f, 0.0f,   leftDif		, 1.0f - topDif	   // top left 
+	float* vertices = new float[20] {
+		// positions                                    // texture coords
+		clipLocation.right, clipLocation.top   , 0.0f,  1.0f - rightDif, 1.0f - topDif	,  // top right
+		clipLocation.right, clipLocation.bottom, 0.0f,  1.0f - rightDif, bottomDif		,  // bottom right
+		clipLocation.left,  clipLocation.bottom, 0.0f,  leftDif		   , bottomDif		,  // bottom left
+		clipLocation.left,  clipLocation.top   , 0.0f,  leftDif		   , 1.0f - topDif	   // top left 
 	};
 
 	return vertices;
 }
+
 
 void TImageBrush::FillRectangle(const RECT_F& location)
 {

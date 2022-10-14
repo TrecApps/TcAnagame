@@ -53,9 +53,9 @@ public:
     WCHAR character;
     RECT_F location;
     TrecPointer<TColor> backgroundColor;
-    FT_Bitmap bitmap;
+    //FT_Bitmap bitmap;
     UCHAR format;
-    bool isHighlighted;
+    bool isHighlighted;// , isBitmpInit;
 
     int GetWeightStrength()const;
     void SetWeightStrength(int weight);
@@ -130,6 +130,8 @@ protected:
 
     HighlightRange highlightRange;
     bool isClickDown;
+
+    UINT VAO, VBO;
 
     void AppendLine(BasicCharLine& line, float& y);
 

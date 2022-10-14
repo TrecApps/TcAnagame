@@ -16,6 +16,7 @@ public:
     ~TShader()override;
 
     bool Use()const;
+    int GetShaderId();
 };
 
 class TFreeTypeShader : public TShader

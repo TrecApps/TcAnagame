@@ -457,7 +457,7 @@ bool TControl::onCreate(const RECT_F& loc, TrecPointer<TFileShell> d)
 
 
 	OnCreateStyle(attributes, d);
-	//this->SetUpTextElement();
+	this->SetUpTextElement();
 	if (border.Get())
 		border->onCreate(area);
 	if (content.Get())
@@ -1000,7 +1000,7 @@ float TControl::GetMinWidth()
 	float textWidth(0.0f);
 	if (text.Get())
 		text->GetMinWidth(textWidth, 0);
-	return max(limitMin, textWidth);
+	return std::max(limitMin, textWidth);
 }
 
 void TControl::ShrinkHeight()

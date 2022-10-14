@@ -1,3 +1,4 @@
+#include <include/GL/glew.h>
 #include <TInstance.h>
 #include "../AnaWidget/TControl.h"
 
@@ -29,6 +30,9 @@ int main()
 		mainInstance.Nullify();
 		return -2;
 	}
+	glewExperimental = GL_TRUE;
+	auto initRes = glewInit();
+	auto chRes = glewGetErrorString(initRes);
 
 	TDataMap<TDataMap<TString>> styles;
 

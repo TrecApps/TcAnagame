@@ -3,8 +3,63 @@
 #include "TImageBrush.h"
 #include "TColorBrush.h"
 #include <cassert>
+#include <TcRunner.h>
 
 FT_Library  freeTypeLibrary;
+
+class CharWithSize
+{
+public:
+	WCHAR ch;
+	int weight;
+	CharWithSize() = default;
+	CharWithSize(const CharWithSize& copy) = default;
+	CharWithSize(WCHAR ch, int weight)
+	{
+		this->ch = ch;
+		this->weight = weight;
+	}
+
+	int compare(const CharWithSize& other) const
+	{
+		int ret = ch - other.ch;
+		if (!ret)
+			ret = weight - other.weight;
+		return ret;
+	}
+
+	bool operator<(const CharWithSize& other) const {
+		return compare(other) < 0;
+	}
+};
+
+TDataMap<std::map<CharWithSize, GLuint>> charMap;
+
+void SetFontCharacter(const TString& font, WCHAR ch, int weight, GLuint id)
+{
+	std::map<CharWithSize, GLuint> map;
+	charMap.retrieveEntry(font, map);
+
+	map.insert_or_assign(CharWithSize(ch, weight), id);
+	charMap.setEntry(font, map);
+}
+
+bool GetFontCharacter(const TString& font, WCHAR ch, int weight, GLuint& id)
+{
+	std::map<CharWithSize, GLuint> map;
+	if(!charMap.retrieveEntry(font, map)) return false;
+
+	auto it = map.find(CharWithSize(ch,weight));
+
+	if (it == map.end())
+		return false;
+	id = it->second;
+	return true;
+}
+
+void EmptyMap() {
+	charMap.clear();
+}
 
 #ifdef _WINDOWS
 const TString fontDirectory(L"C:\\Windows\\Fonts\\");
@@ -81,11 +136,7 @@ void TTextElement::AppendLine(BasicCharLine& curLine, float& y)
 	for (UINT C = 0; C < curLine.characters.Size(); C++)
 	{
 		BasicCharacter tempChar(curLine.characters[C]);
-#ifdef _WINDOWS
-		curLine.height = max(curLine.height, tempChar.location.bottom - tempChar.location.top);
-#elif defined(__linux__) || (defined (__APPLE__) && defined (__MACH__))
 		curLine.height = std::max(curLine.height, tempChar.location.bottom - tempChar.location.top);
-#endif
 		curLine.totalWidth += (tempChar.location.right - tempChar.location.left);
 	}
 	curLine.top = y;
@@ -196,6 +247,8 @@ TTextElement::TTextElement(TrecPointer<DrawingBoard> board): drawingBoard(board)
 
 	text = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(
 		TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L""));
+
+	VBO = VAO = 0;
 }
 
 bool TTextElement::InitializeText()
@@ -264,6 +317,22 @@ RECT_F TTextElement::GetBounds()
 
 void TTextElement::ReCreateLayout()
 {
+	if (VAO)
+	{
+		glDeleteVertexArrays(1, &VAO);
+		VAO = 0;
+	}
+	glGenVertexArrays(1, &VAO);
+	if (VBO)
+	{
+		glDeleteBuffers(1, &VBO);
+		VBO = 0;
+	}
+	glGenBuffers(1, &VBO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 5 * 4, NULL, GL_DYNAMIC_DRAW);
+
 	lines.RemoveAll();
 
 	BasicCharLine curLine;
@@ -276,8 +345,10 @@ void TTextElement::ReCreateLayout()
 
 	int width = 300;
 	int height = 300;
-	drawingBoard->GetDisplayResolution(width, height);
-	FT_Set_Char_Size(curFace, 0, 16 * 64, width, height);
+	//drawingBoard->GetDisplayResolution(width, height);
+	//FT_Set_Char_Size(curFace, 0, 16 * 64, width, height);
+	FT_Set_Pixel_Sizes(curFace, 0, formattingDetails.fontSize);
+
 
 	float x = bounds.left;
 	float y = bounds.top;
@@ -314,26 +385,32 @@ void TTextElement::ReCreateLayout()
 
 		if(FT_Render_Glyph(curFace->glyph, FT_RENDER_MODE_NORMAL))continue;
 
-		auto weight = ch.GetWeightStrength();
-		FT_Bitmap_Embolden(freeTypeLibrary, &(curFace->glyph->bitmap), weight, weight);
-		FT_Vector offset{0,0};
-		FT_Color color{
-			static_cast<UCHAR>(formattingDetails.defaultTextColor.GetBlue() * 255), // In FT_Color, blue is first
-			static_cast<UCHAR>(formattingDetails.defaultTextColor.GetGreen() * 255), // In FT_Color, green is second
-			static_cast<UCHAR>(formattingDetails.defaultTextColor.GetRed() * 255), // In FT_Color, red is third
-			static_cast<UCHAR>(formattingDetails.defaultTextColor.GetOpacity() * 255), // In FT_Color, alpha is last
-		};
-		
-		FT_Bitmap_Blend(freeTypeLibrary, &(curFace->glyph->bitmap), { 0,0 }, &ch.bitmap, &offset, color);
 
 		ch.location.top = y;
-		ch.location.bottom = y + curFace->glyph->advance.y;
+		ch.location.bottom = y + curFace->glyph->bitmap.rows;
 
 		ch.location.left = x;
-		x += curFace->glyph->advance.x;
+		x += curFace->glyph->bitmap.width;
 		ch.location.right = x;
 
 		ch.backgroundColor = formattingDetails.defaultBackgroundColor;
+
+		GLuint texId = 0;
+		if (!GetFontCharacter(formattingDetails.font, ch.character, ch.GetWeightStrength(), texId))
+		{
+			glGenTextures(1, &texId);
+			glBindTexture(GL_TEXTURE_2D, texId);
+			glTexImage2D(GL_TEXTURE_2D,
+				0,
+				GL_RED,
+				curFace->glyph->bitmap.width,
+				curFace->glyph->bitmap.rows,
+				0,
+				GL_RED,
+				GL_UNSIGNED_BYTE,
+				curFace->glyph->bitmap.buffer);
+			SetFontCharacter(formattingDetails.font, ch.character, ch.GetWeightStrength(), texId);
+		}
 		
 		curLine.characters.push_back(ch);
 
@@ -412,7 +489,7 @@ void TTextElement::ReCreateLayout()
 			continue;
 		}
 
-		for (UINT C = 0; C < lines[Rust].characters.Size(); Rust++)
+		for (UINT C = 0; C < lines[Rust].characters.Size(); C++)
 		{
 			BasicCharacter& ch = lines[Rust].characters[C];
 			ch.location.left += bottomDifference;
@@ -425,9 +502,11 @@ void TTextElement::OnDraw(TrecPointer<TVariable> dataText)
 {
 	if (!drawingBoard.Get())
 		return;
-	float* verticies = TImageBrush::GeneratePictureVertices(this->bounds, this->bounds);
-	if (!verticies)
-		return;
+	
+
+	RECT_F proxy = { 0,0,0,0 };
+	
+
 	// First, Draw the Backgrounds or highlights
 	for (UINT Rust = 0; Rust < lines.Size(); Rust++)
 	{
@@ -435,18 +514,18 @@ void TTextElement::OnDraw(TrecPointer<TVariable> dataText)
 		for (UINT C = 0; C < line.characters.Size(); C++)
 		{
 			BasicCharacter& ch = line.characters[C];
-
+			assert(TColorBrush::NormalizeRect(proxy, ch.location, this->drawingBoard));
 			if (ch.isHighlighted)
 			{
 				auto brush = drawingBoard->GetHighlightBrush();
 				auto solidBrush = TrecPointerKey::ConvertPointer<TBrush, TColorBrush>(brush);
-				solidBrush->FillRectangle(ch.location);
+				solidBrush->FillRectangle(proxy);
 			}
 			else if (ch.backgroundColor.Get())
 			{
 				auto brush = drawingBoard->GetSolidColorBrush(*ch.backgroundColor.Get());
 				auto solidBrush = TrecPointerKey::ConvertPointer<TBrush, TColorBrush>(brush);
-				solidBrush->FillRectangle(ch.location);
+				solidBrush->FillRectangle(proxy);
 			}
 
 		}
@@ -454,17 +533,23 @@ void TTextElement::OnDraw(TrecPointer<TVariable> dataText)
 
 
 
-	drawingBoard->SetShader(TrecPointer<TShader>(), shader_type::shader_texture);
+	drawingBoard->SetShader(TrecPointer<TShader>(), shader_type::shader_write);
 
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
-	unsigned int VBO;
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float[32]), verticies, GL_STATIC_DRAW);
+	glUniform4f(
+		glGetUniformLocation(drawingBoard->GetTextureShaderId(), "textColor"),
+		formattingDetails.defaultTextColor.GetRed(),
+		formattingDetails.defaultTextColor.GetGreen(),
+		formattingDetails.defaultTextColor.GetBlue(),
+		formattingDetails.defaultTextColor.GetOpacity());
 
-	glBindVertexArray(VBO);
+	glActiveTexture(GL_TEXTURE0);
+	glBindVertexArray(VAO);
+
+	assert(TColorBrush::NormalizeRect(proxy, bounds, drawingBoard));
+
 
 	for (UINT Rust = 0; Rust < lines.Size(); Rust++)
 	{
@@ -472,22 +557,31 @@ void TTextElement::OnDraw(TrecPointer<TVariable> dataText)
 		for (UINT C = 0; C < line.characters.Size(); C++)
 		{
 			BasicCharacter& ch = line.characters[C];
-			int width = 0, height = 0;
-			UCHAR* charData = textInGlFormat(ch.bitmap, width, height);
 
-			UINT textId = 0;
-			glGenTextures(1, &textId);
-			glBindTexture(GL_TEXTURE_2D, textId);
+			RECT_F chProxy = { 0,0,0,0 };
+			assert(TColorBrush::NormalizeRect(chProxy, ch.location, drawingBoard));
 
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, charData);
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			float* verticies = TImageBrush::GeneratePictureVertices(chProxy, proxy);
+			if (!verticies)
+				continue;
 
-			delete[] charData;
-			charData = nullptr;
+			GLuint texId = 0;
+			if (!GetFontCharacter(formattingDetails.font, ch.character, ch.GetWeightStrength(), texId))
+				continue;
 
-			glDeleteTextures(1, &textId);
+			glBindTexture(GL_TEXTURE_2D, texId);
+			// update content of VBO memory
+			glBindBuffer(GL_ARRAY_BUFFER, VBO);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float[20]), verticies); // be sure to use glBufferSubData and not glBufferData
+
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			// render quad
+			glDrawArrays(GL_TRIANGLES, 0, 6);
 		}
 	}
+
+	glBindVertexArray(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 bool TTextElement::GetMinHeight(float& height)
@@ -731,11 +825,7 @@ void BasicCharLine::SetVerticalPadding(float value, bool isFloor)
 
 float BasicCharLine::GetVerticalPadding(bool isFloor) const
 {
-#if _WINDOWS
-	return max(0.0f, isFloor ? floorPadding : ceilingPadding);
-#elif defined(__linux__) || (defined (__APPLE__) && defined (__MACH__))
-	return std::max( 0.0f, isFloor ? floorPadding : ceilingPadding);
-#endif
+	return std::max(0.0f, isFloor ? floorPadding : ceilingPadding);
 }
 
 int BasicCharacter::GetWeightStrength() const 
@@ -771,14 +861,11 @@ BasicCharacter::BasicCharacter()
 	location = { 0,0,0,0 };
 	format = 0;
 	isHighlighted = false;
-	FT_Bitmap_Init(&bitmap);
+	//FT_Bitmap_Init(&bitmap);
 }
 
 BasicCharacter::BasicCharacter(const BasicCharacter& copy)
 {
-	FT_Bitmap_Init(&bitmap);
-	FT_Bitmap_Copy(freeTypeLibrary, &copy.bitmap, &bitmap);
-
 	backgroundColor = copy.backgroundColor;
 	character = copy.character;
 	format = copy.format;
@@ -788,7 +875,6 @@ BasicCharacter::BasicCharacter(const BasicCharacter& copy)
 
 BasicCharacter::~BasicCharacter()
 {
-	FT_Bitmap_Done(freeTypeLibrary, &bitmap);
 }
 
 

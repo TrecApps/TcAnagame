@@ -42,9 +42,9 @@ _Note:_ As of right now, only **TcGraph** and **TrecLib** have been created
 1. Pick a Directory and run `git clone https://github.com/TrecApps/TcAnagame.git` to clone the project
 2. [Once The project has a *Resources* folder, Build the Project and copy this folder into the Resulting *debug* or *release* folder (if your building for x64, those folders might be behind a *x64* folder)].
 
-Also, the *TcGraph* relies on a 3rd Party project to help load images to be used with OpenGL. To ensure that the project builds:
+Also, the *TcGraph* relies on 2 3rd Party projects to help load images to be used with OpenGL, and manage OpenGL math. To ensure that the project builds:
 
-In the same Directory you cloned `TcAnagame` in, run `https://github.com/nothings/stb.git`
+In the same Directory you cloned `TcAnagame` in, run `git clone https://github.com/nothings/stb.git` and `git clone https://github.com/g-truc/glm.git`
 
 In Visual Studio (for Windows), the Project is already configured to look for the files there (it uses a relative file path, so you don't have to do anything)
 
