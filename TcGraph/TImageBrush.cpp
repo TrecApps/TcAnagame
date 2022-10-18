@@ -32,10 +32,10 @@ float* TImageBrush::GeneratePictureVertices(const RECT_F& picLocation, const REC
 	float width = picLocation.right - picLocation.left;
 	float height = picLocation.top - picLocation.bottom;
 
-	float topDif = (picLocation.top - clipLocation.top) / height;
-	float leftDif = (clipLocation.left - picLocation.left) / width;
-	float bottomDif = (clipLocation.bottom - picLocation.bottom) / height;
-	float rightDif = (picLocation.right - clipLocation.right) / width;
+	float topDif = (picLocation.top > clipLocation.top) ? ((picLocation.top - clipLocation.top) / height) : 0.0f;
+	float leftDif = (clipLocation.left > picLocation.left) ? ((clipLocation.left - picLocation.left) / width) : 0.0f;
+	float bottomDif = (clipLocation.bottom > picLocation.bottom) ? ((clipLocation.bottom - picLocation.bottom) / height) : 0.0f;
+	float rightDif = (picLocation.right > clipLocation.right) ? ((picLocation.right - clipLocation.right) / width) : 0.0f;
 
 	if (width < 0 ||
 		height < 0 /*||
@@ -45,15 +45,33 @@ float* TImageBrush::GeneratePictureVertices(const RECT_F& picLocation, const REC
 		rightDif < 0*/)
 		return nullptr;
 
-	float* vertices = new float[20] {
+	float* vertices = new float[24] {
 		// positions                                    // texture coords
-		clipLocation.right, clipLocation.top   , 0.0f,  1.0f - rightDif, 1.0f - topDif	,  // top right
-		clipLocation.right, clipLocation.bottom, 0.0f,  1.0f - rightDif, bottomDif		,  // bottom right
-		clipLocation.left,  clipLocation.bottom, 0.0f,  leftDif		   , bottomDif		,  // bottom left
-		clipLocation.left,  clipLocation.top   , 0.0f,  leftDif		   , 1.0f - topDif	   // top left 
-	};
+		
+
+		 picLocation.left , picLocation.top   , 0.0f + leftDif , 1.0f - topDif,
+		 picLocation.left , picLocation.bottom, 0.0f + leftDif , 0.0f + bottomDif,
+		 picLocation.right, picLocation.bottom, 1.0f - rightDif, 0.0f + bottomDif,
+
+		 picLocation.left , picLocation.top   , 0.0f + leftDif , 1.0f - topDif,
+		 picLocation.right, picLocation.bottom, 1.0f - rightDif, 0.0f + bottomDif,
+		 picLocation.right, picLocation.top   , 1.0f - rightDif, 1.0f - topDif};
 
 	return vertices;
+}
+
+bool TImageBrush::NormalizeRect(RECT_F& output, const RECT_F& input, TrecPointer<DrawingBoard> board)
+{
+	if(!board.Get())
+	return false;
+
+	float height = board->GetArea().bottom;
+
+	output = input;
+
+	output.bottom = -output.bottom + height;
+	output.top = -output.top + height;
+	return true;
 }
 
 

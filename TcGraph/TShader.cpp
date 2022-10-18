@@ -3,29 +3,29 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-const char* const freeTypeVertex = "#version 330 core\
-layout(location = 0) in vec4 vertex; // <vec2 pos, vec2 tex>\
-out vec2 TexCoords;\
-\
-uniform mat4 projection;\
-\
-void main()\
-{\
-    gl_Position = projection * vec4(vertex.xy, 0.0, 1.0);\
-    TexCoords = vertex.zw;\
+const char* const freeTypeVertex = "#version 330 core\n\
+layout(location = 0) in vec4 vertex; // <vec2 pos, vec2 tex>\n\
+out vec2 TexCoords;\n\
+\n\
+uniform mat4 projection;\n\
+\n\
+void main()\n\
+{\n\
+    gl_Position = projection * vec4(vertex.xy, 0.0, 1.0);\n\
+    TexCoords = vertex.zw;\n\
 }";
 
-const char* const freeTypeFragment = "#version 330 core \
-in vec2 TexCoords; \
-out vec4 color;\
-\
-uniform sampler2D text;\
-uniform vec4 textColor;\
-\
-void main()\
-{\
-    vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, TexCoords).r);\
-    color = vec4(textColor) * sampled;\
+const char* const freeTypeFragment = "#version 330 core \n\
+in vec2 TexCoords; \n\
+out vec4 color;\n\
+\n\
+uniform sampler2D text;\n\
+uniform vec4 textColor;\n\
+\n\
+void main()\n\
+{\n\
+    vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, TexCoords).r);\n\
+    color = vec4(textColor) * sampled;\n\
 }";
 
 const char* const textureVertex = "#version 330 core\nlayout(location = 0) in vec3 aPos;\nlayout(location = 1) in vec4 aColor;\nlayout(location = 2) in vec2 aTexCoord;\n\nout vec4 ourColor;\nout vec2 TexCoord;\n\n void main()\n{\n    gl_Position = vec4(aPos, 1.0);\n    ourColor = aColor;\n    TexCoord = aTexCoord;\n}";
@@ -61,6 +61,8 @@ TFreeTypeShader::TFreeTypeShader()
     unsigned int vertex = glCreateShader(GL_VERTEX_SHADER); 
     unsigned int fragment = glCreateShader(GL_FRAGMENT_SHADER);
 
+
+
     // Create Vertex Shader
     glShaderSource(vertex, 1, &freeTypeVertex, 0);
     glCompileShader(vertex);
@@ -70,6 +72,7 @@ TFreeTypeShader::TFreeTypeShader()
     glCompileShader(fragment);
 
     shaderId = glCreateProgram();
+
     glAttachShader(shaderId, vertex);
     glAttachShader(shaderId, fragment);
 
@@ -77,7 +80,6 @@ TFreeTypeShader::TFreeTypeShader()
 
     glDeleteShader(vertex);
     glDeleteShader(fragment);
-
 
 }
 

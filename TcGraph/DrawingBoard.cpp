@@ -122,6 +122,7 @@ void DrawingBoard::SetShader(TrecPointer<TShader> shader, shader_type shaderType
 {
 	if (shader.Get() && currentShader.Get() == shader.Get())
 		return;
+	GLenum e = 0;
 	switch (shaderType)
 	{
 	case shader_type::shader_3d:
@@ -134,18 +135,25 @@ void DrawingBoard::SetShader(TrecPointer<TShader> shader, shader_type shaderType
 			glUseProgram(0);
 			currentShader.Nullify();
 		}
+		this->shaderType = shaderType;
 		return;
 	case shader_type::shader_texture:
 		if (!shaderTex2D.Get())
 			shaderTex2D = TrecPointerKey::GetNewTrecPointerAlt<TShader, Texture2DShader>();
 		currentShader = shaderTex2D;
-
+		break;
 	case shader_type::shader_write:
 		if (!shaderWrite.Get())
 			shaderWrite = TrecPointerKey::GetNewTrecPointerAlt<TShader, TFreeTypeShader>();
 		currentShader = shaderWrite;
+		e = glGetError();
+		currentShader->Use();
+		e = glGetError();
+		this->shaderType = shaderType;
 		glUniformMatrix4fv(glGetUniformLocation(shaderWrite->GetShaderId(), "projection"), 1, GL_FALSE, 
 			glm::value_ptr(orthoProjection));
+		e = glGetError();
+		return;
 	}
 	this->shaderType = shaderType;
 	if(currentShader.Get())

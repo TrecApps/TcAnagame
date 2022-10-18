@@ -639,10 +639,11 @@ void TControl::Draw(TrecPointer<TVariable> object)
 		return;
 	if (content.Get())
 		content->onDraw(useArea);
-	if (text.Get())
-		text->OnDraw(object);
+
 	if (border.Get())
 		border->onDraw(useArea);
+	if (text.Get())
+		text->OnDraw(object);
 }
 
 void TControl::OnRButtonUp(UINT nFlags, const TPoint& point, message_output& mOut, TDataArray<EventID_Cred>& pages)

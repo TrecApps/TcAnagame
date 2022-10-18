@@ -331,7 +331,7 @@ void TTextElement::ReCreateLayout()
 	glGenBuffers(1, &VBO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 5 * 4, NULL, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
 
 	lines.RemoveAll();
 
@@ -409,6 +409,10 @@ void TTextElement::ReCreateLayout()
 				GL_RED,
 				GL_UNSIGNED_BYTE,
 				curFace->glyph->bitmap.buffer);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			SetFontCharacter(formattingDetails.font, ch.character, ch.GetWeightStrength(), texId);
 		}
 		
@@ -503,6 +507,7 @@ void TTextElement::OnDraw(TrecPointer<TVariable> dataText)
 	if (!drawingBoard.Get())
 		return;
 	
+	auto err1 = glGetError();
 
 	RECT_F proxy = { 0,0,0,0 };
 	
@@ -534,22 +539,24 @@ void TTextElement::OnDraw(TrecPointer<TVariable> dataText)
 
 
 	drawingBoard->SetShader(TrecPointer<TShader>(), shader_type::shader_write);
-
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	err1 = glGetError();
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+	err1 = glGetError();
 	glEnableVertexAttribArray(2);
-
+	err1 = glGetError();
 	glUniform4f(
 		glGetUniformLocation(drawingBoard->GetTextureShaderId(), "textColor"),
 		formattingDetails.defaultTextColor.GetRed(),
 		formattingDetails.defaultTextColor.GetGreen(),
 		formattingDetails.defaultTextColor.GetBlue(),
 		formattingDetails.defaultTextColor.GetOpacity());
-
+	err1 = glGetError();
 	glActiveTexture(GL_TEXTURE0);
+	err1 = glGetError();
 	glBindVertexArray(VAO);
 
-	assert(TColorBrush::NormalizeRect(proxy, bounds, drawingBoard));
-
+	assert(TImageBrush::NormalizeRect(proxy, bounds, drawingBoard));
+	err1 = glGetError();
 
 	for (UINT Rust = 0; Rust < lines.Size(); Rust++)
 	{
@@ -559,7 +566,7 @@ void TTextElement::OnDraw(TrecPointer<TVariable> dataText)
 			BasicCharacter& ch = line.characters[C];
 
 			RECT_F chProxy = { 0,0,0,0 };
-			assert(TColorBrush::NormalizeRect(chProxy, ch.location, drawingBoard));
+			assert(TImageBrush::NormalizeRect(chProxy, ch.location, drawingBoard));
 
 			float* verticies = TImageBrush::GeneratePictureVertices(chProxy, proxy);
 			if (!verticies)
@@ -572,11 +579,14 @@ void TTextElement::OnDraw(TrecPointer<TVariable> dataText)
 			glBindTexture(GL_TEXTURE_2D, texId);
 			// update content of VBO memory
 			glBindBuffer(GL_ARRAY_BUFFER, VBO);
-			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float[20]), verticies); // be sure to use glBufferSubData and not glBufferData
+			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float[24]), verticies); // be sure to use glBufferSubData and not glBufferData
 
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			// render quad
 			glDrawArrays(GL_TRIANGLES, 0, 6);
+			auto err = glGetError();
+			delete[] verticies;
+			verticies = nullptr;
 		}
 	}
 

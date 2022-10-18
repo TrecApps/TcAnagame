@@ -22,6 +22,7 @@ public:
     ~TImageBrush();
 
     static float* GeneratePictureVertices(const RECT_F& picLocation, const RECT_F& clipLocation);
+    static bool NormalizeRect(RECT_F& output, const RECT_F& input, TrecPointer<DrawingBoard> board);
 
     brush_type GetBrushType() override;
 
