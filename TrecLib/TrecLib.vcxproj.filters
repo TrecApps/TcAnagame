@@ -72,6 +72,30 @@
     <ClInclude Include="TPoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TFormatReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TFormatReaderHtml.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TPrimitiveVariable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TFormatReaderJson.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TFormatReaderProps.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TFormatReaderTml.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TFormatReaderXml.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TFormatReaderYaml.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -114,6 +138,30 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TPoint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TFormatReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TFormatReaderHtml.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TPrimitiveVariable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TFormatReaderJson.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TFormatReaderProps.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TFormatReaderTml.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TFormatReaderXml.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TFormatReaderYaml.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

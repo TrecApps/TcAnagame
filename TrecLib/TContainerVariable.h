@@ -56,8 +56,11 @@ class _TREC_LIB_DLL TJsonVariable : public TVariable
 {
 	friend class TJsonVariable;
 	TDataMap<TrecPointer<TVariable>> values;
-
+	bool allowMultiValues;
 public:
+	TJsonVariable();
+	TJsonVariable(bool allowMultiValue);
+
 
 	bool HasField(const TString& field);
 	bool RetrieveField(const TString& field, TrecPointer<TVariable>& value) ;

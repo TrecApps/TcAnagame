@@ -182,6 +182,16 @@ UINT TArrayVariable::Get4Value()
     return 0;
 }
 
+TJsonVariable::TJsonVariable()
+{
+    allowMultiValues = false;
+}
+
+TJsonVariable::TJsonVariable(bool allowMultiValue)
+{
+    allowMultiValues = allowMultiValue;
+}
+
 bool TJsonVariable::HasField(const TString& field)
 {
     TrecPointer<TVariable> var;
@@ -207,7 +217,7 @@ bool TJsonVariable::RetrieveFieldAt(UINT location, TString& fieldName, TrecPoint
 
 bool TJsonVariable::SetField(const TString& field, TrecPointer<TVariable> value, bool doOverride)
 {
-    if(!doOverride && HasField(field))
+    if(!doOverride && !allowMultiValues && HasField(field))
         return false;
     values.addEntry(field, value);
     return true;
