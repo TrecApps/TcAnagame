@@ -53,6 +53,8 @@ int main()
 
 	mainWindow->SetMainPage(page);
 
+
+
 	while (mainInstance->HasWindows())
 	{
 		mainInstance->DoDraw();

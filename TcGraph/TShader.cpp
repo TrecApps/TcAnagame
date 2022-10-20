@@ -25,7 +25,7 @@ uniform vec4 textColor;\n\
 void main()\n\
 {\n\
     vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, TexCoords).r);\n\
-    color = vec4(textColor) * sampled;\n\
+    color = textColor * sampled;\n\
 }";
 
 const char* const textureVertex = "#version 330 core\nlayout(location = 0) in vec3 aPos;\nlayout(location = 1) in vec4 aColor;\nlayout(location = 2) in vec2 aTexCoord;\n\nout vec4 ourColor;\nout vec2 TexCoord;\n\n void main()\n{\n    gl_Position = vec4(aPos, 1.0);\n    ourColor = aColor;\n    TexCoord = aTexCoord;\n}";

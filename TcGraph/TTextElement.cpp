@@ -4,6 +4,7 @@
 #include "TColorBrush.h"
 #include <cassert>
 #include <TcRunner.h>
+#include <atltrace.h>
 
 FT_Library  freeTypeLibrary;
 
@@ -139,6 +140,16 @@ void TTextElement::AppendLine(BasicCharLine& curLine, float& y)
 		curLine.height = std::max(curLine.height, tempChar.location.bottom - tempChar.location.top);
 		curLine.totalWidth += (tempChar.location.right - tempChar.location.left);
 	}
+
+	for (UINT C = 0; C < curLine.characters.Size(); C++)
+	{
+		auto& curChar = curLine.characters[C];
+		float heightDif = curLine.height - (curChar.location.bottom - curChar.location.top);
+
+		curChar.location.bottom += heightDif;
+		curChar.location.top += heightDif;
+	}
+
 	curLine.top = y;
 	lines.push_back(curLine);
 	y += curLine.height + curLine.floorPadding;
@@ -348,7 +359,7 @@ void TTextElement::ReCreateLayout()
 	//drawingBoard->GetDisplayResolution(width, height);
 	//FT_Set_Char_Size(curFace, 0, 16 * 64, width, height);
 	FT_Set_Pixel_Sizes(curFace, 0, formattingDetails.fontSize);
-
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	float x = bounds.left;
 	float y = bounds.top;
@@ -409,6 +420,7 @@ void TTextElement::ReCreateLayout()
 				GL_RED,
 				GL_UNSIGNED_BYTE,
 				curFace->glyph->bitmap.buffer);
+
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -507,8 +519,7 @@ void TTextElement::OnDraw(TrecPointer<TVariable> dataText)
 	if (!drawingBoard.Get())
 		return;
 	
-	auto err1 = glGetError();
-
+	
 	RECT_F proxy = { 0,0,0,0 };
 	
 
@@ -536,27 +547,44 @@ void TTextElement::OnDraw(TrecPointer<TVariable> dataText)
 		}
 	}
 
+	GLint loc = glGetUniformLocation(drawingBoard->SetShader(TrecPointer<TShader>(), shader_type::shader_write), "textColor");
 
-
-	drawingBoard->SetShader(TrecPointer<TShader>(), shader_type::shader_write);
-	err1 = glGetError();
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-	err1 = glGetError();
-	glEnableVertexAttribArray(2);
-	err1 = glGetError();
 	glUniform4f(
-		glGetUniformLocation(drawingBoard->GetTextureShaderId(), "textColor"),
-		formattingDetails.defaultTextColor.GetRed(),
-		formattingDetails.defaultTextColor.GetGreen(),
-		formattingDetails.defaultTextColor.GetBlue(),
-		formattingDetails.defaultTextColor.GetOpacity());
-	err1 = glGetError();
+		loc
+		, formattingDetails.defaultTextColor.GetRed()
+		, formattingDetails.defaultTextColor.GetGreen()
+		, formattingDetails.defaultTextColor.GetBlue()
+		, formattingDetails.defaultTextColor.GetOpacity()
+	);
+	bool cullDisabled = !glIsEnabled(GL_CULL_FACE);
+	bool blendDisabled = !glIsEnabled(GL_BLEND);
+
+	GLint blendSrc;
+	GLint blendDst;
+	glGetIntegerv(GL_BLEND_SRC_ALPHA, &blendSrc);
+	glGetIntegerv(GL_BLEND_DST_ALPHA, &blendDst);
+
+	if (cullDisabled)
+		glEnable(GL_CULL_FACE);
+	if (blendDisabled)
+		glEnable(GL_BLEND);
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
 	glActiveTexture(GL_TEXTURE0);
-	err1 = glGetError();
 	glBindVertexArray(VAO);
 
 	assert(TImageBrush::NormalizeRect(proxy, bounds, drawingBoard));
-	err1 = glGetError();
 
 	for (UINT Rust = 0; Rust < lines.Size(); Rust++)
 	{
@@ -584,7 +612,6 @@ void TTextElement::OnDraw(TrecPointer<TVariable> dataText)
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			// render quad
 			glDrawArrays(GL_TRIANGLES, 0, 6);
-			auto err = glGetError();
 			delete[] verticies;
 			verticies = nullptr;
 		}
@@ -592,6 +619,13 @@ void TTextElement::OnDraw(TrecPointer<TVariable> dataText)
 
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	if (cullDisabled)
+		glDisable(GL_CULL_FACE);
+	if (blendDisabled)
+		glDisable(GL_BLEND);
+
+	glBlendFunc(blendSrc, blendDst);
 }
 
 bool TTextElement::GetMinHeight(float& height)

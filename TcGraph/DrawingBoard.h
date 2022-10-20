@@ -57,7 +57,7 @@ public:
     void BeginDraw() const;
     void ConfirmDraw();
 
-    void SetShader(TrecPointer<TShader> shader, shader_type shaderType = shader_type::shader_3d);
+    GLint SetShader(TrecPointer<TShader> shader, shader_type shaderType = shader_type::shader_3d);
     TrecPointer<TShader> GenerateShader(TrecPointer<TFileShell> shaderFile);
 
     TrecPointer<TBrush> GetSolidColorBrush(const TColor& color) const;

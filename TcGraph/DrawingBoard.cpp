@@ -25,6 +25,9 @@ DrawingBoard::DrawingBoard(GLFWwindow* window)
 
 	shaderType = shader_type::shader_2d;
 	glfwMakeContextCurrent(window);
+	//glEnable(GL_CULL_FACE);
+	//glEnable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 GLuint DrawingBoard::GetTextureShaderId()
@@ -118,11 +121,11 @@ void DrawingBoard::ConfirmDraw()
 	glfwSwapBuffers(window);
 }
 
-void DrawingBoard::SetShader(TrecPointer<TShader> shader, shader_type shaderType)
+int DrawingBoard::SetShader(TrecPointer<TShader> shader, shader_type shaderType)
 {
 	if (shader.Get() && currentShader.Get() == shader.Get())
-		return;
-	GLenum e = 0;
+		return currentShader->GetShaderId();
+	GLint i = 0;
 	switch (shaderType)
 	{
 	case shader_type::shader_3d:
@@ -136,7 +139,7 @@ void DrawingBoard::SetShader(TrecPointer<TShader> shader, shader_type shaderType
 			currentShader.Nullify();
 		}
 		this->shaderType = shaderType;
-		return;
+		return -1;
 	case shader_type::shader_texture:
 		if (!shaderTex2D.Get())
 			shaderTex2D = TrecPointerKey::GetNewTrecPointerAlt<TShader, Texture2DShader>();
@@ -146,18 +149,20 @@ void DrawingBoard::SetShader(TrecPointer<TShader> shader, shader_type shaderType
 		if (!shaderWrite.Get())
 			shaderWrite = TrecPointerKey::GetNewTrecPointerAlt<TShader, TFreeTypeShader>();
 		currentShader = shaderWrite;
-		e = glGetError();
 		currentShader->Use();
-		e = glGetError();
 		this->shaderType = shaderType;
-		glUniformMatrix4fv(glGetUniformLocation(shaderWrite->GetShaderId(), "projection"), 1, GL_FALSE, 
+		i = glGetUniformLocation(shaderWrite->GetShaderId(), "projection");
+		glUniformMatrix4fv(i, 1, GL_FALSE,
 			glm::value_ptr(orthoProjection));
-		e = glGetError();
-		return;
+		return currentShader->GetShaderId();
 	}
 	this->shaderType = shaderType;
-	if(currentShader.Get())
+	int ret = -1;
+	if (currentShader.Get()) {
 		currentShader->Use();
+		ret = currentShader->GetShaderId();
+	}
+	return ret;
 }
 
 TrecPointer<TShader> DrawingBoard::GenerateShader(TrecPointer<TFileShell> shaderFile)

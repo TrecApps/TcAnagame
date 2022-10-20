@@ -49,13 +49,13 @@ float* TImageBrush::GeneratePictureVertices(const RECT_F& picLocation, const REC
 		// positions                                    // texture coords
 		
 
-		 picLocation.left , picLocation.top   , 0.0f + leftDif , 1.0f - topDif,
-		 picLocation.left , picLocation.bottom, 0.0f + leftDif , 0.0f + bottomDif,
-		 picLocation.right, picLocation.bottom, 1.0f - rightDif, 0.0f + bottomDif,
+		 picLocation.left , picLocation.top   , 0.0f + leftDif , 0.0f + bottomDif,
+		 picLocation.left , picLocation.bottom, 0.0f + leftDif , 1.0f - topDif,
+		 picLocation.right, picLocation.bottom, 1.0f - rightDif, 1.0f - topDif,
 
-		 picLocation.left , picLocation.top   , 0.0f + leftDif , 1.0f - topDif,
-		 picLocation.right, picLocation.bottom, 1.0f - rightDif, 0.0f + bottomDif,
-		 picLocation.right, picLocation.top   , 1.0f - rightDif, 1.0f - topDif};
+		 picLocation.left , picLocation.top   , 0.0f + leftDif , 0.0f + bottomDif,
+		 picLocation.right, picLocation.bottom, 1.0f - rightDif, 1.0f - topDif,
+		 picLocation.right, picLocation.top   , 1.0f - rightDif, 0.0f + bottomDif};
 
 	return vertices;
 }
