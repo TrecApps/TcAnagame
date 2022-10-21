@@ -258,3 +258,5 @@ protected:
 };
 
 RECT_F ConvertStringToD2D1Rect(const TString& str);
+
+UINT GetScrollbarBoxSize();

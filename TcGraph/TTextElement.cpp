@@ -105,6 +105,108 @@ int powerOf2(int value)
 	return ret;
 }
 
+/**
+ * Class: TTextElementInterceter
+ * Purpose: Intercepts text from handlers to the TTextElements
+ */
+class _TC_GRAPH TTextElementIntercepter : public TTextIntercepter
+{
+public:
+	/**
+	 * Method: TTextIntercepter::OnChar
+	 * Purpose: Takes a character and feeds it to its target
+	 * Parameters: WCHAR ch - the character to report
+	 *          UINT count number of instances of that character to feed
+	 *          UINT flags - flags (usually 0)
+	 * Returns: void
+	 *
+	 * Attributes: abstract
+	 */
+	virtual void OnChar(UINT ch, UINT count, UINT flags)
+	{
+		element->OnInputChar(ch, count);
+	}
+
+
+	/**
+	 * Method: TTextIntercepter::OnLoseFocus
+	 * Purpose: Alerts the target that it will no longer be intercepting characters
+	 * Parameters: void
+	 * Returns: void
+	 *
+	 * Attributes: abstract
+	 */
+	virtual void OnLoseFocus()
+	{
+		element->OnLoseFocus();
+	}
+
+	/**
+	 * Method: TTextIntercepter::OnCopy
+	 * Purpose: Tells the target that CTRL-C was pressed
+	 * Parameters: void
+	 * Returns: void
+	 *
+	 * Attributes: abstract
+	 */
+	virtual void OnCopy()
+	{
+		element->OnCutCopyPaste(control_text_mode::ctm_copy);
+	}
+	/**
+	 * Method: TTextIntercepter::OnCut
+	 * Purpose: Tells the target that CTRL-X was pressed
+	 * Parameters: void
+	 * Returns: void
+	 *
+	 * Attributes: override
+	 */
+	virtual void OnCut()
+	{
+		element->OnCutCopyPaste(control_text_mode::ctm_cut);
+	}
+
+	/**
+	 * Method: TTextElementIntercepter::GetTarget
+	 * Purpose: Reports the TTextElement address it points to
+	 * Parameters: void
+	 * Returns: void* - address of the TTextElement
+	 *
+	 * Attributes: override
+	 */
+	virtual void* GetTarget() override
+	{
+		return element.Get();
+	}
+
+
+	/**
+	 * Method: TTextInterceptor::TakesInput
+	 * Purpose: Reports whather input will be added to the target
+	 * Parameters: void
+	 * Returns: bool - whether the target supports input or not
+	 */
+	virtual bool TakesInput() override
+	{
+		return element->TakesInput();
+	}
+
+	TTextElementIntercepter(TrecPointer<TTextElement> element)
+	{
+		this->element = element;
+		assert(element.Get());
+	}
+private:
+	TrecPointer<TTextElement> element;
+};
+
+void TTextElement::SetSelf(TrecPointer<TTextElement> e)
+{
+	if (this != e.Get())
+		throw 1;
+	self = TrecPointerKey::SoftFromTrec<>(e);
+}
+
 void TTextElement::ClearHighlight()
 {
 	for (UINT Rust = 0; Rust < lines.Size(); Rust++)
@@ -207,6 +309,17 @@ UCHAR* TTextElement::textInGlFormat(FT_Bitmap& bitmap, int& targetWidth, int tar
 		}
 	}
 	return ret;
+}
+
+TrecPointer<TTextIntercepter> TTextElement::GetTextInterceptor()
+{
+	if (!interceptor.Get())
+	{
+		auto fullSelf = TrecPointerKey::TrecFromSoft<>(self);
+		interceptor = TrecPointerKey::GetNewTrecPointerAlt<TTextIntercepter, TTextElementIntercepter>(fullSelf);
+	}
+
+	return interceptor;
 }
 
 bool TTextElement::HitTestPoint(const TPoint& point, BOOL& isTrailingHit, BOOL& isInside, UINT& position)

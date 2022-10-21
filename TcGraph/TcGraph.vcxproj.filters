@@ -60,6 +60,12 @@
     <ClInclude Include="TGradientStop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TTextIntercepter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TComplexTextElement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -99,6 +105,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TGradientStop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TTextIntercepter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TComplexTextElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -5,6 +5,7 @@
 
 #include <ft2build.h>
 #include <TPoint.h>
+#include "TTextIntercepter.h"
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
 #include FT_OUTLINE_H
@@ -118,6 +119,13 @@ protected:
     void ClearHighlight();
     void SetHighlight(UINT start, UINT end);
 
+    TrecPointerSoft<TTextElement> self;
+
+    /**
+     * Object that directs tect input to this element
+     */
+    TrecPointer<TTextIntercepter> interceptor;
+
     TrecPointer<DrawingBoard> drawingBoard;
     TrecPointer<TStringVariable> text;
 
@@ -156,8 +164,11 @@ protected:
         );
 #endif
 public:
+    void SetSelf(TrecPointer<TTextElement> e);
+
     explicit TTextElement(TrecPointer<DrawingBoard> board);
 
+    TrecPointer<TTextIntercepter> GetTextInterceptor();
 
     static bool InitializeText();
     bool RetrieveFont(const TString& name, FT_Face& face);

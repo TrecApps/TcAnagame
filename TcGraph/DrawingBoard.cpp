@@ -30,6 +30,25 @@ DrawingBoard::DrawingBoard(GLFWwindow* window)
 	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
+
+void DrawingBoard::AddLayer(const RECT_F& ref)
+{
+	layers.push_back(ref);
+	glfwMakeContextCurrent(window);
+
+	glViewport(ref.left, ref.top, ref.right - ref.left, ref.bottom - ref.top);
+}
+
+void DrawingBoard::PopLayer()
+{
+	UINT curSize = layers.Size();
+	if (curSize)
+		layers.RemoveAt(--curSize);
+	RECT_F ref = curSize ? layers[curSize - 1] : area;
+	glViewport(ref.left, ref.top, ref.right - ref.left, ref.bottom - ref.top);
+		
+}
+
 GLuint DrawingBoard::GetTextureShaderId()
 {
 	if (!shaderTex2D.Get())
@@ -78,6 +97,12 @@ bool DrawingBoard::IsContained(const TPoint& point, const RECT_F& loc)
 		(loc.right >= point.x) &&
 		(point.y >= loc.top) &&
 		(loc.bottom >= point.y);
+}
+
+bool DrawingBoard::IsContained(const TPoint& cp, const ELLIPSE_F& el)
+{
+	return (pow((cp.x - el.point.x), 2) / pow(el.x, 2)
+		+ pow((cp.y - el.point.y), 2) / pow(el.y, 2)) <= 1;
 }
 
 bool DrawingBoard::GetDisplayResolution(int& width, int& height)

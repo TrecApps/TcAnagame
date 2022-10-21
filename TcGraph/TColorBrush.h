@@ -93,7 +93,7 @@ public:
 	 *				float thickness -  the thickness of the line (default is 1.0f)
 	 * Returns: void
 	 */
-	void DrawGeometry(const TDataArray<VERTEX_2D>& geo, float thickness = 1.0f);
+	void DrawGeometry(const TDataArray<TPoint>& geo, float thickness = 1.0f);
 
 	/**
 	 * Method: TBrush::FillGeometry
@@ -103,7 +103,7 @@ public:
 	 *
 	 * Attributes: virtual
 	 */
-	virtual void FillGeometry(const TDataArray<VERTEX_2D>& geo);
+	virtual void FillGeometry(const TDataArray<TPoint>& geo);
 
 
 	/**
@@ -114,6 +114,6 @@ public:
 	 *				float thickness -  the thickness of the line (default is 1.0f)
 	 * Returns: void
 	 */
-	void DrawLine(const VERTEX_2D& p1, const VERTEX_2D& p2, float thickness = 1.0f);
+	void DrawLine(const TPoint& p1, const TPoint& p2, float thickness = 1.0f);
 };
 

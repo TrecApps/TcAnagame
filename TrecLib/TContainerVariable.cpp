@@ -1,5 +1,9 @@
 #include "TContainerVariable.h"
 #include "TString.h"
+bool TArrayVariable::GetValueAt(UINT index, TrecPointer<TVariable>& data)
+{
+    return At(data, index);
+}
 TrecPointer<TVariable> TArrayVariable::Clone()
 {
     TrecPointer<TVariable> ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TArrayVariable>(isStack, false);
@@ -201,6 +205,12 @@ bool TJsonVariable::HasField(const TString& field)
 bool TJsonVariable::RetrieveField(const TString& field, TrecPointer<TVariable>& value)
 {
     return values.retrieveEntry(field, value);;
+}
+
+bool TJsonVariable::GetValueAt(UINT index, TrecPointer<TVariable>& data)
+{
+    TString value;
+    return RetrieveFieldAt(index, value, data);
 }
 
 bool TJsonVariable::RetrieveFieldAt(UINT location, TString& fieldName, TrecPointer<TVariable>& value) const

@@ -433,4 +433,7 @@ RECT_F ConvertStringToD2D1Rect(const TString& str)
 	return returnable; LONG i;
 }
 
-
+UINT GetScrollbarBoxSize()
+{
+	return BOX_SIZE;
+}

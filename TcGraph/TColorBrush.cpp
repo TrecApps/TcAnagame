@@ -115,15 +115,60 @@ void TColorBrush::FillEllipse(const ELLIPSE_F& r)
 {
 }
 
-void TColorBrush::DrawGeometry(const TDataArray<VERTEX_2D>& , float )
+void TColorBrush::DrawGeometry(const TDataArray<TPoint>& points, float thickness)
 {
+    if (points.Size() < 3)
+    {
+        if (points.Size() == 2)
+            DrawLine(points[0], points[1]);
+        return;
+    }
+    TrecPointer<DrawingBoard> board = TrecPointerKey::TrecFromSoft<>(window);
+    if (!board.Get())
+        return;
+    board->SetShader(TrecPointer<TShader>(), shader_type::shader_2d);
+
+    glBegin(GL_LINE_STRIP);
+    TColor color(GetColor());
+    glLineWidth(thickness);
+    glColor4f(color.GetRed(), color.GetGreen(), color.GetBlue(), color.GetOpacity());
+
+    for (UINT Rust = 1; Rust < points.Size(); Rust++)
+    {
+        glVertex2d(points[Rust - 1].x, points[Rust - 1].y);
+        glVertex2d(points[Rust].x, points[Rust].y);
+    }
+
+    glEnd();
+    DrawLine(points[0], points[points.Size() - 1], thickness);
 }
 
-void TColorBrush::FillGeometry(const TDataArray<VERTEX_2D>& geo)
+void TColorBrush::FillGeometry(const TDataArray<TPoint>& points)
 {
+    if (points.Size() < 3)
+    {
+        if(points.Size() == 2)
+            DrawLine(points[0], points[1]);
+        return;
+    }
+    TrecPointer<DrawingBoard> board = TrecPointerKey::TrecFromSoft<>(window);
+    if (!board.Get())
+        return;
+    board->SetShader(TrecPointer<TShader>(), shader_type::shader_2d);
+
+    glBegin(GL_POLYGON);
+    TColor color(GetColor());
+    glColor4f(color.GetRed(), color.GetGreen(), color.GetBlue(), color.GetOpacity());
+
+    for (UINT Rust = 0; Rust < points.Size(); Rust++)
+    {
+        glVertex2d(points[Rust].x, points[Rust].y);
+    }
+
+    glEnd();
 }
 
-void TColorBrush::DrawLine(const VERTEX_2D& p1, const VERTEX_2D& p2, float )
+void TColorBrush::DrawLine(const TPoint& p1, const TPoint& p2, float thickness)
 {
     TrecPointer<DrawingBoard> board = TrecPointerKey::TrecFromSoft<>(window);
     if (!board.Get())
@@ -133,6 +178,9 @@ void TColorBrush::DrawLine(const VERTEX_2D& p1, const VERTEX_2D& p2, float )
 
     glBegin(GL_LINES);
 
+    glLineWidth(thickness);
+
+    glColor4f(color.GetRed(), color.GetGreen(), color.GetBlue(), color.GetOpacity());
     glVertex2d(p1.x, p1.y);
     glVertex2d(p2.x, p2.y);
 

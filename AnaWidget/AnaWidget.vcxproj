@@ -149,7 +149,16 @@
     <ClInclude Include="HandlerPage.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="TControl.h" />
+    <ClInclude Include="TDataLayout.h" />
+    <ClInclude Include="TDataNodeControl.h" />
+    <ClInclude Include="TGadget.h" />
+    <ClInclude Include="TGrid.h" />
+    <ClInclude Include="TLayout.h" />
     <ClInclude Include="TPage.h" />
+    <ClInclude Include="TRandomLayout.h" />
+    <ClInclude Include="TScrollerPage.h" />
+    <ClInclude Include="TTextInput.h" />
+    <ClInclude Include="TTextLayout.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -161,7 +170,16 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TControl.cpp" />
+    <ClCompile Include="TDataLayout.cpp" />
+    <ClCompile Include="TDataNodeControl.cpp" />
+    <ClCompile Include="TGadget.cpp" />
+    <ClCompile Include="TGrid.cpp" />
+    <ClCompile Include="TLayout.cpp" />
     <ClCompile Include="TPage.cpp" />
+    <ClCompile Include="TRandomLayout.cpp" />
+    <ClCompile Include="TScrollerPage.cpp" />
+    <ClCompile Include="TTextInput.cpp" />
+    <ClCompile Include="TTextLayout.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

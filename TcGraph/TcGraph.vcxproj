@@ -152,12 +152,14 @@
     <ClInclude Include="TcGraph.h" />
     <ClInclude Include="TColor.h" />
     <ClInclude Include="TColorBrush.h" />
+    <ClInclude Include="TComplexTextElement.h" />
     <ClInclude Include="TGradientStop.h" />
     <ClInclude Include="TGradientStopCollection.h" />
     <ClInclude Include="TImageBrush.h" />
     <ClInclude Include="TInputTextElement.h" />
     <ClInclude Include="TShader.h" />
     <ClInclude Include="TTextElement.h" />
+    <ClInclude Include="TTextIntercepter.h" />
     <ClInclude Include="TVidPlayer.h" />
   </ItemGroup>
   <ItemGroup>
@@ -172,12 +174,14 @@
     <ClCompile Include="TBrush.cpp" />
     <ClCompile Include="TColor.cpp" />
     <ClCompile Include="TColorBrush.cpp" />
+    <ClCompile Include="TComplexTextElement.cpp" />
     <ClCompile Include="TGradientStop.cpp" />
     <ClCompile Include="TGradientStopCollection.cpp" />
     <ClCompile Include="TImageBrush.cpp" />
     <ClCompile Include="TInputTextElement.cpp" />
     <ClCompile Include="TShader.cpp" />
     <ClCompile Include="TTextElement.cpp" />
+    <ClCompile Include="TTextIntercepter.cpp" />
     <ClCompile Include="TVidPlayer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

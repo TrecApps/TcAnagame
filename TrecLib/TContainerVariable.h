@@ -4,7 +4,13 @@
 #include "TLinkedList.h"
 #include "TDataMap.h"
 
-class _TREC_LIB_DLL TArrayVariable : public TVariable
+class _TREC_LIB_DLL TContainerVariable : public TVariable
+{
+public:
+	virtual bool GetValueAt(UINT index, TrecPointer<TVariable>&) = 0;
+};
+
+class _TREC_LIB_DLL TArrayVariable : public TContainerVariable
 {
 	friend class TArrayVariable;
 	TDataArray<TrecPointer<TVariable>> arrayList;
@@ -14,6 +20,8 @@ class _TREC_LIB_DLL TArrayVariable : public TVariable
 	bool isStrict;	// Whether operations must be compatible with the stack/queue structure
 
 public:
+	bool GetValueAt(UINT index, TrecPointer<TVariable>&) override;
+
 	TrecPointer<TVariable> Clone() override;
 	TArrayVariable(bool isStack = true, bool isStrict = false);
 
@@ -52,7 +60,7 @@ public:
 };
 
 
-class _TREC_LIB_DLL TJsonVariable : public TVariable 
+class _TREC_LIB_DLL TJsonVariable : public TContainerVariable 
 {
 	friend class TJsonVariable;
 	TDataMap<TrecPointer<TVariable>> values;
@@ -64,6 +72,8 @@ public:
 
 	bool HasField(const TString& field);
 	bool RetrieveField(const TString& field, TrecPointer<TVariable>& value) ;
+
+	bool GetValueAt(UINT index, TrecPointer<TVariable>&) override;
 
 	bool RetrieveFieldAt(UINT location, TString& fieldName, TrecPointer<TVariable>& value)const;
 	bool SetField(const TString& field, TrecPointer<TVariable> value, bool doOverride = false);

@@ -33,6 +33,33 @@
     <ClInclude Include="HandlerPage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TRandomLayout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TLayout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TScrollerPage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TGrid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TDataLayout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TDataNodeControl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TGadget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TTextInput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TTextLayout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -48,6 +75,33 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HandlerPage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TRandomLayout.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TLayout.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TScrollerPage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TDataLayout.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TDataNodeControl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TGadget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TTextInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TTextLayout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

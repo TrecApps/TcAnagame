@@ -36,8 +36,15 @@ protected:
     explicit DrawingBoard(GLFWwindow* window);
 
     RECT_F area;
+
+    TDataArray<RECT_F> layers;
     
 public:
+
+    void AddLayer(const RECT_F& ref);
+
+    void PopLayer();
+
     GLuint GetTextureShaderId();
 
     void SetSelf(TrecPointer<DrawingBoard> s);
@@ -49,7 +56,7 @@ public:
     TrecPointer<TBrush> GetHighlightBrush();
 
     static bool IsContained(const TPoint& point, const RECT_F& loc);
-
+    static bool IsContained(const TPoint& cp, const ELLIPSE_F& el);
     bool GetDisplayResolution(int& width, int& height);
 
     ~DrawingBoard() override;
