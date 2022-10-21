@@ -149,6 +149,7 @@
     <ClInclude Include="GraphicsDef.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="TBrush.h" />
+    <ClInclude Include="TCamera.h" />
     <ClInclude Include="TcGraph.h" />
     <ClInclude Include="TColor.h" />
     <ClInclude Include="TColorBrush.h" />

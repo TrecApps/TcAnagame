@@ -63,7 +63,7 @@ void TInputTextElement::OnDraw(TrecPointer<TVariable> dataText)
 					topPoint.x = bottomPoint.x = bounds.left + ((bounds.right - bounds.left) / 2);
 				}
 
-				colorBrush->DrawLine(VERTEX_2D{ topPoint.x, topPoint.y }, VERTEX_2D{ bottomPoint.x, bottomPoint.y });
+				colorBrush->DrawLine(TPoint( topPoint.x, topPoint.y ), TPoint( bottomPoint.x, bottomPoint.y ));
 				return;
 			}
 
@@ -74,7 +74,7 @@ void TInputTextElement::OnDraw(TrecPointer<TVariable> dataText)
 				topPoint.y = ch.location.top;
 				bottomPoint.y = ch.location.bottom;
 				topPoint.x = bottomPoint.x = ch.location.left;
-				colorBrush->DrawLine(VERTEX_2D{ topPoint.x, topPoint.y }, VERTEX_2D{ bottomPoint.x, bottomPoint.y });
+				colorBrush->DrawLine(TPoint( topPoint.x, topPoint.y ), TPoint( bottomPoint.x, bottomPoint.y ));
 				return;
 			}
 		}

@@ -369,7 +369,7 @@ void TTextInput::SetUpTextElement()
 
 	details.defaultTextColor = fontColor;
 
-	text = TrecPointerKey::GetNewSelfTrecPointerAlt<TTextElement, TInputTextElement>(drawingBoard, windowHandle);
+	text = TrecPointerKey::GetNewSelfTrecPointerAlt<TTextElement, TInputTextElement>(drawingBoard);
 
 	text->SetBounds(area);
 	text->SetBasicFormatting(details);

@@ -161,7 +161,7 @@ TrecPointer<BasicCharLine> TTextLayout::GetLineMetrics()
 	//	}
 	//}
 
-	//return TrecPointer<LineMetrics2>();
+	return TrecPointer<BasicCharLine>();
 }
 
 bool TTextLayout::ApplyFormatting(const TextFormattingDetails& ds)
@@ -174,7 +174,7 @@ bool TTextLayout::ApplyFormatting(const TextFormattingDetails& ds)
 	//}
 	//this->details.push_back(ds);
 
-	//return true;
+	return true;
 }
 
 void TTextLayout::ShrinkHeight()

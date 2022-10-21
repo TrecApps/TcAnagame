@@ -10,7 +10,7 @@ class _TC_GRAPH TTextIntercepter : public TObject
 public:
     virtual void OnChar(UINT ch, UINT count, UINT flags) = 0;
 
-    virtual void OnKey(UINT ch, UINT count, UINT flags) = 0;
+    //virtual void OnKey(UINT ch, UINT count, UINT flags) = 0;
 
     virtual void OnLoseFocus() = 0;
 
