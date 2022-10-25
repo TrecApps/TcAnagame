@@ -447,3 +447,17 @@ bool TPageBuilder::UsesFile()
 {
 	return true;
 }
+
+void TPageBuilder::SetDrawingBoard(TrecPointer<DrawingBoard> board)
+{
+	this->board = board;
+}
+void TPageBuilder::SetSpace(RECT_F space) 
+{
+	this->space = space;
+}
+
+void TPageBuilder::SetHandler(TrecPointer<TPage::EventHandler> handler) 
+{
+	this->handler = handler;
+}

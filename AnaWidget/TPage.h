@@ -262,11 +262,19 @@ protected:
 class _ANA_WIDGET TPageBuilder :
 	public TObject
 {
+protected:
+	TrecPointer<DrawingBoard> board;
+	RECT_F space;
+	TrecPointer<TPage::EventHandler> handler;
 public:
 	ObjectType GetObjectType() override;
 	virtual bool UsesFile();
 	virtual TrecPointer<TPage> GetPage(const TString& details) = 0;
 	virtual TrecPointer<TPage> GetPage(TrecPointer<TFileShell> file) = 0;
+
+	void SetDrawingBoard(TrecPointer<DrawingBoard> board);
+	void SetSpace(RECT_F space);
+	void SetHandler(TrecPointer<TPage::EventHandler> handler);
 };
 
 RECT_F ConvertStringToD2D1Rect(const TString& str);
