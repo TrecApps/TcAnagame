@@ -37,11 +37,10 @@ TrecPointer<TTextIntercepter> TTextInput::GetInterceptor()
 	return text.Get() ? text->GetTextInterceptor() : TrecPointer<TTextIntercepter>();
 }
 
-TTextInput::TTextInput(TrecPointer<DrawingBoard> rt, TDataMap<TDataMap<TString>> ta, HWND win) : TGadget(rt, ta)
+TTextInput::TTextInput(TrecPointer<DrawingBoard> rt, TDataMap<TDataMap<TString>> ta) : TGadget(rt, ta)
 {
 	useNumber = usePassword = passwordPeek = useNumBoxes = showPassword = textLock = false;
 	editEnabled = true;
-	windowHandle = win;
 }
 
 TTextInput::~TTextInput()

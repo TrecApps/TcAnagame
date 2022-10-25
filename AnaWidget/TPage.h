@@ -195,6 +195,8 @@ public:
 
 	public:
 
+		ObjectType GetObjectType()override;
+
 		virtual bool GetVariable(const TString& name, TrecPointer<TVariable>& var) override;
 
 		virtual bool SetVariable(const TString& name, TrecPointer<TVariable> var) override;
@@ -255,6 +257,16 @@ protected:
 	 * How much to rotate by before drawing
 	 */
 	float rotate;
+};
+
+class _ANA_WIDGET TPageBuilder :
+	public TObject
+{
+public:
+	ObjectType GetObjectType() override;
+	virtual bool UsesFile();
+	virtual TrecPointer<TPage> GetPage(const TString& details) = 0;
+	virtual TrecPointer<TPage> GetPage(TrecPointer<TFileShell> file) = 0;
 };
 
 RECT_F ConvertStringToD2D1Rect(const TString& str);

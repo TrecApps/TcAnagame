@@ -45,7 +45,7 @@ public:
 	 *				bool isGadgetBase - the gadget base
 	 * Return: new Gadget Control object
 	 */
-	TTextInput(TrecPointer<DrawingBoard> rt, TDataMap<TDataMap<TString>> ta, HWND win);
+	TTextInput(TrecPointer<DrawingBoard> rt, TDataMap<TDataMap<TString>> ta);
 
 	/**
 	 * Method: TGadget::~TGadget

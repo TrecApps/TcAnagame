@@ -2,7 +2,7 @@
 #include "AnafacePage.h"
 #include <TFormatReader.h>
 #include <TContainerVariable.h>
-//#include "TRadiobutton.h"
+#include "TRadioButton.h"
 #include "TCheckbox.h"
 //#include "TConsoleText.h"
 //#include "TConsoleLayout.h"
@@ -12,6 +12,7 @@
 #include "TLayout.h"
 #include "TGrid.h"
 #include "TDataNodeControl.h"
+#include "TTextLayout.h"
 //#include "TTextCombobox.h"
 //#include "TSwitchControl.h"
 
@@ -106,14 +107,14 @@ TrecPointer<TPage> AnafacePage::HandleControl(const TString& name, TString& resu
 
 	LayoutData curLd{ false, -1,-1,-1,-1 };
 
-	//if (name.StartsWith(L"TRadioButton", true))
-	//	ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TRadiobutton>(this->drawingBoard, styles);
-	//if (name.StartsWith(L"TCheckBox", true))
-	//	ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TCheckbox>(this->drawingBoard, styles);
-	//if (name.StartsWith(L"TInput", true))
-	//	ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TTextInput>(this->drawingBoard, styles, this->drawingBoard->GetWindowHandle());
-	//if (name.StartsWith(L"TLongInput", true))
-	//	ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TTextLayout>(this->drawingBoard, styles, this->drawingBoard->GetWindowHandle());
+	if (name.StartsWith(L"TRadioButton", true))
+		ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TRadioButton>(this->drawingBoard, styles);
+	if (name.StartsWith(L"TCheckBox", true))
+		ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TCheckBox>(this->drawingBoard, styles);
+	if (name.StartsWith(L"TInput", true))
+		ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TTextInput>(this->drawingBoard, styles);
+	if (name.StartsWith(L"TLongInput", true))
+		ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TTextLayout>(this->drawingBoard, styles);
 	//if (name.StartsWith(L"TBasicPrompt", true))
 	//	ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TConsoleText>(this->drawingBoard, styles);
 	//if (name.StartsWith(L"TComplexPrompt", true))

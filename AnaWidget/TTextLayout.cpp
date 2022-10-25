@@ -231,7 +231,7 @@ void TTextLayout::ShrinkHeight()
 	}
 }
 
-TTextLayout::TTextLayout(TrecPointer<DrawingBoard> rt, TDataMap<TDataMap<TString>> ta, HWND win) : TTextInput(rt, ta, win)
+TTextLayout::TTextLayout(TrecPointer<DrawingBoard> rt, TDataMap<TDataMap<TString>> ta) : TTextInput(rt, ta)
 {
 }
 

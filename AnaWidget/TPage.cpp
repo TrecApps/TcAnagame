@@ -335,6 +335,11 @@ TrecPointer<TPage::EventHandler> TPage::GetHandler()
 	return TrecPointer<TPage::EventHandler>();
 }
 
+TObject::ObjectType TPage::GetObjectType()
+{
+	return ObjectType::ot_page;
+}
+
 bool TPage::GetVariable(const TString& name, TrecPointer<TVariable>& var)
 {
 	return false;
@@ -431,4 +436,14 @@ RECT_F ConvertStringToD2D1Rect(const TString& str)
 	if (res[0] > 0 || res[1] > 0 || res[2] > 0 || res[3] > 0)
 		ZeroMemory(&returnable, sizeof(returnable));
 	return returnable; LONG i;
+}
+
+TObject::ObjectType TPageBuilder::GetObjectType()
+{
+	return ObjectType::ot_page_builder;
+}
+
+bool TPageBuilder::UsesFile()
+{
+	return true;
 }

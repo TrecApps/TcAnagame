@@ -32,7 +32,7 @@ public:
 
 	virtual void ShrinkHeight();
 
-	TTextLayout(TrecPointer<DrawingBoard> rt, TDataMap<TDataMap<TString>> ta, HWND win);
+	TTextLayout(TrecPointer<DrawingBoard> rt, TDataMap<TDataMap<TString>> ta);
 
 	virtual ~TTextLayout();
 

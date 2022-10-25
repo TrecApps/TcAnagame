@@ -45,6 +45,7 @@ public:
 		ot_environment,	// Holds resources used by Other objects
 		ot_handler,		// Handles events directed it's way
 		ot_page,		// Represents something that can be drawn
+		ot_page_builder,// Represents an Object that can build a Page
 		ot_writer,		// Writes to some target
 		ot_reader,		// Reads from some source
 		ot_other		// Does not fit into the previous categories

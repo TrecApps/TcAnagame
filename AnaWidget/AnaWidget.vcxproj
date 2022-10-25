@@ -159,6 +159,7 @@
     <ClInclude Include="TGrid.h" />
     <ClInclude Include="TLayout.h" />
     <ClInclude Include="TPage.h" />
+    <ClInclude Include="TRadioButton.h" />
     <ClInclude Include="TRandomLayout.h" />
     <ClInclude Include="TScrollerPage.h" />
     <ClInclude Include="TTextInput.h" />
@@ -184,6 +185,7 @@
     <ClCompile Include="TGrid.cpp" />
     <ClCompile Include="TLayout.cpp" />
     <ClCompile Include="TPage.cpp" />
+    <ClCompile Include="TRadioButton.cpp" />
     <ClCompile Include="TRandomLayout.cpp" />
     <ClCompile Include="TScrollerPage.cpp" />
     <ClCompile Include="TTextInput.cpp" />
