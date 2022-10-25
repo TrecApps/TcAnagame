@@ -208,23 +208,14 @@ void TTextLayout::AddColorEffect(TColor col, UINT start, UINT length)
 	cText->SetFormatting(TrecPointerKey::ConvertPointer<FormatChangeColor, FormatChange>(colorEffect), start, start + length);
 }
 
-TrecPointer<BasicCharLine> TTextLayout::GetLineMetrics()
+TDataArray<LineMetrics> TTextLayout::GetLineMetrics()
 {
-	//TObjectLocker threadLock(&thread);
-	//if (text.Get() && text->GetLayout().Get())
-	//{
-	//	TrecPointer<LineMetrics2> ret = TrecPointerKey::GetNewTrecPointer<LineMetrics2>(5);
-	//	HRESULT res = text->GetLayout()->GetLineMetrics(ret->metrics.data(), ret->metrics.Size(), &ret->sizeNeeded);
-	//	if (res == E_NOT_SUFFICIENT_BUFFER)
-	//	{
-	//		ret->SetSize(ret->sizeNeeded);
-	//		text->GetLayout()->GetLineMetrics(ret->metrics.data(), ret->metrics.Size(), &ret->sizeNeeded);
+	TObjectLocker threadLock(&thread);
+	TDataArray<LineMetrics> ret;
+	if (text.Get())
+		text->GetLineMetrics(ret);
 
-	//		return ret;
-	//	}
-	//}
-
-	return TrecPointer<BasicCharLine>();
+	return ret;
 }
 
 

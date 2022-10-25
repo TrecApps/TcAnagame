@@ -94,6 +94,20 @@ public:
     float GetVerticalPadding(bool isFloor = true) const;
 };
 
+class _TC_GRAPH LineMetrics
+{
+public:
+    bool carriesOver;
+    bool isCarryOver;
+    UINT charCount;
+    float ceilingPadding;
+    float floorPadding;
+    float height;
+    float top;
+    LineMetrics() = default;
+    LineMetrics(const LineMetrics& copy) = default;
+};
+
 class _TC_GRAPH HighlightRange
 {
 public:
@@ -203,5 +217,7 @@ public:
     virtual void SetBasicFormatting(TextFormattingDetails& details);
     virtual void SetHorizontalAllignment(tc_line_spacing);
     virtual void SetVerticalAllignment(tc_text_spacing);
+
+    void GetLineMetrics(TDataArray<LineMetrics>& metricsList);
 };
 

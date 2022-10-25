@@ -28,7 +28,7 @@ public:
 
 	void AddBackgroundColor(const TString& col, UINT start, UINT length);
 
-	TrecPointer<BasicCharLine> GetLineMetrics();
+	TDataArray<LineMetrics> GetLineMetrics();
 
 	virtual void ShrinkHeight();
 

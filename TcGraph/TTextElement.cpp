@@ -959,6 +959,31 @@ void TTextElement::SetVerticalAllignment(tc_text_spacing s)
 	formattingDetails.textSpacing = s;
 }
 
+
+void TTextElement::GetLineMetrics(TDataArray<LineMetrics>& metricsList)
+{
+	metricsList.RemoveAll();
+
+	for (UINT Rust = 0; Rust < lines.Size(); Rust++)
+	{
+		LineMetrics mets;
+		BasicCharLine& line = lines[Rust];
+
+		mets.isCarryOver = line.isCarryOver;
+		mets.ceilingPadding = line.ceilingPadding;
+		mets.charCount = line.characters.Size();
+		mets.floorPadding = line.floorPadding;
+		mets.height = line.height;
+		mets.top = line.top;
+
+		mets.carriesOver = false;
+
+		if (mets.isCarryOver && Rust)
+			metricsList[Rust - 1].carriesOver = true;
+		metricsList.push_back(mets);
+	}
+}
+
 TextFormattingDetails::TextFormattingDetails():
 	fontSize(16.0f),
 	formatTweaks(0),
