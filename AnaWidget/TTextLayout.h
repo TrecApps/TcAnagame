@@ -20,9 +20,15 @@ public:
 
 	void AddColorEffect(TColor col, UINT start, UINT length);
 
-	TrecPointer<BasicCharLine> GetLineMetrics();
+	void AddFontSize(float size, UINT start, UINT length);
 
-	bool ApplyFormatting(const TextFormattingDetails& details);
+	void AddFontWeight(UCHAR weight, UINT start, UINT length);
+
+	void AddFont(const TString& font, UINT start, UINT length);
+
+	void AddBackgroundColor(const TString& col, UINT start, UINT length);
+
+	TrecPointer<BasicCharLine> GetLineMetrics();
 
 	virtual void ShrinkHeight();
 

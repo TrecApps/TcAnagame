@@ -41,6 +41,7 @@ public:
 
     float fontSize;
     UCHAR formatTweaks;
+    UCHAR italicValue;
     TString font;
     tc_line_spacing defaultLineSpacing;
     tc_text_spacing textSpacing;
@@ -118,6 +119,8 @@ class _TC_GRAPH TTextElement :
 protected:
     void ClearHighlight();
     void SetHighlight(UINT start, UINT end);
+
+    virtual bool GetTextFormattingDetails(TextFormattingDetails& details, UINT location);
 
     TrecPointerSoft<TTextElement> self;
 

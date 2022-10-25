@@ -113,36 +113,99 @@ UINT TTextLayout::AppendText(const TString& str)
 	return 0;
 }
 
+void TTextLayout::AddFontSize(float size, UINT start, UINT length)
+{
+	TObjectLocker threadLock(&thread);
+	if (!text.Get() || !drawingBoard.Get())
+	{
+		return;
+	}
+
+	auto cText = TrecPointerKey::ConvertPointer<TTextElement, TComplexTextElement>(text);
+	assert(cText.Get());
+
+	TrecPointer<FormatChangeFontSize> colorEffect = TrecPointerKey::GetNewTrecPointer<FormatChangeFontSize>();
+	colorEffect->fontSize = size;
+	colorEffect->textStart = start;
+	colorEffect->textEnd = start + length;
+
+	cText->SetFormatting(TrecPointerKey::ConvertPointer<FormatChangeFontSize, FormatChange>(colorEffect), start, start + length);
+}
+
+void TTextLayout::AddFontWeight(UCHAR weight, UINT start, UINT length)
+{
+	TObjectLocker threadLock(&thread);
+	if (!text.Get() || !drawingBoard.Get())
+	{
+		return;
+	}
+
+	auto cText = TrecPointerKey::ConvertPointer<TTextElement, TComplexTextElement>(text);
+	assert(cText.Get());
+
+	TrecPointer<FormatChangeFontWeight> colorEffect = TrecPointerKey::GetNewTrecPointer<FormatChangeFontWeight>();
+	colorEffect->tweak = weight;
+	colorEffect->textStart = start;
+	colorEffect->textEnd = start + length;
+
+	cText->SetFormatting(TrecPointerKey::ConvertPointer<FormatChangeFontWeight, FormatChange>(colorEffect), start, start + length);
+}
+
+void TTextLayout::AddFont(const TString& font, UINT start, UINT length)
+{
+	TObjectLocker threadLock(&thread);
+	if (!text.Get() || !drawingBoard.Get())
+	{
+		return;
+	}
+
+	auto cText = TrecPointerKey::ConvertPointer<TTextElement, TComplexTextElement>(text);
+	assert(cText.Get());
+
+	TrecPointer<FormatChangeFont> colorEffect = TrecPointerKey::GetNewTrecPointer<FormatChangeFont>();
+	colorEffect->font.Set(font);
+	colorEffect->textStart = start;
+	colorEffect->textEnd = start + length;
+
+	cText->SetFormatting(TrecPointerKey::ConvertPointer<FormatChangeFont, FormatChange>(colorEffect), start, start + length);
+}
+
+void TTextLayout::AddBackgroundColor(const TString& col, UINT start, UINT length)
+{
+	TObjectLocker threadLock(&thread);
+	if (!text.Get() || !drawingBoard.Get())
+	{
+		return;
+	}
+
+	auto cText = TrecPointerKey::ConvertPointer<TTextElement, TComplexTextElement>(text);
+	assert(cText.Get());
+
+	TrecPointer<FormatChangeBackgroundColor> colorEffect = TrecPointerKey::GetNewTrecPointer<FormatChangeBackgroundColor>();
+	colorEffect->color = col;
+	colorEffect->textStart = start;
+	colorEffect->textEnd = start + length;
+
+	cText->SetFormatting(TrecPointerKey::ConvertPointer<FormatChangeBackgroundColor, FormatChange>(colorEffect), start, start + length);
+}
+
 void TTextLayout::AddColorEffect(TColor col, UINT start, UINT length)
 {
-	//TObjectLocker threadLock(&thread);
-	//if (!text.Get() || !drawingBoard.Get())
-	//{
-	//	return;
-	//}
-	//IDWriteTextLayout* layout = text->GetLayout().Get();
-	//if (!layout)
-	//{
-	//	return;
-	//}
-	//for (UINT C = 0; C < colors.Size(); C++)
-	//{
-	//	if (col == colors[C].color)
-	//	{
-	//		layout->SetDrawingEffect(colors[C].colBrush, DWRITE_TEXT_RANGE{ start, length });
+	TObjectLocker threadLock(&thread);
+	if (!text.Get() || !drawingBoard.Get())
+	{
+		return;
+	}
 
-	//		return;
-	//	}
-	//}
+	auto cText = TrecPointerKey::ConvertPointer<TTextElement, TComplexTextElement>(text);
+	assert(cText.Get());
 
-	//ColorEffect ce{ nullptr, col };
+	TrecPointer<FormatChangeColor> colorEffect = TrecPointerKey::GetNewTrecPointer<FormatChangeColor>();
+	colorEffect->color = col;
+	colorEffect->textStart = start;
+	colorEffect->textEnd = start + length;
 
-	//HRESULT h = drawingBoard->GetRenderer()->CreateSolidColorBrush(col, &ce.colBrush);
-	//if (SUCCEEDED(h))
-	//{
-	//	colors.push_back(ce);
-	//	layout->SetDrawingEffect(ce.colBrush, DWRITE_TEXT_RANGE{ start, length });
-	//}
+	cText->SetFormatting(TrecPointerKey::ConvertPointer<FormatChangeColor, FormatChange>(colorEffect), start, start + length);
 }
 
 TrecPointer<BasicCharLine> TTextLayout::GetLineMetrics()
@@ -164,18 +227,7 @@ TrecPointer<BasicCharLine> TTextLayout::GetLineMetrics()
 	return TrecPointer<BasicCharLine>();
 }
 
-bool TTextLayout::ApplyFormatting(const TextFormattingDetails& ds)
-{
-	//TObjectLocker threadLock(&thread);
-	//if ((ds.range.startPosition + ds.range.length) > text->GetTextLength())
-	//{
 
-	//	return false;
-	//}
-	//this->details.push_back(ds);
-
-	return true;
-}
 
 void TTextLayout::ShrinkHeight()
 {

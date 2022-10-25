@@ -49,6 +49,7 @@ public:
 
 	static TColor GetColorFromString(const TString& color, bool& worked);
 
+	bool IsEqual(const TColor& c, float threshold = 0.05f);
 private:
 	color_struct color;
 };

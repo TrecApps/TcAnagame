@@ -233,6 +233,12 @@ void TTextElement::SetHighlight(UINT start, UINT end)
 	}
 }
 
+bool TTextElement::GetTextFormattingDetails(TextFormattingDetails& details, UINT location)
+{
+	details = this->formattingDetails;
+	return true;
+}
+
 void TTextElement::AppendLine(BasicCharLine& curLine, float& y)
 {
 	curLine.totalWidth = 0.0f;
@@ -464,14 +470,11 @@ void TTextElement::ReCreateLayout()
 	const TString& theText = text->GetString();
 
 	FT_Face curFace = nullptr;
-	if (!RetrieveFont(formattingDetails.font, curFace))
-		return;
 
 	int width = 300;
 	int height = 300;
 	//drawingBoard->GetDisplayResolution(width, height);
 	//FT_Set_Char_Size(curFace, 0, 16 * 64, width, height);
-	FT_Set_Pixel_Sizes(curFace, 0, formattingDetails.fontSize);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	float x = bounds.left;
@@ -501,6 +504,13 @@ void TTextElement::ReCreateLayout()
 
 		prevChar = ch.character;
 
+		TextFormattingDetails chFormatting;
+		assert(this->GetTextFormattingDetails(chFormatting, Rust));
+		if (!RetrieveFont(chFormatting.font, curFace))
+			return;
+
+		FT_Set_Pixel_Sizes(curFace, 0, chFormatting.fontSize);
+
 		FT_UInt glyphIndex = FT_Get_Char_Index(curFace, ch.character);
 		if(!glyphIndex)continue;
 
@@ -517,10 +527,10 @@ void TTextElement::ReCreateLayout()
 		x += curFace->glyph->bitmap.width;
 		ch.location.right = x;
 
-		ch.backgroundColor = formattingDetails.defaultBackgroundColor;
+		ch.backgroundColor = chFormatting.defaultBackgroundColor;
 
 		GLuint texId = 0;
-		if (!GetFontCharacter(formattingDetails.font, ch.character, ch.GetWeightStrength(), texId))
+		if (!GetFontCharacter(chFormatting.font, ch.character, ch.GetWeightStrength(), texId))
 		{
 			glGenTextures(1, &texId);
 			glBindTexture(GL_TEXTURE_2D, texId);
@@ -538,7 +548,7 @@ void TTextElement::ReCreateLayout()
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			SetFontCharacter(formattingDetails.font, ch.character, ch.GetWeightStrength(), texId);
+			SetFontCharacter(chFormatting.font, ch.character, ch.GetWeightStrength(), texId);
 		}
 		
 		curLine.characters.push_back(ch);
@@ -662,13 +672,7 @@ void TTextElement::OnDraw(TrecPointer<TVariable> dataText)
 
 	GLint loc = glGetUniformLocation(drawingBoard->SetShader(TrecPointer<TShader>(), shader_type::shader_write), "textColor");
 
-	glUniform4f(
-		loc
-		, formattingDetails.defaultTextColor.GetRed()
-		, formattingDetails.defaultTextColor.GetGreen()
-		, formattingDetails.defaultTextColor.GetBlue()
-		, formattingDetails.defaultTextColor.GetOpacity()
-	);
+
 	bool cullDisabled = !glIsEnabled(GL_CULL_FACE);
 	bool blendDisabled = !glIsEnabled(GL_BLEND);
 
@@ -713,9 +717,20 @@ void TTextElement::OnDraw(TrecPointer<TVariable> dataText)
 			if (!verticies)
 				continue;
 
+			TextFormattingDetails chFormatting;
+			assert(this->GetTextFormattingDetails(chFormatting, C + line.strIndex));
+
 			GLuint texId = 0;
-			if (!GetFontCharacter(formattingDetails.font, ch.character, ch.GetWeightStrength(), texId))
+			if (!GetFontCharacter(chFormatting.font, ch.character, ch.GetWeightStrength(), texId))
 				continue;
+
+			glUniform4f(
+				loc
+				, chFormatting.defaultTextColor.GetRed()
+				, chFormatting.defaultTextColor.GetGreen()
+				, chFormatting.defaultTextColor.GetBlue()
+				, chFormatting.defaultTextColor.GetOpacity()
+			);
 
 			glBindTexture(GL_TEXTURE_2D, texId);
 			// update content of VBO memory
@@ -947,6 +962,7 @@ void TTextElement::SetVerticalAllignment(tc_text_spacing s)
 TextFormattingDetails::TextFormattingDetails():
 	fontSize(16.0f),
 	formatTweaks(0),
+	italicValue(0),
 	defaultLineSpacing(tc_line_spacing::left),
 	textSpacing(tc_text_spacing::center)
 {
@@ -958,7 +974,7 @@ BasicCharLine::BasicCharLine()
 	top = 0;
 	height = totalWidth = 0;
 	isCarryOver = false;
-
+	strIndex = 0;
 	attributes = 0;
 	ceilingPadding = floorPadding = 0.0f;
 }
