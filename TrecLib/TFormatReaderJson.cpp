@@ -26,6 +26,21 @@ TString TFormatReaderJson::Read()
     return ret;
 }
 
+TString TFormatReaderJson::Write(TrecPointer<TVariable> data, write_mode mode)
+{
+    if (!fileShell.Get())
+        return L"No File Provided!";
+
+    TFile file(fileShell, TFile::t_file_open_always | TFile::t_file_write | TFile::t_file_truncate_existing);
+
+    if (!file.IsOpen())
+        return L"Failed to open file!";
+
+
+
+    return TString();
+}
+
 TrecPointer<TVariable> TFormatReaderJson::GetData()
 {
     return variable;

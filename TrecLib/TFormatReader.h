@@ -12,6 +12,14 @@ class _TREC_LIB_DLL TFormatReader :
 {
 public:
 
+    typedef enum class write_mode
+    {
+        formatted,
+        line_formated,
+        condensed
+    }write_mode;
+
+
     /**
      * Class: TFormatReaderBuilder
      * Purpose: Enables third Parties to provide their own Builders and Readers for formats not directly supported by Anagame
@@ -49,6 +57,8 @@ public:
      * Attributes: abstract
      */
     virtual TrecPointer<TVariable> GetData() = 0;
+
+    virtual TString Write(TrecPointer<TVariable> data, write_mode = write_mode::formatted);
 
     static void EstablishDefaultBuilders();
 

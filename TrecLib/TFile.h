@@ -229,9 +229,15 @@ public:
 	TFile(TrecPointer<TFileShell> file,
 		UINT nOpenFlags);
 
+	TFile(TrecPointer<TFileShell> file, const TString& name,
+		UINT nOpenFlags);
+
 	~TFile();
 
 	bool Open(TrecPointer<TFileShell> file,
+		UINT nOpenFlags);
+
+	bool Open(TrecPointer<TFileShell> file, const TString& name,
 		UINT nOpenFlags);
 
 

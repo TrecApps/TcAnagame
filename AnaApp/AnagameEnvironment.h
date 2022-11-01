@@ -15,3 +15,25 @@ public:
     virtual TrecPointer<TPage> GetPage(const TString& details) override;
     virtual TrecPointer<TPage> GetPage(TrecPointer<TFileShell> file) override;
 };
+
+
+class _ANA_APP UserProfileEnvironment : public TEnvironment
+{
+protected:
+    TrecPointer<TObject> RetrieveResource(const TString& name) override;
+    void RetrieveResourceListSub(TDataArray<TString>& resources) override;
+
+public:
+    UserProfileEnvironment();
+    ~UserProfileEnvironment();
+};
+
+class _ANA_APP AppDataEnvironment : public TEnvironment
+{
+protected:
+    TrecPointer<TObject> RetrieveResource(const TString& name) override;
+    void RetrieveResourceListSub(TDataArray<TString>& resources) override;
+public:
+    AppDataEnvironment();
+    ~AppDataEnvironment();
+};

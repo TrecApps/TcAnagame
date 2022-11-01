@@ -39,6 +39,8 @@ public:
      */
     virtual TString Read() override;
 
+    TString Write(TrecPointer<TVariable> data, write_mode mode)override;
+
     /**
      * Method: TFormatReaderJson::GetData
      * Purpose: Retrieves the Data from the File after a successful read

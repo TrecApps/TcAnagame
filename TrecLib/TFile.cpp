@@ -777,6 +777,11 @@ TFile::TFile(TrecPointer<TFileShell> lpszFileName, UINT nOpenFlags)
 	Open(lpszFileName, nOpenFlags);
 }
 
+TFile::TFile(TrecPointer<TFileShell> file, const TString& name, UINT nOpenFlags)
+{
+	Open(file, name, nOpenFlags);
+}
+
 TFile::~TFile()
 {
 	Close();
@@ -784,23 +789,41 @@ TFile::~TFile()
 
 bool TFile::Open(TrecPointer<TFileShell> file, UINT nOpenFlags)
 {
-	if (!file.Get() || file->IsDirectory())
+	return Open(file, L"", nOpenFlags);
+}
+
+bool TFile::Open(TrecPointer<TFileShell> file, const TString& name, UINT nOpenFlags)
+{
+	if (!file.Get()) return false;
+	
+	if (!name.GetSize() && file->IsDirectory())
 		return false;
+
 	TObjectLocker lock(&thread);
-		fileEncode = FileEncodingType::fet_unknown;
+	fileEncode = FileEncodingType::fet_unknown;
 
 	UINT readWrite = 0, sharing = 0, atts = 0;
 	ConvertFlags(nOpenFlags, readWrite, sharing, atts);
 
 	// If no attribute for opening is specified, use the value most likely to succeed
+	WCHAR sep = L'\0';
 	if (!atts) {
 #ifdef _WINDOWS
 		atts = OPEN_ALWAYS;
+		sep = L'\\';
 #elif defined(__linux__) || (defined (__APPLE__) && defined (__MACH__))
 		atts = O_CREAT;
+		sep = L'/';
 #endif
 	}
 	TString newFileName(file->GetPath());
+
+	if (file->IsDirectory())
+	{
+		if (!newFileName.EndsWith(sep))
+			newFileName.AppendChar(sep);
+		newFileName.Append(name);
+	}
 
 	fileHandle = TcFileOpen(newFileName, readWrite, sharing, atts);
 

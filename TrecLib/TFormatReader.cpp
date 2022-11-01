@@ -9,6 +9,10 @@
 
 TDataArray <TrecPointer<TFormatReader::TFormatReaderBuilder>> builders;
 
+TString TFormatReader::Write(TrecPointer<TVariable> data, write_mode)
+{
+    return L"Not Implemented";
+}
 
 void TFormatReader::EstablishDefaultBuilders()
 {

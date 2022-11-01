@@ -7,11 +7,13 @@ class _TREC_LIB_DLL TEnvironment :
     public TObject
 {
     TDataArray<TrecPointer<TEnvironment>> childEnvironments;
-    TDataMap<TrecPointer<TVariable>> properties;
 protected:
+    TDataMap<TrecPointer<TVariable>> properties;
     virtual TrecPointer<TObject> RetrieveResource(const TString& name) = 0;
     virtual void RetrieveResourceListSub(TDataArray<TString>& resources) = 0;
 public:
+    TEnvironment() = default;
+
     ObjectType GetObjectType()final;
 
     void RetrieveResourceList(TDataArray<TString>& resources);
