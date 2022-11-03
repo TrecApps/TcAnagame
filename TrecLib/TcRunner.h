@@ -85,6 +85,8 @@ class TcAsyncRunner : public TcRunner
     friend class ThreadBridge;
 
 public:
+    static ULONG64 GetTimeMilli();
+
     ~TcAsyncRunner();
 
     class ThreadBridge : public TObject
@@ -112,6 +114,7 @@ public:
 
     void Stop()override;
 protected:
+    // Should Return true once it is "done" or no more rounds are needed
     virtual bool RunRound() = 0;
 
     TrecPointer<ThreadBridge> bridge;

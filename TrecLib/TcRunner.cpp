@@ -1,5 +1,5 @@
 #include "TcRunner.h"
-
+#include <chrono>
 
 void ThreadSleep();
 
@@ -39,7 +39,7 @@ DWORD CreateAnagameThread(TrecPointer<TcAsyncRunner::ThreadBridge>& bridge)
 
 void ThreadSleep()
 {
-	Sleep(1000);
+	sleep(1000);
 }
 
 void* ThreadRoutine(void* params)
@@ -90,7 +90,10 @@ void TcRunner::Stop()
 
 
 
-
+ULONG64 TcAsyncRunner::GetTimeMilli()
+{
+	return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+}
 
 TcAsyncRunner::~TcAsyncRunner()
 {
@@ -118,7 +121,10 @@ void TcAsyncRunner::Pause()
 void TcAsyncRunner::Resume()
 {
 	if (bridge.Get() && bridge->GetState() == thread_state::paused)
+	{
 		bridge->SetState(thread_state::running);
+		// To-Do: Resume Thread
+	}
 }
 
 void TcAsyncRunner::Stop()
@@ -141,7 +147,7 @@ void TcAsyncRunner::ThreadBridge::Run()
 {
 	state = thread_state::running;
 
-	while (GetState() != thread_state::stopped && runner->RunRound())
+	while (GetState() != thread_state::stopped && !runner->RunRound())
 	{
 		while (GetState() == thread_state::paused)
 			ThreadSleep();

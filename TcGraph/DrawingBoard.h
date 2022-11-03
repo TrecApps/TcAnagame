@@ -14,6 +14,34 @@ using shader_type = enum class shader_type {
     shader_3d
 };
 
+using animation_mode = enum class animation_mode
+{
+    run_once,   // Only run the animation once
+    forward_reverse_once,   // runs the animations forward once and reverse once
+    forward_loop,           // Runs the animations forward in a loop
+    forward_reverse_loop,   // Runs the animations forward and backwards over and over again
+};
+
+class Animation : public TCoreObject
+{
+    friend class StoryBoard;
+protected:
+
+    UINT millisecondRefresh;
+
+    UINT millisecondLength;
+
+    bool reverse;
+public:
+    UINT GetMillisecondRefresh();
+    UINT GetMillisecondLength();
+    void SetMillisecondRefresh(UINT);
+    void SetMillisecondLength(UINT);
+    bool DoReverse();
+    void DoReverse(bool reverse);
+    virtual bool Update(float progress) = 0;
+};
+
 class _TC_GRAPH DrawingBoard :
     public TVObject
 {
