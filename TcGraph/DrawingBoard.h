@@ -6,6 +6,8 @@
 #include "GraphicsDef.h"
 #include <map>
 #include <glm/gtc/matrix_transform.hpp>
+#include <TcRunner.h>
+#include "TTextIntercepter.h"
 
 using shader_type = enum class shader_type {
     shader_2d,
@@ -42,9 +44,20 @@ public:
     virtual bool Update(float progress) = 0;
 };
 
+typedef struct AnagameCaret
+{
+    TrecPointer<TTextIntercepter> intercepter;
+    TPoint top, bottom;
+    TrecPointer<TColorBrush> brush;
+    float thickness;
+    bool OnDraw;
+};
+
 class _TC_GRAPH DrawingBoard :
     public TVObject
 {
+    friend class CaretRunner;
+
     TrecPointerSoft<DrawingBoard> self;
     TColor defaultClearColor;
 
@@ -57,6 +70,14 @@ class _TC_GRAPH DrawingBoard :
 
     TrecPointer<TBrush> textHighlight;
 
+    AnagameCaret caret;
+
+    TrecPointer<TcAsyncRunner> caretRunner;
+
+    void InitializeCaretRunner();
+
+    void DrawCaret();
+
 protected:
     glm::mat4 orthoProjection; 
 
@@ -66,8 +87,22 @@ protected:
     RECT_F area;
 
     TDataArray<RECT_F> layers;
+
+    ThreadBlocker drawingThread;
     
+    bool needsRefresh, needsConstantRefresh;
+
 public:
+
+    void NormalizePoint(const TPoint& input, TPoint& output);
+
+    void LockDrawing();
+    void UnlockDrawing();
+
+    void SetCaret(TrecPointer<TTextIntercepter> texter, const TPoint& top, const TPoint& bottom, float thickness = 0.0f);
+    void SetCaret(TrecPointer<TTextIntercepter> texter, const TPoint& top, const TPoint& bottom, const TColor& color, float thickness = 0.0f);
+    void ShowCaret();
+    void PauseCaret();
 
     void AddLayer(const RECT_F& ref);
 

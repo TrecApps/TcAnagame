@@ -3,8 +3,7 @@
 
 TWindow::TWindow(GLFWwindow* window) : DrawingBoard(window)
 {
-    needsRefresh = true;
-    needsConstantRefresh = false;
+
 }
 
 bool TWindow::IsWindow(GLFWwindow* test)

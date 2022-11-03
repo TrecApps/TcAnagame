@@ -13,7 +13,6 @@ class _ANA_APP TWindow :
     friend class TrecPointerKey;
     TPoint mousePoint;
 protected:
-    bool needsRefresh, needsConstantRefresh;
 
     TWindow(GLFWwindow* window);
     bool IsWindow(GLFWwindow* test);

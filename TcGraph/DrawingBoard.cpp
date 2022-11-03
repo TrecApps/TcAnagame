@@ -6,6 +6,33 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+class CaretRunner : public TcAsyncRunner
+{
+	friend class DrawingBoard;
+	TrecPointerSoft<DrawingBoard> self;
+protected:
+	// Should Return true once it is "done" or no more rounds are needed
+	virtual bool RunRound() override
+	{
+		TrecPointer<DrawingBoard> board = TrecPointerKey::TrecFromSoft<>(self);
+		if (!board.Get())
+			return true;
+		if (board->caret.intercepter.Get())
+		{
+			board->LockDrawing();
+			board->caret.OnDraw = !board->caret.OnDraw;
+			board->needsRefresh = true;
+			board->UnlockDrawing();
+		}
+#ifdef _WINDOWS
+		Sleep(1000);
+#else
+		sleep(1000);
+#endif
+		return false;
+	}
+};
+
 DrawingBoard::DrawingBoard(GLFWwindow* window)
 {
 	if (!window) throw 0;
@@ -25,9 +52,101 @@ DrawingBoard::DrawingBoard(GLFWwindow* window)
 
 	shaderType = shader_type::shader_2d;
 	glfwMakeContextCurrent(window);
+
+	caret.thickness = 2.0f;
+	caret.OnDraw = false;
 	//glEnable(GL_CULL_FACE);
 	//glEnable(GL_BLEND);
 	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	needsRefresh = true;
+	needsConstantRefresh = false;
+
+	TcInitLock(&drawingThread);
+}
+
+void DrawingBoard::NormalizePoint(const TPoint& input, TPoint& output)
+{
+	auto r = this->area;
+	r.bottom /= 2.0f;
+	r.right /= 2.0f;
+
+	output.x = (input.x / r.right) - 1.0f;
+	output.y = -(input.y / r.bottom) - 1.0f;
+}
+
+void DrawingBoard::LockDrawing()
+{
+	TcLockObject(&drawingThread);
+}
+void DrawingBoard::UnlockDrawing()
+{
+	TcUnlockObject(&drawingThread);
+}
+
+void DrawingBoard::InitializeCaretRunner()
+{
+	if (this->caretRunner.Get())
+		return;
+	TrecPointer<CaretRunner> cRunner = TrecPointerKey::ConvertPointer<TVariable, CaretRunner>(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, CaretRunner>());
+	cRunner->self = this->self;
+
+	caretRunner = TrecPointerKey::ConvertPointer<CaretRunner, TcAsyncRunner>(cRunner);
+	ReturnObject obj;
+
+	caretRunner->Run(obj);
+	caretRunner->Pause();
+
+}
+
+void DrawingBoard::DrawCaret()
+{
+	if (caret.brush.Get() && caret.OnDraw)
+	{
+		this->SetShader(TrecPointer<TShader>(), shader_type::shader_2d);
+
+		caret.brush->DrawLine(caret.bottom, caret.top, caret.thickness);
+	}
+}
+
+void DrawingBoard::SetCaret(TrecPointer<TTextIntercepter> texter, const TPoint& top, const TPoint& bottom, float thickness = 0.0f)
+{
+	LockDrawing();
+	InitializeCaretRunner();
+	PauseCaret();
+
+	NormalizePoint(top, caret.top);
+	NormalizePoint(bottom, caret.bottom);
+	if (!caret.brush.Get())
+		caret.brush = TrecPointerKey::ConvertPointer<TBrush, TColorBrush>(GetSolidColorBrush(TColor()));
+	caret.intercepter = texter;
+	if(thickness)
+		caret.thickness = thickness;
+	UnlockDrawing();
+}
+void DrawingBoard::SetCaret(TrecPointer<TTextIntercepter> texter, const TPoint& top, const TPoint& bottom, const TColor& color, float thickness = 0.0f)
+{
+	LockDrawing();
+	InitializeCaretRunner();
+	PauseCaret();
+
+	NormalizePoint(top, caret.top);
+	NormalizePoint(bottom, caret.bottom);
+	caret.brush = TrecPointerKey::ConvertPointer<TBrush, TColorBrush>(GetSolidColorBrush(color));
+	caret.intercepter = texter;
+	if (thickness)
+		caret.thickness = thickness;
+	UnlockDrawing();
+}
+void DrawingBoard::ShowCaret()
+{
+	if (caretRunner.Get())
+		caretRunner->Resume();
+}
+void DrawingBoard::PauseCaret()
+{
+	if (caretRunner.Get())
+		caretRunner->Pause();
 }
 
 
@@ -124,6 +243,7 @@ DrawingBoard::~DrawingBoard()
 {
 	glfwDestroyWindow(window);
 	window = nullptr;
+	TcRemoveLock(&drawingThread);
 }
 
 void DrawingBoard::BeginDraw() const
@@ -143,6 +263,7 @@ void DrawingBoard::BeginDraw() const
 
 void DrawingBoard::ConfirmDraw()
 {
+	DrawCaret();
 	glfwSwapBuffers(window);
 }
 
