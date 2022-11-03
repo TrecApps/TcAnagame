@@ -1,19 +1,6 @@
 #pragma once
 #include "TString.h"
-
 #include <thread>
-
-using runner_block_mode = enum class runner_block_mode {
-    block,          // This Runner Only supports running in the calling thread
-    supports_async, // This runner runs in the calling thread but can run in a separate thread if requested
-    async           // This runner runs in a separate thread by Default, but can be called upon to run in the calling thread
-};
-
-using runner_method_mode = enum class runner_method_mode {
-    regular,        // This Runner does not consider itself a method
-    method,         // This Runner considers itself a method and could modify the object in question
-    method_const    // This Runner considers itself a method and declares it will not alter the object in question
-};
 
 using return_mode = enum class return_mode
 {
@@ -24,7 +11,6 @@ using return_mode = enum class return_mode
     rm_super_return, // Return was detected, and the caller should also return
     rm_yield        // Similar to Return, but function is expected to resume from the yield point
 };
-
 
 class _TREC_LIB_DLL ReturnObject
 {
@@ -64,142 +50,69 @@ public:
 
 };
 
-class _TREC_LIB_DLL VariableHolder : public TVObject
-{
-public:
-    VariableHolder();
-    VariableHolder(const VariableHolder& copy);
-    VariableHolder& operator=(const VariableHolder& copy);
-    ~VariableHolder();
-
-    /*
-     * The type of variable being held (if blank, assume anything) 
-     */
-    TString type;
-    /*
-     * Level of mutability
-     * 0 = completely mutable (though the type should be maintained)
-     * 1 = the Variable can't change but it can be operated upon
-     * 2 = The variable can change, but it must not be operated upon
-     * 3 = the variable can't change and it must not be operated upon
-     */
-    UCHAR mutLevel;
-
-    /*
-     * In a parameter List, determines if this could hold an array of values of the specified type. Ignored otherwise
-     */
-    bool isArray;
-
-    /*
-     * Whether the Parameter can be null (true by default)
-     */
-    bool nullable;
-
-    /*
-     * The actual value
-     */
-    TrecPointer<TVariable> value;
-};
-
-
-
-class _TREC_LIB_DLL TcRunner :
+class TcRunner :
     public TVariable
 {
-protected:
-    TDataArray<VariableHolder> variableSpecs;       // Variables that the Runner needs before running
-    TDataArray<VariableHolder> declaredVariables;   // Variables held by the Runner during the Run
-
-    ULONG64 termination;                              // Whether the Runner Should terminate after a set amout of time (0 for no)
-
-    bool doAsync;       // Whether to run this asyncronously
-    bool doTerminate;   // Whether to terminate or not, should start out as false
-
-    virtual void RunDetails(ReturnObject& ret) = 0;
-    
 public:
-
     var_type GetVarType() override;
 
     TcRunner() = default;
 
-    void GetParameterSpecs(TDataArray<VariableHolder>& specs);
-
-    void SetParameterSpecs(const TDataArray<VariableHolder>& specs);
-
-    virtual void SetParameters(TrecPointer<TVariable>& params, ReturnObject& result);
-
-    void SetTerminate(ULONG64 termination);
-
-    void Terminate();
-
-    virtual runner_block_mode GetBlockMode() = 0;
-
-    virtual bool SetAsync() = 0;
+    virtual bool Blocks(); // Whether calling Run on this Runner will block until the task is complete
 
     virtual void Run(ReturnObject& ret);
 
-    virtual TrecPointer<TVariable> ToString() override;
+    virtual void Pause();
 
-    virtual TrecPointer<TVariable> ToString(TrecPointer<TVariable> detail) override;
+    virtual void Resume();
 
-    virtual UINT Get4Value() override;
-
-    virtual UINT GetSize() override;
+    virtual void Stop();
 };
 
-class TcAsyncVariable : public TVariable
+using thread_state = enum class thread_state
 {
-private:
-    TrecPointer<TcRunner> mainFunction;
-    VariableHolder varHolder;           // The Place to retrieve the resulting value once complete
-    signed char process;
-protected:
+    pre_run,
+    running,
+    paused,
+    finished,
+    stopped
+};
 
-    using AsyncResponseRunner = struct AsyncResponseRunner {
-        TrecPointer<TcRunner> accepted;
-        TrecPointer<TcRunner> rejected;
-    };
 
-    TDataArray<AsyncResponseRunner> response;
 
-    TrecPointer<TcRunner> finalCall;
-
-    mutable ThreadBlocker thread;
-
-    std::thread* threadReference;
-
-    bool doTerminate;
+class TcAsyncRunner : public TcRunner
+{
+    friend class ThreadBridge;
 
 public:
+    ~TcAsyncRunner();
 
-    var_type GetVarType() override;
+    class ThreadBridge : public TObject
+    {
+        friend class TcAsyncRunner;
+        thread_state state;
+        TrecPointer<TcAsyncRunner> runner;
+        DWORD id;
+        bool deletable;
+    public:
+        ThreadBridge();
+        void Run();
+        thread_state GetState();
+        void SetState(thread_state state);
+        bool CanDelete();
+    };
 
-    TrecPointer<TVariable> Clone() override;
+    bool Blocks()override;
 
-    TrecPointer<TVariable> ToString() override;
+    void Run(ReturnObject& ret)override;
 
-    TrecPointer<TVariable> ToString(TrecPointer<TVariable> detail) override;
+    void Pause()override;
 
-    UINT Get4Value()override;
+    void Resume()override;
 
-    UINT GetSize()override;
+    void Stop()override;
+protected:
+    virtual bool RunRound() = 0;
 
-    TcAsyncVariable(TrecPointer<TcRunner> mainRunner);
-
-    ~TcAsyncVariable();
-
-    static void Invoke_(TrecPointer<TcAsyncVariable> thisVar);
-
-    void SetExpectedType(const TString& type);
-
-    void Invoke();
-
-    TrecPointer<TVariable> GetResult() const;
-
-    signed char GetProgess() const;
-
-    void AppendResponse(TrecPointer<TcRunner> success, TrecPointer<TcRunner> rejected);
-
-    void SetFinalResponse(TrecPointer<TcRunner> finallyRunner);
+    TrecPointer<ThreadBridge> bridge;
 };

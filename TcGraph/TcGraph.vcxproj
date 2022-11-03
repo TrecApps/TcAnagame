@@ -148,6 +148,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="GraphicsDef.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="StoryBoard.h" />
     <ClInclude Include="TBrush.h" />
     <ClInclude Include="TCamera.h" />
     <ClInclude Include="TcGraph.h" />
@@ -172,6 +173,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="StoryBoard.cpp" />
     <ClCompile Include="TBrush.cpp" />
     <ClCompile Include="TColor.cpp" />
     <ClCompile Include="TColorBrush.cpp" />
