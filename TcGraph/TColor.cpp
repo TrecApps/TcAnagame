@@ -508,7 +508,7 @@ TColor TColor::GetColorFromString(const TString& color, bool& worked)
 }
 
 
-bool TColor::IsEqual(const TColor& c, float threshold = 0.05f)
+bool TColor::IsEqual(const TColor& c, float threshold)
 {
 	return abs(c.color.a - color.a) < threshold &&
 		abs(c.color.r - color.r) < threshold &&

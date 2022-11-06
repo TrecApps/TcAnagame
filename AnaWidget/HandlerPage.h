@@ -1,6 +1,6 @@
 #pragma once
 #include "TPage.h"
-class HandlerPage :
+class _ANA_WIDGET HandlerPage :
     public TPage
 {
 protected:

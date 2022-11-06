@@ -35,6 +35,7 @@ protected:
 
     bool reverse;
 public:
+    Animation() = default;
     UINT GetMillisecondRefresh();
     UINT GetMillisecondLength();
     void SetMillisecondRefresh(UINT);
@@ -48,7 +49,7 @@ typedef struct AnagameCaret
 {
     TrecPointer<TTextIntercepter> intercepter;
     TPoint top, bottom;
-    TrecPointer<TColorBrush> brush;
+    TrecPointer<TBrush> brush;
     float thickness;
     bool OnDraw;
 };
@@ -132,5 +133,7 @@ public:
 
     TrecPointer<TBrush> GetSolidColorBrush(const TColor& color) const;
     TrecPointer<TBrush> GetImageBrush(TrecPointer<TFileShell> file) const;
+
+    TrecPointer<TBrush> GetImageBrush(UCHAR* data, UINT width, UINT height, GLenum unum = GL_RGBA)const;
 };
 

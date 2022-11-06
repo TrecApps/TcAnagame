@@ -50,7 +50,7 @@ public:
 
 };
 
-class TcRunner :
+class _TREC_LIB_DLL TcRunner :
     public TVariable
 {
 public:
@@ -67,6 +67,12 @@ public:
     virtual void Resume();
 
     virtual void Stop();
+
+    UINT GetSize(void)override;
+    TrecPointer<TVariable> ToString(TrecPointer<TVariable>)override;
+
+    TrecPointer<TVariable> ToString()override;
+    UINT Get4Value(void);
 };
 
 using thread_state = enum class thread_state
@@ -80,7 +86,7 @@ using thread_state = enum class thread_state
 
 
 
-class TcAsyncRunner : public TcRunner
+class _TREC_LIB_DLL TcAsyncRunner : public TcRunner
 {
     friend class ThreadBridge;
 
@@ -89,7 +95,7 @@ public:
 
     ~TcAsyncRunner();
 
-    class ThreadBridge : public TObject
+    class _TREC_LIB_DLL ThreadBridge : public TObject
     {
         friend class TcAsyncRunner;
         thread_state state;

@@ -93,7 +93,8 @@ UserProfileEnvironment::UserProfileEnvironment()
 
 UserProfileEnvironment::~UserProfileEnvironment()
 {
-	TrecPointer<TJsonVariable> props = TrecPointerKey::GetNewSelfTrecPointer<TJsonVariable>();
+	TrecPointer<TVariable> vProps = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TJsonVariable>();
+	TrecPointer<TJsonVariable> props = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(vProps);
 
 	TDataEntry<TrecPointer<TVariable>> entry;
 	for (UINT Rust = 0; properties.GetEntryAt(Rust, entry); Rust++)
@@ -107,7 +108,7 @@ UserProfileEnvironment::~UserProfileEnvironment()
 	TrecPointer<TFormatReader> reader = TFormatReader::GetReader(targetFile);
 	assert(reader.Get());
 
-	reader->Write(TrecPointerKey::ConvertPointer<TJsonVariable, TVariable>(props));
+	reader->Write(vProps);
 	
 }
 
@@ -155,7 +156,8 @@ AppDataEnvironment::AppDataEnvironment()
 
 AppDataEnvironment::~AppDataEnvironment()
 {
-	TrecPointer<TJsonVariable> props = TrecPointerKey::GetNewSelfTrecPointer<TJsonVariable>();
+	TrecPointer<TVariable> vProps = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TJsonVariable>();
+	TrecPointer<TJsonVariable> props = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(vProps);
 
 	TDataEntry<TrecPointer<TVariable>> entry;
 	for (UINT Rust = 0; properties.GetEntryAt(Rust, entry); Rust++)
@@ -169,5 +171,5 @@ AppDataEnvironment::~AppDataEnvironment()
 	TrecPointer<TFormatReader> reader = TFormatReader::GetReader(targetFile);
 	assert(reader.Get());
 
-	reader->Write(TrecPointerKey::ConvertPointer<TJsonVariable, TVariable>(props));
+	reader->Write(vProps);
 }

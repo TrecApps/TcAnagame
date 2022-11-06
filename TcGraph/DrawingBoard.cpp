@@ -6,6 +6,32 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+UINT Animation::GetMillisecondRefresh()
+{
+	return millisecondRefresh;
+}
+UINT Animation::GetMillisecondLength()
+{
+	return millisecondLength;
+}
+void Animation::SetMillisecondRefresh(UINT mr)
+{
+	millisecondRefresh = mr;
+}
+void Animation::SetMillisecondLength(UINT ml)
+{
+	millisecondLength = ml;
+}
+bool Animation::DoReverse()
+{
+	return reverse;
+}
+void Animation::DoReverse(bool reverse)
+{
+	reverse = true;
+}
+
+
 class CaretRunner : public TcAsyncRunner
 {
 	friend class DrawingBoard;
@@ -30,6 +56,13 @@ protected:
 		sleep(1000);
 #endif
 		return false;
+	}
+public:
+	TrecPointer<TObject::TVariable> TObject::TVariable::Clone(void)
+	{
+		TrecPointer<TVariable> ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, CaretRunner>();
+		dynamic_cast<CaretRunner*>(ret.Get())->self = this->self;
+		return ret;
 	}
 };
 
@@ -101,15 +134,15 @@ void DrawingBoard::InitializeCaretRunner()
 
 void DrawingBoard::DrawCaret()
 {
-	if (caret.brush.Get() && caret.OnDraw)
+	if (caret.OnDraw && dynamic_cast<TColorBrush*>(caret.brush.Get()))
 	{
 		this->SetShader(TrecPointer<TShader>(), shader_type::shader_2d);
 
-		caret.brush->DrawLine(caret.bottom, caret.top, caret.thickness);
+		dynamic_cast<TColorBrush*>(caret.brush.Get())->DrawLine(caret.bottom, caret.top, caret.thickness);
 	}
 }
 
-void DrawingBoard::SetCaret(TrecPointer<TTextIntercepter> texter, const TPoint& top, const TPoint& bottom, float thickness = 0.0f)
+void DrawingBoard::SetCaret(TrecPointer<TTextIntercepter> texter, const TPoint& top, const TPoint& bottom, float thickness)
 {
 	LockDrawing();
 	InitializeCaretRunner();
@@ -118,13 +151,13 @@ void DrawingBoard::SetCaret(TrecPointer<TTextIntercepter> texter, const TPoint& 
 	NormalizePoint(top, caret.top);
 	NormalizePoint(bottom, caret.bottom);
 	if (!caret.brush.Get())
-		caret.brush = TrecPointerKey::ConvertPointer<TBrush, TColorBrush>(GetSolidColorBrush(TColor()));
+		caret.brush = GetSolidColorBrush(TColor());
 	caret.intercepter = texter;
 	if(thickness)
 		caret.thickness = thickness;
 	UnlockDrawing();
 }
-void DrawingBoard::SetCaret(TrecPointer<TTextIntercepter> texter, const TPoint& top, const TPoint& bottom, const TColor& color, float thickness = 0.0f)
+void DrawingBoard::SetCaret(TrecPointer<TTextIntercepter> texter, const TPoint& top, const TPoint& bottom, const TColor& color, float thickness)
 {
 	LockDrawing();
 	InitializeCaretRunner();
@@ -132,7 +165,7 @@ void DrawingBoard::SetCaret(TrecPointer<TTextIntercepter> texter, const TPoint& 
 
 	NormalizePoint(top, caret.top);
 	NormalizePoint(bottom, caret.bottom);
-	caret.brush = TrecPointerKey::ConvertPointer<TBrush, TColorBrush>(GetSolidColorBrush(color));
+	caret.brush = GetSolidColorBrush(color);
 	caret.intercepter = texter;
 	if (thickness)
 		caret.thickness = thickness;
@@ -334,7 +367,7 @@ TrecPointer<TBrush> DrawingBoard::GetImageBrush(TrecPointer<TFileShell> file) co
 	TrecPointer<TImageBrush> ret = TrecPointerKey::GetNewTrecPointer<TImageBrush>();
 
 	ret->GenerateImageData(file);
-
+	ret->window = self;
 	if (!ret->data)
 		return TrecPointer<TBrush>();
 
@@ -357,5 +390,22 @@ TrecPointer<TBrush> DrawingBoard::GetImageBrush(TrecPointer<TFileShell> file) co
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ret->width, ret->height, 0, sourceChannel, GL_UNSIGNED_BYTE, ret->data);
 //	glGenerateMipmap(GL_TEXTURE_2D);
+	return TrecPointerKey::ConvertPointer<TImageBrush, TBrush>(ret);
+}
+
+
+TrecPointer<TBrush> DrawingBoard::GetImageBrush(UCHAR* data, UINT width, UINT height, GLenum unum) const
+{
+	if (!data || !width || !height)
+		return TrecPointer<TBrush>();
+	TrecPointer<TImageBrush> ret = TrecPointerKey::GetNewTrecPointer<TImageBrush>();
+	ret->width = width;
+	ret->height = height;
+	ret->window = self;
+	glGenTextures(1, &(ret->textureId));
+	glBindTexture(GL_TEXTURE_2D, ret->textureId);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ret->width, ret->height, 0, unum, GL_UNSIGNED_BYTE, data);
+
 	return TrecPointerKey::ConvertPointer<TImageBrush, TBrush>(ret);
 }

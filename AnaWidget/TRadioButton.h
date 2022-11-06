@@ -7,7 +7,7 @@ class _TC_GRAPH TRadioButton :
 	public TGadget
 {
 public:
-	class TRadioClass {
+	class TRadioClass : public TCoreObject {
 	public:
 		TRadioClass();
 		TRadioClass(const TRadioClass& copy);

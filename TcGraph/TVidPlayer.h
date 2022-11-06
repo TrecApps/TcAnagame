@@ -1,6 +1,8 @@
 #pragma once
 #include <TcRunner.h>
 #include <TFile.h>
+#include <TLinkedList.h>
+#include "TImageBrush.h"
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -16,12 +18,48 @@ using TAvCodec = struct TAvCodec {
     int height;
     AVCodecContext* av_codec_ctx;
     AVRational timeBase;
+    UINT packetIndex;
+    SwsContext* scalerContext;
+};
+
+using av_stream_type = enum class av_stream_type {
+    t_video,
+    t_audio
+};
+
+class TcAVFrame
+{
+    friend class TVidPlayer;
+    friend class Stream;
+    mutable AVFrame* frame;
+    TrecPointer<TImageBrush> brush;
+public:
+    TcAVFrame();
+    TcAVFrame(const TcAVFrame& copy);
+    ~TcAVFrame();
+
+    void SetFrame(AVFrame* frame);
+};
+
+class Stream
+{
+    friend class TVidPlayer;
+    av_stream_type streamType;
+    TAvCodec codec;
+    TLinkedList<TcAVFrame> frames;
+public:
+    Stream() = default;
+    Stream(const Stream& copy) = default;
+
+    void ProcessFrames(TrecPointer<DrawingBoard>& board);
 };
 
 class TVidPlayer :
-    public TcRunner
+    public TcAsyncRunner
 {
     friend class TrecPointerKey;
+
+    TrecPointer<DrawingBoard> board;
 
     AVFormatContext* avFormatContext;
     AVFrame* avFrame;
@@ -30,21 +68,27 @@ class TVidPlayer :
     TVidPlayer() = default;
     bool Initialize();
 
-    TDataArray<TAvCodec> videoStreams;
-    TDataArray<TAvCodec> audioStreams;
+    TDataArray<Stream> streams;
 
+    UINT frameBuffer;           // minimum number of frams for each stream to hold in reserve
+    bool endOfFile;
 protected:
-    void RunDetails(ReturnObject& ret) override;
+    bool RunRound() override;
+
+    bool SupplementStreams();
+    bool NeedsFrames();
+
+    bool ProcessVideoStream(UINT index);
+    bool ProcessAudioStream(UINT index);
+
+
 public:
     TrecPointer<TVariable> Clone()override;
-    runner_block_mode GetBlockMode()override;
-    bool SetAsync() override;
 
 
 
     ~TVidPlayer()override;
 
-    static TrecPointer<TVidPlayer> GetPlayer(TrecPointer<TFileShell> file);
-
+    static TrecPointer<TVidPlayer> GetPlayer(TrecPointer<DrawingBoard> board, TrecPointer<TFileShell> file, UINT frameBufferDefault = 10);
 };
 

@@ -61,6 +61,35 @@ DWORD CreateAnagameThread(TrecPointer<TcAsyncRunner::ThreadBridge>& bridge)
 #endif // _WINDOWS
 
 
+ReturnObject::ReturnObject()
+{
+	returnCode = nextCount = 0;
+	mode = return_mode::rm_regular;
+}
+
+ReturnObject::ReturnObject(const ReturnObject& copy)
+{
+	errorMessage.Set(copy.errorMessage);
+	errorObject = copy.errorObject;
+	errorObject2 = copy.errorObject2;
+	returnCode = copy.returnCode;
+	stackTrace = copy.stackTrace;
+	mode = copy.mode;
+	nextCount = copy.nextCount;
+}
+
+ReturnObject& ReturnObject::operator=(const ReturnObject& copy)
+{
+	errorMessage.Set(copy.errorMessage);
+	errorObject = copy.errorObject;
+	errorObject2 = copy.errorObject2;
+	returnCode = copy.returnCode;
+	stackTrace = copy.stackTrace;
+	mode = copy.mode;
+	nextCount = copy.nextCount;
+	return *this;
+}
+
 var_type TcRunner::GetVarType()
 {
 	return var_type::runner;
@@ -87,6 +116,25 @@ void TcRunner::Stop()
 {
 }
 
+UINT TcRunner::GetSize(void)
+{
+	return 0;
+}
+
+TrecPointer<TVariable> TcRunner::ToString(TrecPointer<TVariable>)
+{
+	return ToString();
+}
+
+TrecPointer<TVariable> TcRunner::ToString()
+{
+	return TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"async function");
+}
+
+UINT TcRunner::Get4Value(void)
+{
+	return 0;
+}
 
 
 
@@ -98,6 +146,11 @@ ULONG64 TcAsyncRunner::GetTimeMilli()
 TcAsyncRunner::~TcAsyncRunner()
 {
 	Stop();
+}
+
+bool TcAsyncRunner::Blocks()
+{
+	return false;
 }
 
 void TcAsyncRunner::Run(ReturnObject& ret)
