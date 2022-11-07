@@ -63,6 +63,28 @@ void Stream::ProcessFrames(TrecPointer<DrawingBoard>& board)
     
 }
 
+void Stream::DoPresent(double& baseTime)
+{
+    double current = glfwGetTime();
+    double timeBase = static_cast<double>(codec.timeBase.num) / static_cast<double>(codec.timeBase.den);
+
+    for (UINT Rust = 0; Rust < frames.GetSize(); )
+    {
+        bool doPresent = (static_cast<double>(frames.at(Rust).frame->pts) * timeBase) > current;
+        if (!doPresent)
+            return;
+        if (this->streamType == av_stream_type::t_video)
+        {
+            brush = frames.at(Rust).brush;
+        }
+        else if (streamType == av_stream_type::t_audio)
+        {
+
+        }
+        frames.DropHead();
+    }
+}
+
 bool TVidPlayer::Initialize()
 {
     avFrame = nullptr;
@@ -85,10 +107,18 @@ bool TVidPlayer::Initialize()
 
 bool TVidPlayer::RunRound()
 {
-    SupplementStreams();
+    if (!SupplementStreams()) return true;
 
     // Check to see if each Stream needs prcessing
-    return false;
+    bool ret = true;
+    for (UINT Rust = 0; Rust < streams.Size(); Rust++)
+    {
+        streams[Rust].ProcessFrames(board);
+        streams[Rust].DoPresent(baseTime);
+        if (streams[Rust].frames.GetSize())
+            ret = false;
+    }
+    return ret;
 }
 
 bool TVidPlayer::SupplementStreams()
@@ -144,6 +174,24 @@ bool TVidPlayer::NeedsFrames()
 TrecPointer<TVariable> TVidPlayer::Clone()
 {
     return TrecPointer<TVariable>();
+}
+
+void TVidPlayer::Run(ReturnObject& ret)
+{
+    baseTime = glfwGetTime();
+    TcAsyncRunner::Run(ret);
+}
+
+void TVidPlayer::Pause()
+{
+    TcAsyncRunner::Pause();
+    pauseTime = glfwGetTime();
+}
+
+void TVidPlayer::Resume()
+{
+    baseTime = (glfwGetTime() - pauseTime);
+    TcAsyncRunner::Resume();
 }
 
 TVidPlayer::~TVidPlayer()
@@ -245,6 +293,8 @@ TrecPointer<TVidPlayer> TVidPlayer::GetPlayer(TrecPointer<DrawingBoard> board, T
 
     ret->frameBuffer = frameBufferDefault;
     ret->endOfFile = false;
+
+    ret->pauseTime = ret->baseTime = 0.0f;
 
     if (!ret->Initialize())
         ret.Nullify();

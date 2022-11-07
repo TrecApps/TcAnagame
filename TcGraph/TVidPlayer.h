@@ -47,11 +47,13 @@ class Stream
     av_stream_type streamType;
     TAvCodec codec;
     TLinkedList<TcAVFrame> frames;
+    TrecPointer<TImageBrush> brush;
 public:
     Stream() = default;
     Stream(const Stream& copy) = default;
 
     void ProcessFrames(TrecPointer<DrawingBoard>& board);
+    void DoPresent(double& baseTime);
 };
 
 class TVidPlayer :
@@ -72,6 +74,9 @@ class TVidPlayer :
 
     UINT frameBuffer;           // minimum number of frams for each stream to hold in reserve
     bool endOfFile;
+
+    double baseTime;
+    double pauseTime;
 protected:
     bool RunRound() override;
 
@@ -85,7 +90,11 @@ protected:
 public:
     TrecPointer<TVariable> Clone()override;
 
+    void Run(ReturnObject& ret)override;
 
+    void Pause()override;
+
+    void Resume()override;
 
     ~TVidPlayer()override;
 
