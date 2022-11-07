@@ -27,11 +27,23 @@ void TWindow::OnDraw()
 
 void TWindow::HandleWindowEvents(TDataArray<TPage::EventID_Cred>& cred)
 {
+    for (UINT Rust = 0; Rust < cred.Size(); Rust++)
+    {
+        if (cred[Rust].textIntercepter.Get())
+            this->caret.intercepter = cred[Rust].textIntercepter;
+    }
+
 }
 
 void TWindow::SetMainPage(TrecPointer<TPage> mainPage)
 {
     this->mainPage = mainPage;
+}
+
+void TWindow::OnChar(UINT ch)
+{
+    if (caret.intercepter.Get())
+        caret.intercepter->OnChar(ch, 0, 0);
 }
 
 void TWindow::OnMouseMove(double x, double y)

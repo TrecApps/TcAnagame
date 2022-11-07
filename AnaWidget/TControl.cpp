@@ -740,24 +740,24 @@ void TControl::OnLButtonUp(UINT nFlags, const TPoint& point, message_output& mOu
 		{
 			TString index = HasEvent(R_Message_Type::On_Click);
 
-			//EventID_Cred cred(R_Message_Type::On_Click, TrecPointerKey::TrecFromSoft<>(self), text.Get() ? text->GetTextInterceptor() : TrecPointer<TTextIntercepter>());
+			EventID_Cred cred(R_Message_Type::On_Click, TrecPointerKey::TrecFromSoft<>(self), text.Get() ? text->GetTextInterceptor() : TrecPointer<TTextIntercepter>());
 
-			//if (index.GetSize())
-			//{
-			//	this->args.Reset();
-			//	this->args.arrayLabel = this->arrayID;
-			//	this->args.eventType = R_Message_Type::On_Click;
-			//	this->args.isClick = true;
-			//	this->args.isLeftClick = true;
-			//	this->args.methodID = index;
-			//	this->args.point = point;
-			//	this->args.positive = true;
-			//	this->args.type = L'\0';
+			if (index.GetSize())
+			{
+				this->args.Reset();
+				this->args.arrayLabel = this->arrayID;
+				this->args.eventType = R_Message_Type::On_Click;
+				this->args.isClick = true;
+				this->args.isLeftClick = true;
+				this->args.methodID = index;
+				this->args.point = point;
+				this->args.positive = true;
+				this->args.type = L'\0';
 
-			//	cred.args = TrecPointerKey::GetNewTrecPointer<EventArgs>(this->args);
-			//}
-			//if (text.Get() || index.GetSize())
-			//	eventAr.push_back(cred);
+				cred.args = TrecPointerKey::GetNewTrecPointer<EventArgs>(this->args);
+			}
+			if (text.Get() || index.GetSize())
+				eventAr.push_back(cred);
 
 		}
 		else

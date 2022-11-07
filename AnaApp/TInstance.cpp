@@ -132,8 +132,11 @@ void TInstance::SetCallbacks(GLFWcharfun charFun, GLFWcursorposfun cursorFun,
 	closeFunction = closeFun;
 }
 
-void TInstance::OnChar(GLFWwindow* win, UINT ch)
+void TInstance::OnChar(GLFWwindow* window, UINT ch)
 {
+	auto win = GetWindow(window);
+	if (win.Get())
+		win->OnChar(ch);
 }
 
 void TInstance::OnMouseMove(GLFWwindow* window, double xpos, double ypos)

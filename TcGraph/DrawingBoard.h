@@ -71,7 +71,6 @@ class _TC_GRAPH DrawingBoard :
 
     TrecPointer<TBrush> textHighlight;
 
-    AnagameCaret caret;
 
     TrecPointer<TcAsyncRunner> caretRunner;
 
@@ -82,6 +81,7 @@ class _TC_GRAPH DrawingBoard :
 protected:
     glm::mat4 orthoProjection; 
 
+    AnagameCaret caret;
     GLFWwindow* window;
     explicit DrawingBoard(GLFWwindow* window);
 

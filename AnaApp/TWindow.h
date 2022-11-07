@@ -28,6 +28,7 @@ public:
 
     void SetMainPage(TrecPointer<TPage> mainPage);
 
+    void OnChar(UINT ch);
     void OnMouseMove(double x, double y);
     void OnLButtonDown(int mods);
     void OnLButtonUp(int mods);

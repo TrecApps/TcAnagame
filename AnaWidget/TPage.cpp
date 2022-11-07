@@ -288,6 +288,13 @@ TPage::EventID_Cred::EventID_Cred(R_Message_Type t, TrecPointer<TPage> c, TrecPo
 	this->scroll = sb;
 }
 
+TPage::EventID_Cred::EventID_Cred(R_Message_Type t, TrecPointer<TPage> c, TrecPointer<TTextIntercepter> i)
+{
+	this->eventType = t;
+	this->control = c;
+	this->textIntercepter = i;
+}
+
 //TPage::EventID_Cred::EventID_Cred(R_Message_Type t, TrecPointer<TPage> c, TrecPointer<TTextIntercepter> i)
 //{
 //	this->eventType = t;

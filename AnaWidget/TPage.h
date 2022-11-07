@@ -144,14 +144,14 @@ public:
 		EventID_Cred(const EventID_Cred& copy);
 		EventID_Cred(R_Message_Type t, TrecPointer<TPage> c);
 		EventID_Cred(R_Message_Type t, TrecPointer<TPage> c, TrecPointer<TScrollBar> sb);
-		//EventID_Cred(R_Message_Type t, TrecPointer<TPage> c, TrecPointer<TTextIntercepter> i);
+		EventID_Cred(R_Message_Type t, TrecPointer<TPage> c, TrecPointer<TTextIntercepter> i);
 
 
 		R_Message_Type eventType;
 		TrecPointer<TPage> control;
 		TrecPointer<TScrollBar> scroll;
 		// TrecPointer<TFlyout> flyout; // To-Do: Re add later
-		//TrecPointer<TTextIntercepter> textIntercepter;
+		TrecPointer<TTextIntercepter> textIntercepter;
 		TrecPointer<TVariable> data;		// Holds either a variable, or an interpretor to handle an event
 		TString expression;
 
