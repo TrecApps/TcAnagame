@@ -304,6 +304,12 @@ TrecPointer<TControlComponent> TControlComponent::GetControlContent(TrecPointer<
 	return ret;
 }
 
+void TControlComponent::SetImageBrush(TrecPointer<TImageBrush> newBrush)
+{
+	if (newBrush.Get())
+		this -> image = newBrush;
+}
+
 void TControlComponent::ResetBrush()
 {
 	TObjectLocker threadLock(&thread);

@@ -189,6 +189,24 @@ void TcAsyncRunner::Stop()
 	bridge.Nullify();
 }
 
+tc_async_runner_state TcAsyncRunner::GetCurrentState()
+{
+	if (!bridge.Get())
+		return tc_async_runner_state::inactive;
+
+	thread_state s = bridge->GetState();
+
+	switch (s)
+	{
+	case thread_state::running:
+		return tc_async_runner_state::running;
+	case thread_state::paused:
+		return tc_async_runner_state::paused;
+	default:
+		return tc_async_runner_state::inactive;
+	}
+}
+
 TcAsyncRunner::ThreadBridge::ThreadBridge()
 {
 	this->state = thread_state::pre_run;

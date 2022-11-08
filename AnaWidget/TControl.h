@@ -103,6 +103,8 @@ public:
 
 	static TrecPointer<TControlComponent> GetControlContent(TrecPointer<DrawingBoard> board, TrecPointer<TPage> parent);
 
+	void SetImageBrush(TrecPointer<TImageBrush> newBrush);
+
 private:
 
 	TControlComponent(TrecPointer<DrawingBoard>, TrecPointer<TPage> parent);

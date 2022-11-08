@@ -84,7 +84,12 @@ using thread_state = enum class thread_state
     stopped
 };
 
-
+using tc_async_runner_state = enum class tc_async_runner_state
+{
+    inactive,
+    running,
+    paused
+};
 
 class _TREC_LIB_DLL TcAsyncRunner : public TcRunner
 {
@@ -119,6 +124,8 @@ public:
     void Resume()override;
 
     void Stop()override;
+
+    tc_async_runner_state GetCurrentState();
 protected:
     // Should Return true once it is "done" or no more rounds are needed
     virtual bool RunRound() = 0;

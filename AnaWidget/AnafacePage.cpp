@@ -7,7 +7,7 @@
 //#include "TConsoleText.h"
 //#include "TConsoleLayout.h"
 #include "TArenaView.h"
-//#include "TVideoPlayer.h"
+#include "TVideoControl.h"
 #include "TDataLayout.h"
 #include "TLayout.h"
 #include "TGrid.h"
@@ -121,8 +121,8 @@ TrecPointer<TPage> AnafacePage::HandleControl(const TString& name, TString& resu
 	//	ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TConsoleLayout>(this->drawingBoard, styles);
 	if (name.StartsWith(L"TArena", true))
 		ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TArenaView>(this->drawingBoard, styles);
-	//if (name.StartsWith(L"TVideo", true))
-	//	ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TVideoPlayer>(this->drawingBoard, styles);
+	if (name.StartsWith(L"TVideo", true))
+		ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TVideoControl>(this->drawingBoard, styles);
 	//if (name.StartsWith(L"TCanvas", true))
 	//	ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TRadiobutton>(this->drawingBoard, styles);
 	//if (name.StartsWith(L"TImage", true))

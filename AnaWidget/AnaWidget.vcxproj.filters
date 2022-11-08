@@ -75,6 +75,9 @@
     <ClInclude Include="TRadioButton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TVideoControl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -132,6 +135,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TRadioButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TVideoControl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

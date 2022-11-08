@@ -164,6 +164,7 @@
     <ClInclude Include="TScrollerPage.h" />
     <ClInclude Include="TTextInput.h" />
     <ClInclude Include="TTextLayout.h" />
+    <ClInclude Include="TVideoControl.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnafacePage.cpp" />
@@ -190,6 +191,7 @@
     <ClCompile Include="TScrollerPage.cpp" />
     <ClCompile Include="TTextInput.cpp" />
     <ClCompile Include="TTextLayout.cpp" />
+    <ClCompile Include="TVideoControl.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

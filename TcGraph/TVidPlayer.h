@@ -56,7 +56,12 @@ public:
     void DoPresent(double& baseTime);
 };
 
-class TVidPlayer :
+using tc_player_state = enum class tc_player_state
+{
+
+};
+
+class _TC_GRAPH TVidPlayer :
     public TcAsyncRunner
 {
     friend class TrecPointerKey;
@@ -97,6 +102,10 @@ public:
     void Resume()override;
 
     ~TVidPlayer()override;
+
+    TDataArray<UINT> GetVideoStreams();
+
+    TrecPointer<TImageBrush> RetrieveBrush(UINT streamIndex);
 
     static TrecPointer<TVidPlayer> GetPlayer(TrecPointer<DrawingBoard> board, TrecPointer<TFileShell> file, UINT frameBufferDefault = 10);
 };

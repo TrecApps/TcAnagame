@@ -211,6 +211,25 @@ TVidPlayer::~TVidPlayer()
     }
 }
 
+TDataArray<UINT> TVidPlayer::GetVideoStreams()
+{
+    TDataArray<UINT> ret;
+    for (UINT Rust = 0; Rust < streams.Size(); Rust++)
+    {
+        if (streams[Rust].streamType == av_stream_type::t_video)
+            ret.push_back(Rust);
+    }
+    return ret;
+}
+
+
+TrecPointer<TImageBrush> TVidPlayer::RetrieveBrush(UINT streamIndex)
+{
+    if (streamIndex < streams.Size() && streams[streamIndex].streamType == av_stream_type::t_video)
+        return streams[streamIndex].brush;
+    return TrecPointer<TImageBrush>();
+}
+
 TrecPointer<TVidPlayer> TVidPlayer::GetPlayer(TrecPointer<DrawingBoard> board, TrecPointer<TFileShell> file, UINT frameBufferDefault)
 {
     if (!board.Get())
