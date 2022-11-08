@@ -23,11 +23,41 @@ bool TInputTextElement::FindString(const TString& target, UINT& index, bool from
 
 void TInputTextElement::UpdateCarotPoisition(UINT loc)
 {
+	carotActive = false;
+	if (!drawingBoard.Get()) return;
+	for (UINT Rust = 0; Rust < lines.Size(); Rust++)
+	{
+		auto& line = lines[Rust];
+		if (loc >= line.strIndex && loc < (line.strIndex + line.characters.Size()))
+		{
+			auto& ch = line.characters[loc - line.strIndex];
+
+			drawingBoard->SetCaret(
+				GetTextInterceptor(),
+				TPoint(ch.location.left, ch.location.top),
+				TPoint(ch.location.left, ch.location.bottom));
+			carotActive = true;
+			carotLoc = loc;
+		}
+		if (loc == (line.strIndex + line.characters.Size()))
+		{
+			auto& ch = line.characters[line.characters.Size() -1];
+			drawingBoard->SetCaret(
+				GetTextInterceptor(),
+				TPoint(ch.location.left, ch.location.top),
+				TPoint(ch.location.left, ch.location.bottom));
+			carotActive = true;
+			carotLoc = loc;
+		}
+		if (carotActive)return;
+	}
 }
 
 bool TInputTextElement::GetCarotLoc(UINT& loc)
 {
-	return false;
+	if (carotActive)
+		loc = carotLoc;
+	return carotActive;
 }
 
 void TInputTextElement::OnDraw(TrecPointer<TVariable> dataText)
@@ -184,6 +214,7 @@ bool TInputTextElement::OnMouseMove(const TPoint& point)
 
 void TInputTextElement::OnCutCopyPaste(control_text_mode mode)
 {
+	//if()
 }
 
 bool TInputTextElement::OnInputChar(WCHAR ch, UINT count)
@@ -235,22 +266,27 @@ bool TInputTextElement::OnInputChar(WCHAR ch, UINT count)
 
 bool TInputTextElement::LockText(bool doLock)
 {
-	return false;
+	editAllowed = !doLock;
+	return true;
 }
 
 bool TInputTextElement::TakesInput()
 {
-	return false;
+	return editAllowed;
 }
 
 bool TInputTextElement::CanTakeInput()
 {
-	return false;
+	return true;
 }
 
 void TInputTextElement::OnLoseFocus()
 {
 	carotActive = false;
+	if (drawingBoard.Get())
+	{
+		drawingBoard->PauseCaret();
+	}
 }
 
 void TInputTextElement::OnTransferText(UINT newPos)
