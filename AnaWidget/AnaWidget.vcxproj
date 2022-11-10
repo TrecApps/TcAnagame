@@ -157,6 +157,7 @@
     <ClInclude Include="TDataNodeControl.h" />
     <ClInclude Include="TGadget.h" />
     <ClInclude Include="TGrid.h" />
+    <ClInclude Include="TIdeLayout.h" />
     <ClInclude Include="TLayout.h" />
     <ClInclude Include="TPage.h" />
     <ClInclude Include="TRadioButton.h" />
@@ -184,6 +185,7 @@
     <ClCompile Include="TDataNodeControl.cpp" />
     <ClCompile Include="TGadget.cpp" />
     <ClCompile Include="TGrid.cpp" />
+    <ClCompile Include="TIdeLayout.cpp" />
     <ClCompile Include="TLayout.cpp" />
     <ClCompile Include="TPage.cpp" />
     <ClCompile Include="TRadioButton.cpp" />
