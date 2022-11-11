@@ -21,13 +21,27 @@ bool DivideRectangle(const RECT_F& rect, bool vertical, bool isTotal, float& div
     return true;
 }
 
-void TIdeLayout::DrawSection(TrecPointer<TVariable> object, TrecPointer<IdeSection> section)
-{
-
-}
-
 bool TIdeLayout::onCreate(const RECT_F& loc, TrecPointer<TFileShell> d)
 {
+    TRandomLayout::onCreate(loc, d);
+
+    TString valpoint;
+    if (attributes.retrieveEntry(L"BorderThickness", valpoint))
+    {
+        valpoint.ConvertToFloat(thickness);
+    }
+    TColor col;
+    if (attributes.retrieveEntry(L"BorderColor", valpoint))
+    {
+        bool w;
+        col = TColor::GetColorFromString(valpoint, w);
+    }
+    dividerColor = TrecPointerKey::ConvertPointer<TBrush, TColorBrush>(drawingBoard->GetSolidColorBrush(col));
+
+    if (attributes.retrieveEntry(L"MouseSensitivity", valpoint))
+    {
+        valpoint.ConvertToFloat(mouseSensitivity);
+    }
     return false;
 }
 
@@ -45,6 +59,9 @@ TIdeLayout::~TIdeLayout()
 
 void TIdeLayout::Draw(TrecPointer<TVariable> object)
 {
+    TRandomLayout::Draw(object);
+    if (rootSection.Get())
+        rootSection->Draw(object, this->dividerColor, this->thickness);
 }
 
 void TIdeLayout::OnRButtonUp(UINT nFlags, const TPoint& point, message_output& mOut, TDataArray<EventID_Cred>& er)
@@ -52,12 +69,19 @@ void TIdeLayout::OnRButtonUp(UINT nFlags, const TPoint& point, message_output& m
     TRandomLayout::OnRButtonUp(nFlags, point, mOut, er);
     if (!DrawingBoard::IsContained(point, area))
         return;
+
+    if (rootSection.Get())
+        rootSection->OnClickEvent(click_section_event::right_up, nFlags, point, mOut, er);
 }
 
 void TIdeLayout::OnRButtonDown(UINT nFlags, const TPoint& point, message_output& mOut, TDataArray<EventID_Cred>& er)
 {
+    TRandomLayout::OnRButtonDown(nFlags, point, mOut, er);
     if (!DrawingBoard::IsContained(point, area))
         return;
+
+    if (rootSection.Get())
+        rootSection->OnClickEvent(click_section_event::right_down, nFlags, point, mOut, er);
 }
 
 void TIdeLayout::OnLButtonUp(UINT nFlags, const TPoint& point, message_output& mOut, TDataArray<EventID_Cred>& er)
@@ -66,6 +90,9 @@ void TIdeLayout::OnLButtonUp(UINT nFlags, const TPoint& point, message_output& m
     TRandomLayout::OnLButtonUp(nFlags, point, mOut, er);
     if (!DrawingBoard::IsContained(point, area))
         return;
+
+    if (rootSection.Get())
+        rootSection->OnClickEvent(click_section_event::left_up, nFlags, point, mOut, er);
 }
 
 void TIdeLayout::OnMouseMove(UINT nFlags, TPoint point, message_output& mOut, TDataArray<EventID_Cred>& er)
@@ -73,40 +100,63 @@ void TIdeLayout::OnMouseMove(UINT nFlags, TPoint point, message_output& mOut, TD
     if (!DrawingBoard::IsContained(point, area))
         return;
 
-    RECT_F bounds = area;
-    TrecPointer<IdeSection> section;
-
-    if (GetBounds(point, bounds, section))
+    if (captured.Get())
     {
-        if (section.Get())
+        float newBarrier = captured->isVertical ? (point.x - captured->bounds.left) : (point.y - captured->bounds.top);
+
+        if (DivideRectangle(captured->bounds, captured->isVertical, true, newBarrier))
         {
-            switch (section->GetSectionType())
+            captured->leftTop = newBarrier;
+            if (captured->first.Get())
             {
-            case ide_section_type::page:
-
-                break;
-            case ide_section_type::tab:
-
+                RECT_F r = captured->bounds;
+                if (captured->isVertical)
+                    r.right = newBarrier;
+                else
+                    r.bottom = newBarrier;
+                captured->first->OnResize(r, 0, er);
+            }if (captured->second.Get())
+            {
+                RECT_F r = captured->bounds;
+                if (captured->isVertical)
+                    r.left = newBarrier;
+                else
+                    r.top = newBarrier;
+                captured->second->OnResize(r, 0, er);
             }
         }
     }
+    else if (rootSection.Get())
+        rootSection->OnMouseMove(nFlags, point, mOut, er);
 }
 
 void TIdeLayout::OnLButtonDblClk(UINT nFlags, TPoint point, message_output& mOut, TDataArray<EventID_Cred>& args)
 {
+    TRandomLayout::OnLButtonDblClk(nFlags, point, mOut, args);
     if (!DrawingBoard::IsContained(point, area))
         return;
+    if (rootSection.Get())
+        rootSection->OnLButtonDblClk(nFlags, point, mOut, args);
 }
 
 void TIdeLayout::OnLButtonDown(UINT nFlags, const TPoint& point, message_output& mOut, TDataArray<EventID_Cred>& args)
 {
+    TRandomLayout::OnLButtonDown(nFlags, point, mOut, args);
     if (!DrawingBoard::IsContained(point, area))
         return;
+    if (rootSection.Get())
+        rootSection->OnClickEvent(click_section_event::left_down, nFlags, point, mOut, args);
+    RECT_F r;
+    TrecPointer<IdeSection> section;
+    if (GetBounds(point, r, section) && dynamic_cast<IdeDividerSection*>(section.Get()))
+        captured = TrecPointerKey::ConvertPointer<IdeSection, IdeDividerSection>(section);
 }
 
 void TIdeLayout::OnResize(RECT_F& newLoc, UINT nFlags, TDataArray<EventID_Cred>& eventAr)
 {
-    
+    TRandomLayout::OnResize(newLoc, nFlags, eventAr);
+    if (rootSection.Get())
+        rootSection->OnResize(newLoc, nFlags, eventAr);
 }
 
 bool TIdeLayout::OnScroll(bool, const TPoint& point, const TPoint& direction, TDataArray<EventID_Cred>& args)
@@ -375,6 +425,34 @@ void IdeDividerSection::OnResize(RECT_F& newLoc, UINT nFlags, TDataArray<TPage::
 
 }
 
+void IdeDividerSection::Draw(TrecPointer<TVariable> obj, TrecPointer<TColorBrush> col, float thickness)
+{
+    TPoint p1, p2;
+
+    if (!col.Get())
+        return;
+
+    if (isVertical)
+    {
+        p1.x = p2.x = leftTop;
+        p1.y = bounds.top;
+        p2.y = bounds.bottom;
+    }
+    else
+    {
+        p1.y = p2.y = leftTop;
+        p1.x = bounds.left;
+        p2.x = bounds.right;
+    }
+
+    col->DrawLine(p1, p2, thickness);
+
+    if (first.Get())
+        first->Draw(obj, col, thickness);
+    if (second.Get())
+        second->Draw(obj, col, thickness);
+}
+
 ide_section_type IdeTabSection::GetSectionType()
 {
     return ide_section_type::tab;
@@ -420,6 +498,12 @@ void IdeTabSection::OnResize(RECT_F& newLoc, UINT nFlags, TDataArray<TPage::Even
     bounds = newLoc;
 }
 
+void IdeTabSection::Draw(TrecPointer<TVariable> obj, TrecPointer<TColorBrush> col, float thickness)
+{
+    if (tab.Get())
+        tab->Draw(obj);
+}
+
 ide_section_type IdePageSection::GetSectionType()
 {
     return ide_section_type::page;
@@ -463,6 +547,12 @@ void IdePageSection::OnResize(RECT_F& newLoc, UINT nFlags, TDataArray<TPage::Eve
     if (this->tab.Get())
         tab->OnResize(newLoc, nFlags, eventAr);
     bounds = newLoc;
+}
+
+void IdePageSection::Draw(TrecPointer<TVariable> obj, TrecPointer<TColorBrush> col, float thickness)
+{
+    if (tab.Get())
+        tab->Draw(obj);
 }
 
 IdeSection::IdeSection()

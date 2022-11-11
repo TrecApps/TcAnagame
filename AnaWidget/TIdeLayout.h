@@ -30,6 +30,8 @@ public:
 	virtual void OnMouseMove(UINT nFlags, TPoint point, message_output& mOut, TDataArray<TPage::EventID_Cred>& er) = 0;
 	virtual void OnLButtonDblClk(UINT nFlags, TPoint point, message_output& mOut, TDataArray<TPage::EventID_Cred>& args) = 0;
 	virtual void OnResize(RECT_F& newLoc, UINT nFlags, TDataArray<TPage::EventID_Cred>& eventAr) = 0;
+
+	virtual void Draw(TrecPointer<TVariable> obj, TrecPointer<TColorBrush> col, float thickness) = 0;
 };
 
 class IdeDividerSection : public IdeSection
@@ -45,6 +47,8 @@ public:
 	virtual void OnMouseMove(UINT nFlags, TPoint point, message_output& mOut, TDataArray<TPage::EventID_Cred>& er) override;
 	virtual void OnLButtonDblClk(UINT nFlags, TPoint point, message_output& mOut, TDataArray<TPage::EventID_Cred>& args) override;
 	virtual void OnResize(RECT_F& newLoc, UINT nFlags, TDataArray<TPage::EventID_Cred>& eventAr) override;
+
+	void Draw(TrecPointer<TVariable> obj, TrecPointer<TColorBrush> col, float thickness) override;
 };
 
 class IdeTabSection : public IdeSection
@@ -58,6 +62,8 @@ public:
 	virtual void OnMouseMove(UINT nFlags, TPoint point, message_output& mOut, TDataArray<TPage::EventID_Cred>& er) override;
 	virtual void OnLButtonDblClk(UINT nFlags, TPoint point, message_output& mOut, TDataArray<TPage::EventID_Cred>& args) override;
 	virtual void OnResize(RECT_F& newLoc, UINT nFlags, TDataArray<TPage::EventID_Cred>& eventAr) override;
+
+	void Draw(TrecPointer<TVariable> obj, TrecPointer<TColorBrush> col, float thickness) override;
 };
 
 class IdePageSection : public IdeSection
@@ -71,6 +77,8 @@ public:
 	virtual void OnMouseMove(UINT nFlags, TPoint point, message_output& mOut, TDataArray<TPage::EventID_Cred>& er) override;
 	virtual void OnLButtonDblClk(UINT nFlags, TPoint point, message_output& mOut, TDataArray<TPage::EventID_Cred>& args) override;
 	virtual void OnResize(RECT_F& newLoc, UINT nFlags, TDataArray<TPage::EventID_Cred>& eventAr) override;
+
+	void Draw(TrecPointer<TVariable> obj, TrecPointer<TColorBrush> col, float thickness) override;
 };
 
 class TIdeLayout :
@@ -86,8 +94,6 @@ protected:
 	TrecPointer<IdeSection> rootSection;
 
 	TrecPointer<IdeDividerSection> captured;
-
-	void DrawSection(TrecPointer<TVariable> object, TrecPointer<IdeSection> section);
 
 public:
 	virtual bool onCreate(const RECT_F& loc, TrecPointer<TFileShell> d)override;
