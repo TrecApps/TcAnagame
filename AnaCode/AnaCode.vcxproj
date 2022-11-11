@@ -144,8 +144,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AnaCode.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="TcExpression.h" />
+    <ClInclude Include="TcNativeRunner.h" />
+    <ClInclude Include="TcObjectRunner.h" />
+    <ClInclude Include="TcOperator.h" />
+    <ClInclude Include="TcProcedureRunner.h" />
+    <ClInclude Include="TcStatement.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -155,6 +162,12 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TcExpression.cpp" />
+    <ClCompile Include="TcNativeRunner.cpp" />
+    <ClCompile Include="TcObjectRunner.cpp" />
+    <ClCompile Include="TcOperator.cpp" />
+    <ClCompile Include="TcProcedureRunner.cpp" />
+    <ClCompile Include="TcStatement.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
