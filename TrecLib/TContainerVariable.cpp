@@ -149,6 +149,18 @@ void TArrayVariable::Clear()
         
 }
 
+bool TArrayVariable::Update(TrecPointer<TVariable> data, UINT index)
+{
+    if (index > GetSize() || isStrict)
+        return false;
+
+    if (isStack)
+        arrayList[index]=(data);
+    else
+        linkedList.Update(data, index);
+    return true;
+}
+
 UINT TArrayVariable::GetSize()
 {
     return isStack ? arrayList.Size() : linkedList.GetSize();

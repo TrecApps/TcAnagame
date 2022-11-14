@@ -49,6 +49,8 @@ public:
 
 	void Clear();
 
+	bool Update(TrecPointer<TVariable> data, UINT index);
+
 	UINT GetSize() override;
 	var_type GetVarType() override;
 

@@ -99,6 +99,9 @@ public:
 
 	bool Inject(T& newData, UINT index)
 	{
+		if (index > size)
+			return false;
+
 		while (currentNode > index)
 			Prev();
 
@@ -121,6 +124,19 @@ public:
 			size++;
 		}
 		return true;
+	}
+
+	bool Update(T& newData, UINT index)
+	{
+		if (index > size)
+			return false;
+
+		while (currentNode > index)
+			Prev();
+
+		while (currentNode < index && Next());
+
+		current.pointer = newData;
 	}
 
 	UINT PushHead(T& newData)

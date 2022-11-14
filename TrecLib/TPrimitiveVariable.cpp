@@ -571,6 +571,11 @@ UINT TPrimitiveVariable::Get4Value()
     return ret;
 }
 
+ULONG64 TPrimitiveVariable::Get8Value()
+{
+    return value;
+}
+
 /**
  * Method: TPrimitiveVarible::GetSize
  * Purpose: Returns the estimated size of the value held

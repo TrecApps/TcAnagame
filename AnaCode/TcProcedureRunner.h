@@ -27,7 +27,10 @@ protected:
 
     TrecPointer<TEnvironment> environment;
     TrecPointerSoft<TcProcedureRunner> parentRunner;
+
+    TrecPointer<TVariable> object;
 public:
+    void SetMethodObject(TrecPointer<TVariable> methodObject);
     TcProcedureRunner(TrecPointer<TEnvironment> environment, TrecPointer<TcProcedureRunner> parentRunner);
 
     virtual void SetIntialVariables(TDataArray<TrecPointer<TVariable>>& params) = 0;
@@ -35,5 +38,9 @@ public:
     void SetParamNames(TDataArray<TString>& paramNames);
 
     void SetParamTypes(TDataArray<TString>& paramTypes);
+
+    bool GetVariable(const TString& name, TcVariableHolder& value);
+
+    bool UpdateVariable(const TString& name, const TString& type, TrecPointer<TVariable> value, bool appendLocal = true);
 };
 

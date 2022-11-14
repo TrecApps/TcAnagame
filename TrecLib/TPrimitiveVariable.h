@@ -37,6 +37,8 @@ public:
      */
     virtual UINT Get4Value()override;
 
+    ULONG64 Get8Value();
+
 
     /**
      * Method: TPrimitiveVarible::GetSize
