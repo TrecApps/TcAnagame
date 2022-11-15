@@ -1,19 +1,6 @@
 #pragma once
 #include <TcRunner.h>
 
-class _TREC_LIB_DLL TcOperator :
-    public TCoreObject
-{
-public:
-    virtual void IsTruthful(TrecPointer<TVariable> v1, ReturnObject& obj) = 0;
-
-    virtual void Add(TrecPointer<TVariable> v1, TrecPointer<TVariable> v2, ReturnObject& obj) = 0;
-    virtual void Sub(TrecPointer<TVariable> v1, TrecPointer<TVariable> v2, ReturnObject& obj) = 0;
-    virtual void Mul(TrecPointer<TVariable> v1, TrecPointer<TVariable> v2, ReturnObject& obj) = 0;
-    virtual void Div(TrecPointer<TVariable> v1, TrecPointer<TVariable> v2, ReturnObject& obj) = 0;
-    virtual void Mod(TrecPointer<TVariable> v1, TrecPointer<TVariable> v2, ReturnObject& obj) = 0;
-    virtual void Pow(TrecPointer<TVariable> v1, TrecPointer<TVariable> v2, ReturnObject& obj) = 0;
-};
 union doubleLong
 {
     LONG64 s;
@@ -132,3 +119,54 @@ typedef enum class tc_int_op
     conditional,
     separator
 }tc_int_op;
+
+class _TREC_LIB_DLL TcOperator :
+    public TObject
+{
+public:
+    virtual void IsTruthful(TrecPointer<TVariable> v1, ReturnObject& obj) = 0;
+    virtual bool CondenseToBoolean() = 0;
+
+    virtual void Add(TrecPointer<TVariable> v1, TrecPointer<TVariable> v2, ReturnObject& obj) = 0;
+    virtual void Sub(TrecPointer<TVariable> v1, TrecPointer<TVariable> v2, ReturnObject& obj) = 0;
+    virtual void Mul(TrecPointer<TVariable> v1, TrecPointer<TVariable> v2, ReturnObject& obj) = 0;
+    virtual void Div(TrecPointer<TVariable> v1, TrecPointer<TVariable> v2, ReturnObject& obj) = 0;
+    virtual void Mod(TrecPointer<TVariable> v1, TrecPointer<TVariable> v2, ReturnObject& obj) = 0;
+    virtual void Pow(TrecPointer<TVariable> v1, TrecPointer<TVariable> v2, ReturnObject& obj) = 0;
+
+    virtual void EqualityCheck(TrecPointer<TVariable> v1, TrecPointer<TVariable> v2, tc_int_op op, ReturnObject& obj) = 0;
+
+    void IsTruthful(TrecPointer<TVariable> v1, bool& worked, bool& truthful, ReturnObject& ret);
+
+    void LogicalOp(TrecPointer<TVariable> v1, TrecPointer<TVariable> v2, tc_int_op op, ReturnObject& obj);
+    void BitwiseOp(TrecPointer<TVariable> v1, TrecPointer<TVariable> v2, tc_int_op op, ReturnObject& obj);
+};
+
+class TcOperatorGroup
+{
+    TDataArray<tc_int_op> operators;
+    bool leftToRight;
+public:
+    TcOperatorGroup() = default;
+    TcOperatorGroup(const TcOperatorGroup& copy) = default;
+    
+    void SetLeftToRight(bool b);
+    void AppendOperator(tc_int_op op);
+
+    bool IsLeftToRight();
+    bool ContainsOperator(tc_int_op op);
+};
+
+class TcOperatorGroupList : public TVObject
+{
+    TDataArray<TcOperatorGroup> opList;
+
+public:
+    TcOperatorGroupList() = default;
+    TcOperatorGroupList(const TcOperatorGroupList& copy) = default;
+
+    bool SetVariable(const TString& name, TrecPointer<TVariable> var) override;
+
+    UINT GetGroupCount();
+    bool GetGroup(TcOperatorGroup& group, UINT Rust);
+};

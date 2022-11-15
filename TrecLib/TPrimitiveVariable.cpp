@@ -526,6 +526,16 @@ bool TPrimitiveVariable::BitShift(bool rightShift, UINT shiftCount, USHORT flags
     return true;
 }
 
+TrecPointer<TVariable> TPrimitiveVariable::GetFalse()
+{
+    return TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TPrimitiveVariable>(false);
+}
+
+TrecPointer<TVariable> TPrimitiveVariable::GetTrue()
+{
+    return TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TPrimitiveVariable>(true);
+}
+
 TrecPointer<TVariable> TPrimitiveVariable::Clone()
 {
     

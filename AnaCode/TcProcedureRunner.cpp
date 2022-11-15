@@ -30,6 +30,16 @@ TcProcedureRunner::TcProcedureRunner(TrecPointer<TEnvironment> environment, Trec
 	this->parentRunner = TrecPointerKey::SoftFromTrec<>(parentRunner);
 }
 
+void TcProcedureRunner::SetOperatorGroupList(TrecPointer<TcOperatorGroupList> opList)
+{
+	this->operatorGroupList = opList;
+}
+
+TrecPointer<TcOperatorGroupList> TcProcedureRunner::GetOperatorGroupList()
+{
+	return operatorGroupList;
+}
+
 void TcProcedureRunner::SetParamNames(TDataArray<TString>& paramNames)
 {
 	this->paramNames = paramNames;

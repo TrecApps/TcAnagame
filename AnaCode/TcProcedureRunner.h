@@ -3,6 +3,7 @@
 #include <TcRunner.h>
 #include <TDataMap.h>
 #include <TEnvironment.h>
+#include "TcOperator.h"
 
 class _ANA_CODE TcVariableHolder
 {
@@ -29,9 +30,14 @@ protected:
     TrecPointerSoft<TcProcedureRunner> parentRunner;
 
     TrecPointer<TVariable> object;
+
+    TrecPointer<TcOperatorGroupList> operatorGroupList;
 public:
     void SetMethodObject(TrecPointer<TVariable> methodObject);
     TcProcedureRunner(TrecPointer<TEnvironment> environment, TrecPointer<TcProcedureRunner> parentRunner);
+
+    void SetOperatorGroupList(TrecPointer<TcOperatorGroupList> opList);
+    TrecPointer<TcOperatorGroupList> GetOperatorGroupList();
 
     virtual void SetIntialVariables(TDataArray<TrecPointer<TVariable>>& params) = 0;
 

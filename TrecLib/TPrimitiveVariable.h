@@ -313,6 +313,9 @@ public:
      */
     bool BitShift(bool rightShift, UINT shiftCount, USHORT flags = 0);
 
+    static TrecPointer<TVariable> GetFalse();
+    static TrecPointer<TVariable> GetTrue();
+
 private:
     /**
      * The actual value being held

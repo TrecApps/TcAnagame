@@ -1,5 +1,72 @@
 #include "TcOperator.h"
 #include "TPrimitiveVariable.h"
+#include <TContainerVariable.h>
+
+using OpMap = struct OpMap {
+	tc_int_op op;
+	TString opName;
+};
+
+OpMap opMap[] = {
+	// Artihmetic
+	{tc_int_op::add, L"Add"},
+	{tc_int_op::add_assign, L"AddAssign"},
+	{tc_int_op::sub, L"Sub"},
+	{tc_int_op::sub_assign, L"SubAssign"},
+	{tc_int_op::mult, L"Mult"},
+	{tc_int_op::mul_assign, L"MultAssign"},
+	{tc_int_op::div, L"Div"},
+	{tc_int_op::div_assign, L"DivAssign"},
+	{tc_int_op::mod, L"Mod"},
+	{tc_int_op::mod_assign, L"ModAssign"},
+	{tc_int_op::pow, L"Pow"},
+	{tc_int_op::pow_assign, L"PowAssign"},
+	// Logical Ops
+	{tc_int_op::and_l, L"LogicalAnd"},
+	{tc_int_op::or_l, L"LogicalOr"},
+	{tc_int_op::xor_l, L"LogicalXor"},
+	{tc_int_op::not_l, L"LogicalNot"},
+	{tc_int_op::and_assign, L"LogicalAndAssign"},
+	{tc_int_op::or_assign, L"LogicalOrAssign"},
+	{tc_int_op::xor_assign, L"LogicalXorAssign"},
+	// Bitwise Ops
+	{tc_int_op::and_b, L"BitwiseAnd"},
+	{tc_int_op::or_b, L"BitwiseOr"},
+	{tc_int_op::xor_b, L"BitwiseXor"},
+	{tc_int_op::left_b, L"BitwiseLeft"},
+	{tc_int_op::right_b, L"BitwiseRight"},
+	{tc_int_op::b_and_assign, L"BitwiseAnd"},
+	{tc_int_op::b_or_assign, L"BitwiseOr"},
+	{tc_int_op::b_xor_assign, L"BitwiseXor"},
+	{tc_int_op::b_left_assign, L"BitwiseLeft"},
+	{tc_int_op::b_right_assign, L"BitwiseRight"},
+	// Equality
+	{tc_int_op::eq, L"Equals"},
+	{tc_int_op::eq_t, L"TypeEquals"},
+	{tc_int_op::gt, L"GreaterThan"},
+	{tc_int_op::gte, L"GreaterThanEquals"},
+	{tc_int_op::lt, L"LessThan"},
+	{tc_int_op::lte, L"LessThanEquals"},
+	{tc_int_op::not_e, L"NotEquals"},
+	{tc_int_op::not_e_t, L"NotTypeEquals"},
+	// Other
+	{tc_int_op::basic_exp, L"BasicExpansion"},
+	{tc_int_op::point_exp, L"PointExpansion"},
+	{tc_int_op::reg_assign, L"RegAssign"},
+	{tc_int_op::conditional, L"Conditional"},
+	{tc_int_op::separator, L"Separator"}
+
+};
+
+tc_int_op GetOpFromString(const TString& opName)
+{
+	for (UINT Rust = 0; Rust < ARRAYSIZE(opMap); Rust++)
+	{
+		if (!opName.Compare(opMap[Rust].opName))
+			return opMap[Rust].op;
+	}
+	return tc_int_op::none;
+}
 
 DoubleLong::DoubleLong(ULONG64 val)
 {
@@ -691,4 +758,201 @@ TString GetStringFromPrimitive(TrecPointer<TVariable> var)
 		}
 	}
 	return strValue;
+}
+
+void TcOperatorGroup::SetLeftToRight(bool b)
+{
+	this->leftToRight = b;
+}
+
+void TcOperatorGroup::AppendOperator(tc_int_op op)
+{
+	this->operators.push_back(op);
+}
+
+bool TcOperatorGroup::IsLeftToRight()
+{
+	return this->leftToRight;
+}
+
+bool TcOperatorGroup::ContainsOperator(tc_int_op op)
+{
+	for (UINT Rust = 0; Rust < operators.Size(); Rust++)
+	{
+		if (operators[Rust] == op)
+			return true;
+	}
+	return false;
+}
+
+bool TcOperatorGroupList::SetVariable(const TString& name, TrecPointer<TVariable> var)
+{
+	TrecPointer<TArrayVariable> groups = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(var);
+	if(!groups.Get())
+		return false;
+	TrecPointer<TVariable> element;
+
+	bool works = true;
+
+	for (UINT Rust = 0; works && groups->At(element, Rust); Rust++)
+	{
+		TrecPointer<TJsonVariable> group = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(element);
+		if (!group.Get())
+		{
+			works = false;
+			break;
+		}
+		TrecPointer<TVariable> leftToRight;
+		TrecPointer<TVariable> ops;
+		if (!group->RetrieveField(L"LeftToRight", leftToRight) && !group->RetrieveField(L"OpList", ops))
+		{
+			works = false;
+			break;
+		}
+
+		TrecPointer<TPrimitiveVariable> actLeftToRight = TrecPointerKey::ConvertPointer<TVariable, TPrimitiveVariable>(leftToRight);
+		TrecPointer<TArrayVariable> actOps = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(ops);
+
+		if (!actLeftToRight.Get() || !actOps.Get())
+		{
+			works = false;
+			break;
+		}
+
+		TDataArray<tc_int_op> opsList;
+
+		TrecPointer<TVariable> opName;
+
+		for (UINT C = 0; actOps->At(opName, C); C++)
+		{
+			TrecPointer<TStringVariable> strOpName = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(opName);
+			if (!strOpName.Get())
+			{
+				works = false;
+				break;
+			}
+
+			tc_int_op curOp = GetOpFromString(strOpName->GetString());
+
+			if (curOp == tc_int_op::none)
+			{
+				works = false;
+				break;
+			}
+
+			opsList.push_back(curOp);
+		}
+
+		TcOperatorGroup newGroup;
+		newGroup.SetLeftToRight(actLeftToRight->Get4Value() > 0);
+		for (UINT C = 0; C < opsList.Size(); C++)
+		{
+			newGroup.AppendOperator(opsList[C]);
+		}
+
+		this->opList.push_back(newGroup);
+	}
+	if (!works)
+		opList.RemoveAll();
+
+	return works;
+}
+
+UINT TcOperatorGroupList::GetGroupCount()
+{
+	return this->opList.Size();
+}
+
+bool TcOperatorGroupList::GetGroup(TcOperatorGroup& group, UINT Rust)
+{
+	if(Rust >= opList.Size())
+		return false;
+	group = opList[Rust];
+	return true;
+}
+
+void TcOperator::IsTruthful(TrecPointer<TVariable> v1, bool& worked, bool& truthful, ReturnObject& ret)
+{
+	IsTruthful(v1, ret);
+	worked = ret.returnCode == 0;
+
+	truthful = ret.errorObject->Get4Value() != 0;
+}
+
+void TcOperator::LogicalOp(TrecPointer<TVariable> v1, TrecPointer<TVariable> v2, tc_int_op op, ReturnObject& obj)
+{
+	bool b1, b2, worked;
+	IsTruthful(v1, worked, b1, obj);
+	if (!worked)
+		return;
+	IsTruthful(v2, worked, b2, obj);
+	if (!worked)
+		return;
+
+	bool doCondense = CondenseToBoolean();
+
+	switch (op)
+	{
+	case tc_int_op::and_l:
+	case tc_int_op::and_assign:
+		obj.errorObject = doCondense ? TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TPrimitiveVariable>(b1 && b2) : (!b1 ? v1 : v2);
+		return;
+	case tc_int_op::or_l:
+	case tc_int_op::or_assign:
+		obj.errorObject = doCondense ? TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TPrimitiveVariable>(b1 || b2) : (b1 ? v1 : v2);
+		return;
+	case tc_int_op::xor_l:
+	case tc_int_op::xor_assign:
+		obj.errorObject = doCondense ? TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TPrimitiveVariable>(b1 ^ b2) : ((b1 && b2) ? TPrimitiveVariable::GetFalse() : (b1 ? v1 : v2));
+		return;
+	default:
+		obj.returnCode = obj.ERR_INTERNAL;
+		obj.errorMessage.Set("Unexpected Operator passed into Logical Operator Processor!");
+	}
+}
+
+void TcOperator::BitwiseOp(TrecPointer<TVariable> v1, TrecPointer<TVariable> v2, tc_int_op op, ReturnObject& obj)
+{
+	DoubleLong dl1 = DoubleLong::GetValueFromPrimitive(v1);
+	DoubleLong dl2 = DoubleLong::GetValueFromPrimitive(v2);
+
+	if (dl1.type == double_long::dl_invalid || dl2.type == double_long::dl_invalid)
+	{
+		obj.returnCode = obj.ERR_IMPROPER_TYPE;
+		obj.errorMessage.Set(L"Bitwise Operations need to be performed on numeric types!");
+		return;
+	}
+
+	ULONG64 baseValue, shiftValue;
+
+	switch (op)
+	{
+	case tc_int_op::and_b:
+	case tc_int_op::b_and_assign:
+		obj.errorObject = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TPrimitiveVariable>(dl1.GetBitAnd(dl2));
+		return;
+	case tc_int_op::or_b:
+	case tc_int_op::b_or_assign:
+		obj.errorObject = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TPrimitiveVariable>(dl1.GetBitOr(dl2));
+		return;
+	case tc_int_op::xor_b:
+	case tc_int_op::b_xor_assign:
+		obj.errorObject = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TPrimitiveVariable>(dl1.GetBitXor(dl2));
+		return;
+	case tc_int_op::left_b:
+	case tc_int_op::b_left_assign:
+		baseValue = dl1.ToUnsignedLong();
+		shiftValue = dl2.ToUnsignedLong();
+		obj.errorObject = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TPrimitiveVariable>(baseValue << shiftValue);
+		return;
+	case tc_int_op::right_b:
+	case tc_int_op::b_right_assign:
+		baseValue = dl1.ToUnsignedLong();
+		shiftValue = dl2.ToUnsignedLong();
+		obj.errorObject = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TPrimitiveVariable>(baseValue >> shiftValue);
+		return;
+	default:
+		obj.returnCode = obj.ERR_INTERNAL;
+		obj.errorMessage.Set("Unexpected Operator passed into Bitwise Operator Processor!");
+	}
 }
