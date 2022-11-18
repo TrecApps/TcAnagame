@@ -1,6 +1,6 @@
 #pragma once
 #include "TRandomLayout.h"
-#include "AnafacePage.h"
+#include "TSwitchControl.h"
 
 using ide_section_type = enum class ide_section_type
 {
@@ -54,7 +54,7 @@ public:
 class IdeTabSection : public IdeSection
 {
 	friend class TIdeLayout;
-	TrecPointer<AnafacePage> tab;
+	TrecPointer<TSwitchControl> tab;
 public:
     ide_section_type GetSectionType() override;
 
@@ -131,7 +131,11 @@ public:
 	// Methods for Manipulating Sections
 	TrecPointer<IdeSection> GetRootSection();
 	bool AppendSection(TrecPointer<IdeSection> section, TrecPointer<TPage> page);
-	bool AppendSection(TrecPointer<IdeSection> section, TrecPointer<AnafacePage> tabs);
+	bool AppendSection(TrecPointer<IdeSection> section, TrecPointer<TSwitchControl> tabs);
+
+	TrecPointer<IdeSection> GetFirstSection(TrecPointer<IdeSection> section);
+	TrecPointer<IdeSection> GetSecondSection(TrecPointer<IdeSection> section);
+
 	bool DivideSection(TrecPointer<IdeSection> section, bool verticle, bool totalSpace, float dividePoint);
 	bool GetBounds(const TPoint& point, RECT_F& bounds, TrecPointer<IdeSection>& section);
 	bool GetBounds(TrecPointer<IdeSection> section, RECT_F& bounds);

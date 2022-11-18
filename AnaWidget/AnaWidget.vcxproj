@@ -163,6 +163,7 @@
     <ClInclude Include="TRadioButton.h" />
     <ClInclude Include="TRandomLayout.h" />
     <ClInclude Include="TScrollerPage.h" />
+    <ClInclude Include="TSwitchControl.h" />
     <ClInclude Include="TTextInput.h" />
     <ClInclude Include="TTextLayout.h" />
     <ClInclude Include="TVideoControl.h" />
@@ -191,6 +192,7 @@
     <ClCompile Include="TRadioButton.cpp" />
     <ClCompile Include="TRandomLayout.cpp" />
     <ClCompile Include="TScrollerPage.cpp" />
+    <ClCompile Include="TSwitchControl.cpp" />
     <ClCompile Include="TTextInput.cpp" />
     <ClCompile Include="TTextLayout.cpp" />
     <ClCompile Include="TVideoControl.cpp" />

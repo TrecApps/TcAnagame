@@ -191,7 +191,7 @@ TrecPointer<IdeSection> TIdeLayout::GetRootSection()
     return rootSection;
 }
 
-bool TIdeLayout::AppendSection(TrecPointer<IdeSection> section, TrecPointer<AnafacePage> page)
+bool TIdeLayout::AppendSection(TrecPointer<IdeSection> section, TrecPointer<TSwitchControl> page)
 {
     if (!page.Get())return false;
     if (!section.Get() || section->GetSectionType() != ide_section_type::divider)
@@ -223,6 +223,24 @@ bool TIdeLayout::AppendSection(TrecPointer<IdeSection> section, TrecPointer<Anaf
     }
     TDataArray<TPage::EventID_Cred> cred;
     page->OnResize(section->bounds, 0, cred);
+}
+
+TrecPointer<IdeSection> TIdeLayout::GetFirstSection(TrecPointer<IdeSection> section)
+{
+    if (!section.Get() || section->GetSectionType() != ide_section_type::divider)
+        return TrecPointer<IdeSection>();
+
+    TrecPointer<IdeDividerSection> divSection = TrecPointerKey::ConvertPointer<IdeSection, IdeDividerSection>(section);
+    return divSection->first;
+}
+
+TrecPointer<IdeSection> TIdeLayout::GetSecondSection(TrecPointer<IdeSection> section)
+{
+    if (!section.Get() || section->GetSectionType() != ide_section_type::divider)
+        return TrecPointer<IdeSection>();
+
+    TrecPointer<IdeDividerSection> divSection = TrecPointerKey::ConvertPointer<IdeSection, IdeDividerSection>(section);
+    return divSection->second;
 }
 
 bool TIdeLayout::AppendSection(TrecPointer<IdeSection> section, TrecPointer<TPage> page)
@@ -261,6 +279,13 @@ bool TIdeLayout::AppendSection(TrecPointer<IdeSection> section, TrecPointer<TPag
 
 bool TIdeLayout::DivideSection(TrecPointer<IdeSection> section, bool verticle, bool totalSpace, float dividePoint)
 {
+    if (!rootSection.Get())
+    {
+        rootSection = TrecPointerKey::GetNewTrecPointerAlt<IdeSection, IdeDividerSection>();
+        rootSection->bounds = this->area;
+        section = rootSection;
+    }
+
     if(!section.Get() || section->GetSectionType() != ide_section_type::divider)
         return false;
 

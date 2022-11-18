@@ -109,6 +109,7 @@ protected:
 template<class T> class _TREC_LIB_DLL TrecPointer : public TrecPointerBase
 {
 	friend class TrecPointerKey;
+	friend class TrecActivePointer;
 	
 
 	explicit TrecPointer(T* raw)
@@ -169,6 +170,43 @@ public:
 		auto ret = Get();
 		if (!ret)
 			throw 0;
+		return ret;
+	}
+};
+
+// These are guaranteed to be not null
+template<class T> class _TREC_LIB_DLL TrecActivePointer : public TrecPointerBase
+{
+	friend class TrecPointerKey;
+
+public:
+
+	TrecActivePointer(const TrecActivePointer<T>& copy)
+	{
+		pointer = copy.pointer;
+		Increment();
+	}
+
+	TrecActivePointer(const TrecPointer<T>& copy)
+	{
+		auto temp = copy;
+		if (!temp.Get())
+			throw 0;
+		pointer = copy.pointer;
+		Increment();
+	}
+
+	~TrecActivePointer()
+	{
+		// Make sure we decriment the coutner before deletion is complete
+		Decrement();
+	}
+
+	TrecPointer<T> Extract()
+	{
+		TrecPointer<T> ret;
+		ret.pointer = this->pointer;
+		Increment();
 		return ret;
 	}
 };

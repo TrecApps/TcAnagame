@@ -23,6 +23,39 @@ void BasicAnagameEnvironment::RetrieveResourceListSub(TDataArray<TString>& resou
 	resources.push_back(resourceAnaface);
 }
 
+BasicAnagameEnvironment::BasicAnagameEnvironment()
+{
+	this->anagame = TrecPointerKey::GetNewTrecPointerAlt<TEnvironment, AppDataEnvironment>();
+	this->user = TrecPointerKey::GetNewTrecPointerAlt<TEnvironment, UserProfileEnvironment>();
+}
+
+void BasicAnagameEnvironment::SetProject(TrecActivePointer<AGProjectEnvironment> projectEnvironment)
+{
+	if (this->project.Get())
+		this->project->Save();
+
+	this->project = projectEnvironment.Extract();
+}
+
+void BasicAnagameEnvironment::SetProperty(const TString& name, TrecPointer<TVariable> var, env_target target)
+{
+	switch (target)
+	{
+	case env_target::anagame:
+		anagame->SetProperty(name, var, true);
+		break;
+	case env_target::user:
+		user->SetProperty(name, var, true);
+		break;
+	case env_target::project:
+		if (project.Get())
+			project->SetProperty(name, var, true);
+		break;
+	default:
+		TEnvironment::SetProperty(name, var, true);
+	}
+}
+
 TrecPointer<TPage> AnafaceBuilder::GetPage(const TString& details)
 {
 	return TrecPointer<TPage>();
@@ -172,4 +205,10 @@ AppDataEnvironment::~AppDataEnvironment()
 	assert(reader.Get());
 
 	reader->Write(vProps);
+}
+
+AGProjectEnvironment::AGProjectEnvironment(const TString& name, TrecActivePointer<TFileShell> directory)
+{
+	this->projectName.Set(name);
+	this->directory = directory.Extract();
 }

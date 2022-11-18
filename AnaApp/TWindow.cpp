@@ -35,6 +35,11 @@ void TWindow::HandleWindowEvents(TDataArray<TPage::EventID_Cred>& cred)
 
 }
 
+TrecPointer<DrawingBoard> TWindow::GetDrawingBoard()
+{
+    return TrecPointerKey::TrecFromSoft<DrawingBoard>(this->self);
+}
+
 void TWindow::SetMainPage(TrecPointer<TPage> mainPage)
 {
     this->mainPage = mainPage;

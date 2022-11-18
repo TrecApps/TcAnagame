@@ -59,7 +59,7 @@ class _TC_GRAPH DrawingBoard :
 {
     friend class CaretRunner;
 
-    TrecPointerSoft<DrawingBoard> self;
+
     TColor defaultClearColor;
 
     shader_type shaderType;
@@ -79,6 +79,8 @@ class _TC_GRAPH DrawingBoard :
     void DrawCaret();
 
 protected:
+    TrecPointerSoft<DrawingBoard> self;
+
     glm::mat4 orthoProjection; 
 
     AnagameCaret caret;

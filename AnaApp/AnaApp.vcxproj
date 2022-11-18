@@ -148,6 +148,7 @@
     <ClInclude Include="AnagameEnvironment.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="TIdeWindow.h" />
     <ClInclude Include="TInstance.h" />
     <ClInclude Include="TWindow.h" />
   </ItemGroup>
@@ -160,6 +161,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TIdeWindow.cpp" />
     <ClCompile Include="TInstance.cpp" />
     <ClCompile Include="TWindow.cpp" />
   </ItemGroup>

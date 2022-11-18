@@ -26,7 +26,9 @@ protected:
 
 public:
 
-    void SetMainPage(TrecPointer<TPage> mainPage);
+    TrecPointer<DrawingBoard> GetDrawingBoard();
+
+    virtual void SetMainPage(TrecPointer<TPage> mainPage);
 
     void OnChar(UINT ch);
     void OnMouseMove(double x, double y);

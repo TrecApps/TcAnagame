@@ -14,7 +14,7 @@
 #include "TDataNodeControl.h"
 #include "TTextLayout.h"
 //#include "TTextCombobox.h"
-//#include "TSwitchControl.h"
+#include "TSwitchControl.h"
 
 TString objectTypes[] = {
 	L"TControl",		// Basic Control
@@ -158,11 +158,11 @@ TrecPointer<TPage> AnafacePage::HandleControl(const TString& name, TString& resu
 		ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TDataLayout>(this->drawingBoard, styles);
 		curLd.isLayout = true;
 	}
-	//if (name.StartsWith(L"TSwitchControl"))
-	//{
-	//	ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TSwitchControl>(this->drawingBoard, styles);
-	//	curLd.isLayout = true;
-	//}
+	if (name.StartsWith(L"TSwitchControl"))
+	{
+		ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TSwitchControl>(this->drawingBoard, styles);
+		curLd.isLayout = true;
+	}
 
 	// Just a Basic TControl
 	if (name.StartsWith(L"TControl", true))

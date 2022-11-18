@@ -1,13 +1,16 @@
 #include <TPage.h>
 #include <TEnvironment.h>
 #include "AnaApp.h"
-class _ANA_APP BasicAnagameEnvironment :
-    public TEnvironment
-{
-protected:
-    TrecPointer<TObject> RetrieveResource(const TString& name) override;
-    void RetrieveResourceListSub(TDataArray<TString>& resources) override;
+
+using env_target = enum class env_target {
+    user,
+    anagame,
+    project,
+    other
 };
+
+
+
 
 class _ANA_APP AnafaceBuilder : public TPageBuilder
 {
@@ -36,4 +39,31 @@ protected:
 public:
     AppDataEnvironment();
     ~AppDataEnvironment();
+};
+
+class _ANA_APP AGProjectEnvironment : public TEnvironment
+{
+protected:
+    TString projectName;
+    TrecPointer<TFileShell> directory;
+public:
+    virtual TString Save() = 0;
+
+    AGProjectEnvironment(const TString& name, TrecActivePointer<TFileShell> directory);
+};
+
+class _ANA_APP BasicAnagameEnvironment :
+    public TEnvironment
+{
+    TrecPointer<TEnvironment> anagame, user;
+    TrecPointer<AGProjectEnvironment> project;
+protected:
+    TrecPointer<TObject> RetrieveResource(const TString& name) override;
+    void RetrieveResourceListSub(TDataArray<TString>& resources) override;
+
+public:
+    BasicAnagameEnvironment();
+    void SetProject(TrecActivePointer<AGProjectEnvironment> projectEnvironment);
+    void SetProperty(const TString& name, TrecPointer<TVariable> var, env_target target);
+
 };
