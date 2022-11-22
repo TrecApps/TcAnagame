@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\..\glm;..\..\Freetype_2.0\include;..\..\GLFW\include;..\TrecLib;..\TcGraph;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\ffmpeg\include;..\..\glm;..\..\Freetype_2.0\include;..\..\GLFW\include;..\TrecLib;..\TcGraph;$(IncludePath)</IncludePath>
     <LibraryPath>..\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

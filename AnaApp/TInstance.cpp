@@ -1,5 +1,6 @@
 #include <GLFW/glfw3.h>
 #include "TInstance.h"
+#include "TIdeWindow.h"
 
 
 TrecPointer<TWindow> TInstance::GetWindow(GLFWwindow* win)
@@ -70,8 +71,16 @@ UINT TInstance::GenerateWindow(TrecPointer<TWindow>& window, TrecPointer<TFileSh
 	if (!glfwWindow)
 		return 1;
 
-	TrecPointer<DrawingBoard> board = TrecPointerKey::GetNewSelfTrecPointerAlt<DrawingBoard, TWindow>(glfwWindow);
-
+	TrecPointer<DrawingBoard> board;
+	
+	switch (type)
+	{
+	case t_window_type::t_window_type_ide:
+		board = TrecPointerKey::GetNewSelfTrecPointerAlt<DrawingBoard, TIdeWindow>(glfwWindow);
+		break;
+	default:
+		board = TrecPointerKey::GetNewSelfTrecPointerAlt<DrawingBoard, TWindow>(glfwWindow);
+	}
 	// To-Do: Other Initialization
 
 

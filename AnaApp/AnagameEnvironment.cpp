@@ -34,7 +34,7 @@ void BasicAnagameEnvironment::SetProject(TrecActivePointer<AGProjectEnvironment>
 	if (this->project.Get())
 		this->project->Save();
 
-	this->project = projectEnvironment.Extract();
+	this->project = TrecPointerKey::ActiveToTrec(projectEnvironment);
 }
 
 void BasicAnagameEnvironment::SetProperty(const TString& name, TrecPointer<TVariable> var, env_target target)
@@ -210,5 +210,5 @@ AppDataEnvironment::~AppDataEnvironment()
 AGProjectEnvironment::AGProjectEnvironment(const TString& name, TrecActivePointer<TFileShell> directory)
 {
 	this->projectName.Set(name);
-	this->directory = directory.Extract();
+	this->directory = TrecPointerKey::ActiveToTrec(directory);
 }

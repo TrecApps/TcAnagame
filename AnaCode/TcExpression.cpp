@@ -12,6 +12,31 @@ bool TcExpression::CanAssign()
     return false;
 }
 
+TrecPointer<TVariable> TcExpression::Clone()
+{
+    return TrecPointer<TVariable>();
+}
+
+TrecPointer<TVariable> TcExpression::ToString(TrecPointer<TVariable>)
+{
+    return TrecPointer<TVariable>();
+}
+
+TrecPointer<TVariable> TcExpression::ToString()
+{
+    return TrecPointer<TVariable>();
+}
+
+UINT TcExpression::Get4Value()
+{
+    return 0;
+}
+
+UINT TcExpression::GetSize()
+{
+    return 0;
+}
+
 bool TcAssignableExpression::CanAssign()
 {
     return true;
@@ -489,7 +514,7 @@ bool TcGroupExpression::ProcessExpression(
 
     case tc_int_op::basic_exp:
     case tc_int_op::point_exp:
-
+        break;
     }
 
     if (ret.returnCode)
@@ -556,7 +581,7 @@ void TcGroupExpression::Express(TrecPointer<TcProcedureRunner> runner, TrecPoint
             {
                 if (ProcessExpression(expressionCopy, operatorsCopy, runner, environment, ret, C, group, theOps))
                 {
-                    expressionCopy[C] = TrecPointerKey::GetNewSelfTrecPointerAlt<TcExpression, TcValueExpression>(ret.errorObject);
+                    expressionCopy[C] = TrecPointerKey::ConvertPointer<TVariable, TcExpression>( TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TcValueExpression>(ret.errorObject));
                     expressionCopy.RemoveAt(C + 1);
                     operatorsCopy.RemoveAt(C--);
                 }
@@ -568,7 +593,7 @@ void TcGroupExpression::Express(TrecPointer<TcProcedureRunner> runner, TrecPoint
             {
                 if (ProcessExpression(expressionCopy, operatorsCopy, runner, environment, ret, C, group, theOps))
                 {
-                    expressionCopy[C] = TrecPointerKey::GetNewSelfTrecPointerAlt<TcExpression, TcValueExpression>(ret.errorObject);
+                    expressionCopy[C] = TrecPointerKey::ConvertPointer<TVariable, TcExpression>( TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TcValueExpression>(ret.errorObject));
                     expressionCopy.RemoveAt(C + 1);
                     operatorsCopy.RemoveAt(C++);
                 }

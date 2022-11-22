@@ -203,7 +203,7 @@ bool TIdeLayout::AppendSection(TrecPointer<IdeSection> section, TrecPointer<TSwi
         return false;
     TrecPointer<IdeTabSection> pageSection = TrecPointerKey::GetNewTrecPointer<IdeTabSection>();
     pageSection->tab = page;
-    TrecPointer<IdeSection> section = TrecPointerKey::ConvertPointer<IdeTabSection, IdeSection>(pageSection);
+    section = TrecPointerKey::ConvertPointer<IdeTabSection, IdeSection>(pageSection);
     section->bounds = section->bounds;
     if (!divSection->first.Get())
     {
@@ -255,7 +255,7 @@ bool TIdeLayout::AppendSection(TrecPointer<IdeSection> section, TrecPointer<TPag
         return false;
     TrecPointer<IdePageSection> pageSection = TrecPointerKey::GetNewTrecPointer<IdePageSection>();
     pageSection->tab = page;
-    TrecPointer<IdeSection> section = TrecPointerKey::ConvertPointer<IdePageSection, IdeSection>(pageSection);
+    section = TrecPointerKey::ConvertPointer<IdePageSection, IdeSection>(pageSection);
     section->bounds = section->bounds;
     if (!divSection->first.Get())
     {

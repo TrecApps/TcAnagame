@@ -17,7 +17,7 @@ using click_section_event = enum class click_section_event
 	left_down
 };
 
-class IdeSection : public TCoreObject
+class _ANA_WIDGET IdeSection : public TCoreObject
 {
 	friend class TIdeLayout;
 protected:
@@ -81,7 +81,7 @@ public:
 	void Draw(TrecPointer<TVariable> obj, TrecPointer<TColorBrush> col, float thickness) override;
 };
 
-class TIdeLayout :
+class _ANA_WIDGET TIdeLayout :
     public TRandomLayout
 {
 protected:

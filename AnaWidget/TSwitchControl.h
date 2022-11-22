@@ -1,7 +1,7 @@
 #pragma once
 #include "TRandomLayout.h"
 #include "TabBar.h"
-class TSwitchControl :public TRandomLayout
+class _ANA_WIDGET TSwitchControl :public TRandomLayout
 {
 	friend class TabBarSwitchControlHolder;
 public:

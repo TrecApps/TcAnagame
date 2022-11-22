@@ -136,7 +136,7 @@ public:
 
 		while (currentNode < index && Next());
 
-		current.pointer = newData;
+		current->data = newData;
 	}
 
 	UINT PushHead(T& newData)

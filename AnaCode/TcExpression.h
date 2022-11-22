@@ -14,6 +14,12 @@ public:
     virtual bool NeedsResources() = 0;
     virtual bool Append(TrecPointer<TcExpression> value) = 0;
     virtual bool CanAssign();
+
+    TrecPointer<TVariable> Clone() override;
+    TrecPointer<TVariable> ToString(TrecPointer<TVariable>) override;
+    TrecPointer<TVariable> ToString() override;
+    UINT Get4Value() override;
+    UINT GetSize() override;
 };
 
 class TcAssignableExpression : public TcExpression

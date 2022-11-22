@@ -72,7 +72,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>..\..\GLEW;..\..\Freetype_2.0\include;..\AnaWidget;..\..\GLFW\include;..\AnaApp;..\TrecLib;..\TcGraph;..\..\glm;..\AnaCode;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Tormonscript\GLEW\lib;..\..\GLFW\lib;..\x64\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\..\GLEW\lib;..\..\GLFW\lib;..\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

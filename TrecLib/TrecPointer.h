@@ -109,7 +109,7 @@ protected:
 template<class T> class _TREC_LIB_DLL TrecPointer : public TrecPointerBase
 {
 	friend class TrecPointerKey;
-	friend class TrecActivePointer;
+	// friend class TrecActivePointer;
 	
 
 	explicit TrecPointer(T* raw)
@@ -174,42 +174,6 @@ public:
 	}
 };
 
-// These are guaranteed to be not null
-template<class T> class _TREC_LIB_DLL TrecActivePointer : public TrecPointerBase
-{
-	friend class TrecPointerKey;
-
-public:
-
-	TrecActivePointer(const TrecActivePointer<T>& copy)
-	{
-		pointer = copy.pointer;
-		Increment();
-	}
-
-	TrecActivePointer(const TrecPointer<T>& copy)
-	{
-		auto temp = copy;
-		if (!temp.Get())
-			throw 0;
-		pointer = copy.pointer;
-		Increment();
-	}
-
-	~TrecActivePointer()
-	{
-		// Make sure we decriment the coutner before deletion is complete
-		Decrement();
-	}
-
-	TrecPointer<T> Extract()
-	{
-		TrecPointer<T> ret;
-		ret.pointer = this->pointer;
-		Increment();
-		return ret;
-	}
-};
 
 template<class T> class _TREC_LIB_DLL TrecPointerSoft : public TrecPointerBase
 {
@@ -257,6 +221,35 @@ public:
 		pointer = other.pointer;
 		IncrementSoft();
 	}
+};
+
+template<class T> class _TREC_LIB_DLL TrecActivePointer : public TrecPointerBase
+{
+	friend class TrecPointerKey;
+
+public:
+
+	TrecActivePointer(const TrecActivePointer<T>& copy)
+	{
+		pointer = copy.pointer;
+		Increment();
+	}
+
+	TrecActivePointer(const TrecPointer<T>& copy)
+	{
+		auto temp = copy;
+		if (!temp.Get())
+			throw 0;
+		pointer = copy.pointer;
+		Increment();
+	}
+
+	~TrecActivePointer()
+	{
+		// Make sure we decriment the coutner before deletion is complete
+		Decrement();
+	}
+
 };
 
 class _TREC_LIB_DLL TrecPointerKey
@@ -339,6 +332,14 @@ public:
 			ret.pointer = input.pointer;
 			ret.Increment();
 		}
+		return ret;
+	}
+
+	template <class T> static TrecPointer<T>& ActiveToTrec(TrecActivePointer<T>& active)
+	{
+		TrecPointer<T> ret;
+		ret.pointer = active.pointer;
+		ret.Increment();
 		return ret;
 	}
 };
