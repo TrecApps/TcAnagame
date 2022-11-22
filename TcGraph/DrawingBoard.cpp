@@ -105,7 +105,7 @@ void DrawingBoard::NormalizePoint(const TPoint& input, TPoint& output)
 	r.right /= 2.0f;
 
 	output.x = (input.x / r.right) - 1.0f;
-	output.y = -(input.y / r.bottom) - 1.0f;
+	output.y = -((input.y / r.bottom) - 1.0f);
 }
 
 void DrawingBoard::LockDrawing()

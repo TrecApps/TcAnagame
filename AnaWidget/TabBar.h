@@ -16,7 +16,7 @@ public:
 	 * Class: TabBar::TabBarHolder
 	 * Purpose: Provides the Tab Bar with the means to send the contents of the tab to which-ever control is in charge of hosting it
 	 */
-	class _ANA_WIDGET TabBarHolder
+	class _ANA_WIDGET TabBarHolder : public TCoreObject
 	{
 	public:
 		/**

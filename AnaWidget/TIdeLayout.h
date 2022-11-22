@@ -136,6 +136,7 @@ public:
 	TrecPointer<IdeSection> GetFirstSection(TrecPointer<IdeSection> section);
 	TrecPointer<IdeSection> GetSecondSection(TrecPointer<IdeSection> section);
 
+	bool InitDivide(bool verticle, bool totalSpace, float dividePoint);
 	bool DivideSection(TrecPointer<IdeSection> section, bool verticle, bool totalSpace, float dividePoint);
 	bool GetBounds(const TPoint& point, RECT_F& bounds, TrecPointer<IdeSection>& section);
 	bool GetBounds(TrecPointer<IdeSection> section, RECT_F& bounds);

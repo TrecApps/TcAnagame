@@ -11,6 +11,7 @@ class _TC_GRAPH TColorBrush :
     TDataArray<TColor> colors;
 
 public:
+	TrecPointer<DrawingBoard> GetDrawingBoard();
 
 	static bool NormalizeRect(RECT_F& output, const RECT_F& input, TrecPointer<DrawingBoard> window);
     brush_type GetBrushType() override;

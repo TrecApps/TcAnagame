@@ -6,6 +6,7 @@
 
 TIdeWindow::TIdeWindow(GLFWwindow* window): TWindow(window)
 {
+	mainPageSpace = 100;
 }
 
 void TIdeWindow::SetMainPage(TrecPointer<TPage> mainPage)
@@ -30,17 +31,27 @@ void TIdeWindow::SetMainPage(TrecPointer<TPage> mainPage)
 
 
 	TrecPointer<IdeSection> ideSection;
-	assert(ideLayout->DivideSection(ideSection, true, false, 0.75f));
+	assert(ideLayout->InitDivide(true, false, 0.75f));
 	page = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TSwitchControl>(TWindow::GetDrawingBoard(), TDataMap<TDataMap<TString>>());
 	dynamic_cast<TSwitchControl*>(page.Get())->onCreate(area, TrecPointer<TFileShell>());
 	
 	ideSection = ideLayout->GetRootSection();
-	assert(ideLayout->AppendSection(ideSection, TrecPointerKey::ConvertPointer<TPage, TSwitchControl>(page)));
-	ideSection = ideLayout->GetFirstSection(ideSection);
+
 	
 	assert(ideLayout->DivideSection(ideSection, false, false, 0.66f));
 
+	assert(ideLayout->AppendSection(ideSection, TrecPointerKey::ConvertPointer<TPage, TSwitchControl>(page)));
+	ideSection = ideLayout->GetFirstSection(ideSection);
 
+	page = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TSwitchControl>(TWindow::GetDrawingBoard(), TDataMap<TDataMap<TString>>());
+	dynamic_cast<TSwitchControl*>(page.Get())->onCreate(area, TrecPointer<TFileShell>());
+
+	assert(ideLayout->AppendSection(ideSection, TrecPointerKey::ConvertPointer<TPage, TSwitchControl>(page)));
+
+	page = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TSwitchControl>(TWindow::GetDrawingBoard(), TDataMap<TDataMap<TString>>());
+	dynamic_cast<TSwitchControl*>(page.Get())->onCreate(area, TrecPointer<TFileShell>());
+
+	assert(ideLayout->AppendSection(ideSection, TrecPointerKey::ConvertPointer<TPage, TSwitchControl>(page)));
 }
 
 void TIdeWindow::SetProject(TrecActivePointer<AGProjectEnvironment> project)

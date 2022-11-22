@@ -277,15 +277,28 @@ bool TIdeLayout::AppendSection(TrecPointer<IdeSection> section, TrecPointer<TPag
     page->OnResize(section->bounds, 0, cred);
 }
 
+bool TIdeLayout::InitDivide(bool verticle, bool totalSpace, float dividePoint)
+{
+    if(rootSection.Get())
+        return false;
+
+    rootSection = TrecPointerKey::GetNewTrecPointerAlt<IdeSection, IdeDividerSection>();
+    rootSection->bounds = this->area;
+
+    TrecPointer<IdeDividerSection> divSection = TrecPointerKey::ConvertPointer<IdeSection, IdeDividerSection>(rootSection);
+
+    divSection->isVertical = verticle;
+
+    bool ret = DivideRectangle(divSection->bounds, verticle, totalSpace, dividePoint);
+    divSection->leftTop = dividePoint;
+    if (!ret)
+        rootSection.Nullify();
+
+    return ret;
+}
+
 bool TIdeLayout::DivideSection(TrecPointer<IdeSection> section, bool verticle, bool totalSpace, float dividePoint)
 {
-    if (!rootSection.Get())
-    {
-        rootSection = TrecPointerKey::GetNewTrecPointerAlt<IdeSection, IdeDividerSection>();
-        rootSection->bounds = this->area;
-        section = rootSection;
-    }
-
     if(!section.Get() || section->GetSectionType() != ide_section_type::divider)
         return false;
 
@@ -470,7 +483,13 @@ void IdeDividerSection::Draw(TrecPointer<TVariable> obj, TrecPointer<TColorBrush
         p2.x = bounds.right;
     }
 
-    col->DrawLine(p1, p2, thickness);
+    auto board = col->GetDrawingBoard();
+
+    TPoint nP1, nP2;
+    board->NormalizePoint(p1, nP1);
+    board->NormalizePoint(p2, nP2);
+
+    col->DrawLine(nP1, nP2, thickness);
 
     if (first.Get())
         first->Draw(obj, col, thickness);

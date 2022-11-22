@@ -17,6 +17,11 @@ bool TColorBrush::NormalizeRect(RECT_F& output, const RECT_F& input, TrecPointer
     return true;
 }
 
+TrecPointer<DrawingBoard> TColorBrush::GetDrawingBoard()
+{
+    return TrecPointerKey::TrecFromSoft<>(this->window);
+}
+
 brush_type TColorBrush::GetBrushType()
 {
     return brushType;
