@@ -132,3 +132,32 @@ protected:
 
     TrecPointer<ThreadBridge> bridge;
 };
+
+
+using procedure_type = enum class procedure_type
+{
+    object,
+    binary,
+    other
+};
+
+class _TREC_LIB_DLL TcProcedure : public TVariable
+{
+protected:
+    TString name;
+    TrecPointer<TVariable> stringReturn;
+public:
+    TcProcedure() = default;
+    TcProcedure(const TString& name);
+    
+    var_type GetVarType() override;
+    virtual procedure_type GetProcedureType() = 0;
+
+    virtual TrecPointer<TVariable> ToString() override;
+
+    virtual TrecPointer<TVariable> ToString(TrecPointer<TVariable> detail) override;
+
+    virtual UINT Get4Value() override;
+
+    virtual UINT GetSize() override;
+};

@@ -35,6 +35,7 @@ protected:
 public:
     void SetMethodObject(TrecPointer<TVariable> methodObject);
     TcProcedureRunner(TrecPointer<TEnvironment> environment, TrecPointer<TcProcedureRunner> parentRunner);
+    virtual ~TcProcedureRunner() = default;
 
     void SetOperatorGroupList(TrecPointer<TcOperatorGroupList> opList);
     TrecPointer<TcOperatorGroupList> GetOperatorGroupList();

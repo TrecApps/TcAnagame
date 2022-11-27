@@ -247,3 +247,46 @@ bool TcAsyncRunner::ThreadBridge::CanDelete()
 	TObjectLocker lock(&thread);
 	return deletable;
 }
+
+TcProcedure::TcProcedure(const TString& name)
+{
+	this->name.Set(name);
+}
+
+var_type TcProcedure::GetVarType()
+{
+	return var_type::procedure;
+}
+
+TrecPointer<TVariable> TcProcedure::ToString()
+{
+
+	if (!stringReturn.Get())
+	{
+		TString ret;
+		ret.Format(L"[ Function %ws ]", name.GetConstantBuffer().getBuffer());
+		stringReturn = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(ret);
+	}
+
+	if (stringReturn->GetVarType() == var_type::string)
+		return stringReturn;
+
+	return stringReturn ->ToString();
+}
+
+TrecPointer<TVariable> TcProcedure::ToString(TrecPointer<TVariable> detail)
+{
+	if (detail.Get())
+		stringReturn = detail;
+	return ToString();
+}
+
+UINT TcProcedure::Get4Value()
+{
+	return 0;
+}
+
+UINT TcProcedure::GetSize()
+{
+	return 0;
+}

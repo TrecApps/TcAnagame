@@ -17,13 +17,11 @@ using var_type = enum class var_type
 {
 	expression,          // Can be Operated upon to generate a new variable
 	primitive,           // Primitive variable is being held
-	primitive_formatted, // Primitive variable with formatting data
 	json,		          // Mapped Collection of Variables
 	list,			 // Regular List
 	native_object,       // Variable references a C++ level native Anagame object
 	string,              // References a String
-	interpretor,         // References an Interpretor (i.e. procedures/functions that are stored as variables
-	interpretor_gen,     // Generates new Interpretors
+	procedure,			// Holds a list of instructions for a given type of Runner
 	processor,
 	accessor,            // Type of variable that holds a Getter and Setter method
 	special_value,       // Holds a special value that doesn't fit in any of the other categories
