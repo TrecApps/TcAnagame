@@ -42,6 +42,21 @@ void TcObjectRunner::SetIntialVariables(TDataArray<TrecPointer<TVariable>>& para
 
 void TcObjectRunner::Run(ReturnObject& ret)
 {
+	if (!theOps.Get())
+	{
+		ret.returnCode == ret.ERR_BROKEN_REF;
+		ret.errorMessage.Set(L"Operator Object Not Set");
+		return;
+	}
+
+	while (this->statementCounter < this->procedure->GetSize())
+	{
+		Resume(ret);
+
+		if (!ret.returnCode && ret.mode == return_mode::rm_regular)
+			continue;
+		break;
+	}
 }
 
 void TcObjectRunner::Init()
@@ -50,102 +65,360 @@ void TcObjectRunner::Init()
 
 void TcObjectRunner::Resume(ReturnObject& ret)
 {
+	auto& statement = procedure->GetStatement(statementCounter);
+
+	for (UINT Rust = 0; Rust < this->nextStack; Rust++)
+	{
+		if (statement.next.Get())
+			statement = *statement.next.Get();
+		else
+		{
+			nextStack = 0;
+			statementCounter++;
+			return;
+		}
+	}
+	(this->*statementHandlers[static_cast<UINT>(statement.statementType)])(ret, statement);
 }
 
-void TcObjectRunner::ProcessRegular(ReturnObject& ret)
+void TcObjectRunner::ProcessRegular(ReturnObject& ret, TcStatement& statement)
 {
 }
 
-void TcObjectRunner::ProcessIf(ReturnObject& ret)
+void TcObjectRunner::ProcessIf(ReturnObject& ret, TcStatement& statement)
+{
+	if (!statement.primeExpression.Get())
+	{
+		ret.returnCode = ret.ERR_UNEXPECTED_TOK;
+		ret.errorMessage.Set(L"Malformed If-Statement: Exprected an Expression of some sorts!");
+		return;
+	}
+	bool worked = false;
+	bool isTrue = false;
+
+	statement.primeExpression->Express(GetProcedureRunner(), environment, ret);
+	if (ret.returnCode)
+		return;
+
+
+
+	theOps->IsTruthful(ret.errorObject, worked, isTrue, ret);
+
+	if (worked && isTrue)
+	{
+		GenerateBlockRunner(statement)->Run(ret);
+	}
+	else if (worked)
+	{
+		nextStack++;
+		return;
+	}
+
+	if (!ret.returnCode)
+	{
+		statementCounter++;
+	}
+
+}
+
+void TcObjectRunner::ProcessNIf(ReturnObject& ret, TcStatement& statement)
+{
+	if (!statement.primeExpression.Get())
+	{
+		ret.returnCode = ret.ERR_UNEXPECTED_TOK;
+		ret.errorMessage.Set(L"Malformed If-Statement: Exprected an Expression of some sorts!");
+		return;
+	}
+	bool worked = false;
+	bool isTrue = false;
+
+	statement.primeExpression->Express(GetProcedureRunner(), environment, ret);
+	if (ret.returnCode)
+		return;
+
+
+
+	theOps->IsTruthful(ret.errorObject, worked, isTrue, ret);
+
+	if (worked && !isTrue)
+	{
+		GenerateBlockRunner(statement)->Run(ret);
+	}
+	else if (worked)
+	{
+		nextStack++;
+		return;
+	}
+
+	if (!ret.returnCode)
+	{
+		statementCounter++;
+	}
+}
+
+bool TcObjectRunner::doBlockReturn(ReturnObject& ret, TcStatement& statement)
+{
+	if (ret.errorObject.Get() && statement.name.GetSize())
+	{
+		auto cur = ret.errorObject;
+		theOps->EqualityCheck(
+			TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(statement.name),
+			ret.errorObject,
+			tc_int_op::eq,
+			ret);
+
+		if (ret.returnCode)
+		{
+			return true;
+		}
+
+		bool worked = false;
+		bool isTrue = false;
+
+		theOps->IsTruthful(ret.errorObject, worked, isTrue, ret);
+
+		if (!worked)
+			return true;
+		if (isTrue)
+			ret.mode = return_mode::rm_regular;
+		else
+		{
+			ret.errorObject = cur;
+			return true;
+		}
+	}
+	return false;
+}
+
+void TcObjectRunner::ProcessWhile(ReturnObject& ret, TcStatement& statement)
+{
+
+	if (!statement.primeExpression.Get())
+	{
+		ret.returnCode = ret.ERR_UNEXPECTED_TOK;
+		ret.errorMessage.Set(L"Malformed If-Statement: Exprected an Expression of some sorts!");
+		return;
+	}
+	bool worked = false;
+	bool isTrue = false;
+
+	statement.primeExpression->Express(GetProcedureRunner(), environment, ret);
+	if (ret.returnCode)
+		return;
+	theOps->IsTruthful(ret.errorObject, worked, isTrue, ret);
+
+	while (worked && isTrue)
+	{
+		GenerateBlockRunner(statement)->Run(ret);
+
+		if (!ret.returnCode)
+			return;
+
+		bool doBreak = false;
+		switch (ret.mode)
+		{
+		case return_mode::rm_break:
+			doBreak = true;
+		case return_mode::rm_continue:
+			if (doBreak || doBlockReturn(ret, statement))
+				return;
+			break;
+
+		case return_mode::rm_return:
+		case return_mode::rm_yield:
+			return;
+		}
+
+		statement.primeExpression->Express(GetProcedureRunner(), environment, ret);
+		if (ret.returnCode)
+			return;
+		theOps->IsTruthful(ret.errorObject, worked, isTrue, ret);
+	}
+	statementCounter++;
+}
+
+void TcObjectRunner::ProcessUntil(ReturnObject& ret, TcStatement& statement)
+{
+	if (!statement.primeExpression.Get())
+	{
+		ret.returnCode = ret.ERR_UNEXPECTED_TOK;
+		ret.errorMessage.Set(L"Malformed If-Statement: Exprected an Expression of some sorts!");
+		return;
+	}
+	bool worked = false;
+	bool isTrue = false;
+
+	statement.primeExpression->Express(GetProcedureRunner(), environment, ret);
+	if (ret.returnCode)
+		return;
+	theOps->IsTruthful(ret.errorObject, worked, isTrue, ret);
+
+	while (worked && !isTrue)
+	{
+		GenerateBlockRunner(statement)->Run(ret);
+
+		if (!ret.returnCode)
+			return;
+
+		bool doBreak = false;
+		switch (ret.mode)
+		{
+		case return_mode::rm_break:
+			doBreak = true;
+		case return_mode::rm_continue:
+			if (doBreak || doBlockReturn(ret, statement))
+				return;
+			break;
+
+		case return_mode::rm_return:
+		case return_mode::rm_yield:
+			return;
+		}
+
+		statement.primeExpression->Express(GetProcedureRunner(), environment, ret);
+		if (ret.returnCode)
+			return;
+		theOps->IsTruthful(ret.errorObject, worked, isTrue, ret);
+	}
+	statementCounter++;
+}
+
+void TcObjectRunner::ProcessDoWhile(ReturnObject& ret, TcStatement& statement)
+{
+	if (!statement.primeExpression.Get())
+	{
+		ret.returnCode = ret.ERR_UNEXPECTED_TOK;
+		ret.errorMessage.Set(L"Malformed If-Statement: Exprected an Expression of some sorts!");
+		return;
+	}
+	bool worked = true;
+	bool isTrue = true;
+
+	while (worked && isTrue)
+	{
+		GenerateBlockRunner(statement)->Run(ret);
+
+		if (!ret.returnCode)
+			return;
+
+		bool doBreak = false;
+		switch (ret.mode)
+		{
+		case return_mode::rm_break:
+			doBreak = true;
+		case return_mode::rm_continue:
+			if (doBreak || doBlockReturn(ret, statement))
+				return;
+			break;
+
+		case return_mode::rm_return:
+		case return_mode::rm_yield:
+			return;
+		}
+
+		statement.primeExpression->Express(GetProcedureRunner(), environment, ret);
+		if (ret.returnCode)
+			return;
+		theOps->IsTruthful(ret.errorObject, worked, isTrue, ret);
+	}
+	statementCounter++;
+}
+
+void TcObjectRunner::ProcessFor1(ReturnObject& ret, TcStatement& statement)
 {
 }
 
-void TcObjectRunner::ProcessNIf(ReturnObject& ret)
+void TcObjectRunner::ProcessFor3(ReturnObject& ret, TcStatement& statement)
+{
+	//if(statement.primeExpression.Get())
+
+}
+
+void TcObjectRunner::ProcessSwitch(ReturnObject& ret, TcStatement& statement)
 {
 }
 
-void TcObjectRunner::ProcessWhile(ReturnObject& ret)
+void TcObjectRunner::ProcessCase(ReturnObject& ret, TcStatement& statement)
 {
 }
 
-void TcObjectRunner::ProcessUntil(ReturnObject& ret)
+void TcObjectRunner::ProcessSwitchDefault(ReturnObject& ret, TcStatement& statement)
 {
 }
 
-void TcObjectRunner::ProcessDoWhile(ReturnObject& ret)
+void TcObjectRunner::ProcessDeclareNew(ReturnObject& ret, TcStatement& statement)
 {
 }
 
-void TcObjectRunner::ProcessFor1(ReturnObject& ret)
+void TcObjectRunner::ProcessDeclareNewConst(ReturnObject& ret, TcStatement& statement)
 {
 }
 
-void TcObjectRunner::ProcessFor3(ReturnObject& ret)
+void TcObjectRunner::ProcessDeclareNewHoist(ReturnObject& ret, TcStatement& statement)
 {
 }
 
-void TcObjectRunner::ProcessSwitch(ReturnObject& ret)
+void TcObjectRunner::ProcessTry(ReturnObject& ret, TcStatement& statement)
 {
 }
 
-void TcObjectRunner::ProcessCase(ReturnObject& ret)
+void TcObjectRunner::ProcessCatch(ReturnObject& ret, TcStatement& statement)
 {
 }
 
-void TcObjectRunner::ProcessSwitchDefault(ReturnObject& ret)
+void TcObjectRunner::ProcessFinally(ReturnObject& ret, TcStatement& statement)
 {
 }
 
-void TcObjectRunner::ProcessDeclareNew(ReturnObject& ret)
+void TcObjectRunner::ProcessThrow(ReturnObject& ret, TcStatement& statement)
 {
 }
 
-void TcObjectRunner::ProcessDeclareNewConst(ReturnObject& ret)
+void TcObjectRunner::ProcessReturn(ReturnObject& ret, TcStatement& statement)
 {
 }
 
-void TcObjectRunner::ProcessDeclareNewHoist(ReturnObject& ret)
+void TcObjectRunner::ProcessBreak(ReturnObject& ret, TcStatement& statement)
 {
 }
 
-void TcObjectRunner::ProcessTry(ReturnObject& ret)
+void TcObjectRunner::ProcessContinue(ReturnObject& ret, TcStatement& statement)
 {
 }
 
-void TcObjectRunner::ProcessCatch(ReturnObject& ret)
+void TcObjectRunner::ProcessYeild(ReturnObject& ret, TcStatement& statement)
 {
 }
 
-void TcObjectRunner::ProcessFinally(ReturnObject& ret)
+void TcObjectRunner::ProcessGoTo(ReturnObject& ret, TcStatement& statement)
 {
 }
 
-void TcObjectRunner::ProcessThrow(ReturnObject& ret)
+void TcObjectRunner::ProcessGoToTarget(ReturnObject& ret, TcStatement& statement)
 {
 }
 
-void TcObjectRunner::ProcessReturn(ReturnObject& ret)
+TrecPointer<TcProcedureRunner> TcObjectRunner::GetProcedureRunner()
 {
+	return TrecPointerKey::ConvertPointer<TVariable, TcProcedureRunner>( 
+		TrecPointerKey::TrecFromSoft<>(this->vSelf));
 }
 
-void TcObjectRunner::ProcessBreak(ReturnObject& ret)
+TrecPointer<TcObjectRunner> TcObjectRunner::GenerateBlockRunner(TcStatement& statement)
 {
-}
+	auto firstParam = statement.block;
+	if (!firstParam.Get())
+		firstParam = TrecPointerKey::ConvertPointer<TVariable, TcObjectProcedure>(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TcObjectProcedure>());
+	TrecPointer<TcObjectRunner> ret = TrecPointerKey::ConvertPointer<TVariable, TcObjectRunner>(
+		TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TcObjectRunner>(
+			TrecActivePointer<TcObjectProcedure>(firstParam),
+			environment,
+			GetProcedureRunner()
+			)
+		);
 
-void TcObjectRunner::ProcessContinue(ReturnObject& ret)
-{
-}
-
-void TcObjectRunner::ProcessYeild(ReturnObject& ret)
-{
-}
-
-void TcObjectRunner::ProcessGoTo(ReturnObject& ret)
-{
-}
-
-void TcObjectRunner::ProcessGoToTarget(ReturnObject& ret)
-{
+	ret->theOps = this->theOps;
+	return ret;
 }
 
 void TcObjectRunner::RunBlock(ReturnObject& ret)

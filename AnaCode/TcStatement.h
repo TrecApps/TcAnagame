@@ -54,6 +54,7 @@ public:
         TrecPointer<TcExpression> primeExpression;
         TrecPointer<TcExpression> secondaryExpression;
         TrecPointer<TcExpression> tertiaryEpression;
+        TString name;
         statement_type statementType;
 
         TrecPointer<TcObjectProcedure> block;
@@ -65,7 +66,7 @@ public:
     };
 
 protected:
-    TrecPointer<TDataArray<TcStatement>> statements;
+    TDataArray<TcStatement> statements;
 
     TString name;
 
@@ -73,4 +74,9 @@ public:
     TcObjectProcedure() = default;
     TcObjectProcedure(const TcObjectProcedure& copy) = default;
 
+    UINT GetSize() override;
+
+    TcStatement& GetStatement(UINT index);
 };
+
+using TcStatement = TcObjectProcedure::TcStatement;

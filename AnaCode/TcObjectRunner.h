@@ -5,9 +5,10 @@ class TcObjectRunner :
     public TcProcedureRunner
 {
     TrecPointer<TcObjectProcedure> procedure;
+    TrecPointer<TcOperator> theOps;
     UINT statementCounter;
     USHORT nextStack;
-    typedef void (TcObjectRunner::*TcObjectStatmentHandler)(ReturnObject& ret);
+    typedef void (TcObjectRunner::*TcObjectStatmentHandler)(ReturnObject& ret, TcStatement& statement);
 
     TDataArray<TcObjectStatmentHandler> statementHandlers;
 
@@ -24,37 +25,40 @@ public:
 private:
 
     // Statement Types to Manage
-    void ProcessRegular(ReturnObject& ret);
+    void ProcessRegular(ReturnObject& ret, TcStatement& statement);
 
-    void ProcessIf(ReturnObject& ret);
-    void ProcessNIf(ReturnObject& ret);
-    void ProcessWhile(ReturnObject& ret);
-    void ProcessUntil(ReturnObject& ret);
-    void ProcessDoWhile(ReturnObject& ret);
-    void ProcessFor1(ReturnObject& ret);
-    void ProcessFor3(ReturnObject& ret);
+    void ProcessIf(ReturnObject& ret, TcStatement& statement);
+    void ProcessNIf(ReturnObject& ret, TcStatement& statement);
+    void ProcessWhile(ReturnObject& ret, TcStatement& statement);
+    void ProcessUntil(ReturnObject& ret, TcStatement& statement);
+    void ProcessDoWhile(ReturnObject& ret, TcStatement& statement);
+    void ProcessFor1(ReturnObject& ret, TcStatement& statement);
+    void ProcessFor3(ReturnObject& ret, TcStatement& statement);
 
-    void ProcessSwitch(ReturnObject& ret);
-    void ProcessCase(ReturnObject& ret);
-    void ProcessSwitchDefault(ReturnObject& ret);
+    void ProcessSwitch(ReturnObject& ret, TcStatement& statement);
+    void ProcessCase(ReturnObject& ret, TcStatement& statement);
+    void ProcessSwitchDefault(ReturnObject& ret, TcStatement& statement);
 
-    void ProcessDeclareNew(ReturnObject& ret);
-    void ProcessDeclareNewConst(ReturnObject& ret);
-    void ProcessDeclareNewHoist(ReturnObject& ret);
+    void ProcessDeclareNew(ReturnObject& ret, TcStatement& statement);
+    void ProcessDeclareNewConst(ReturnObject& ret, TcStatement& statement);
+    void ProcessDeclareNewHoist(ReturnObject& ret, TcStatement& statement);
 
-    void ProcessTry(ReturnObject& ret);
-    void ProcessCatch(ReturnObject& ret);
-    void ProcessFinally(ReturnObject& ret);
-    void ProcessThrow(ReturnObject& ret);
+    void ProcessTry(ReturnObject& ret, TcStatement& statement);
+    void ProcessCatch(ReturnObject& ret, TcStatement& statement);
+    void ProcessFinally(ReturnObject& ret, TcStatement& statement);
+    void ProcessThrow(ReturnObject& ret, TcStatement& statement);
 
-    void ProcessReturn(ReturnObject& ret);
-    void ProcessBreak(ReturnObject& ret);
-    void ProcessContinue(ReturnObject& ret);
-    void ProcessYeild(ReturnObject& ret);
-    void ProcessGoTo(ReturnObject& ret);
-    void ProcessGoToTarget(ReturnObject& ret);
+    void ProcessReturn(ReturnObject& ret, TcStatement& statement);
+    void ProcessBreak(ReturnObject& ret, TcStatement& statement);
+    void ProcessContinue(ReturnObject& ret, TcStatement& statement);
+    void ProcessYeild(ReturnObject& ret, TcStatement& statement);
+    void ProcessGoTo(ReturnObject& ret, TcStatement& statement);
+    void ProcessGoToTarget(ReturnObject& ret, TcStatement& statement);
 
     // Helper Methods
+    bool doBlockReturn(ReturnObject& ret, TcStatement& statement);
+    TrecPointer<TcProcedureRunner> GetProcedureRunner();
+    TrecPointer<TcObjectRunner> GenerateBlockRunner(TcStatement& statement);
     void RunBlock(ReturnObject& ret);
 };
 
