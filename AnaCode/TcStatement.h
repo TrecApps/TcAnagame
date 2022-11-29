@@ -8,6 +8,7 @@ using statement_type = enum class statement_type
 {
     st_regular,
     // Regular Control
+    st_block,
     st_if,
     st_n_if,
     st_while,

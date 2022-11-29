@@ -28,6 +28,7 @@ private:
     void ProcessRegular(ReturnObject& ret, TcStatement& statement);
 
     void ProcessIf(ReturnObject& ret, TcStatement& statement);
+    void ProcessBlock(ReturnObject& ret, TcStatement& statement);
     void ProcessNIf(ReturnObject& ret, TcStatement& statement);
     void ProcessWhile(ReturnObject& ret, TcStatement& statement);
     void ProcessUntil(ReturnObject& ret, TcStatement& statement);

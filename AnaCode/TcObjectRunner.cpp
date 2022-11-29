@@ -7,11 +7,12 @@ TcObjectRunner::TcObjectRunner(TrecActivePointer<TcObjectProcedure> proc, TrecPo
 
 	statementHandlers.push_back(&TcObjectRunner::ProcessRegular);
 
-	statementHandlers.push_back(&TcObjectRunner::ProcessIf);
+	statementHandlers.push_back(&TcObjectRunner::ProcessBlock);
 	statementHandlers.push_back(&TcObjectRunner::ProcessIf);
 	statementHandlers.push_back(&TcObjectRunner::ProcessNIf);
 	statementHandlers.push_back(&TcObjectRunner::ProcessWhile);
 	statementHandlers.push_back(&TcObjectRunner::ProcessUntil);
+	statementHandlers.push_back(&TcObjectRunner::ProcessDoWhile);
 	statementHandlers.push_back(&TcObjectRunner::ProcessFor1);
 	statementHandlers.push_back(&TcObjectRunner::ProcessFor3);
 
@@ -119,6 +120,11 @@ void TcObjectRunner::ProcessIf(ReturnObject& ret, TcStatement& statement)
 		statementCounter++;
 	}
 
+}
+
+void TcObjectRunner::ProcessBlock(ReturnObject& ret, TcStatement& statement)
+{
+	GenerateBlockRunner(statement)->Run(ret);
 }
 
 void TcObjectRunner::ProcessNIf(ReturnObject& ret, TcStatement& statement)
@@ -360,18 +366,72 @@ void TcObjectRunner::ProcessDeclareNewHoist(ReturnObject& ret, TcStatement& stat
 
 void TcObjectRunner::ProcessTry(ReturnObject& ret, TcStatement& statement)
 {
+	ProcessBlock(ret, statement);
+
+	if (ret.returnCode)
+		ProcessCatch(ret, statement);
+	else ProcessFinally(ret, statement);
 }
 
 void TcObjectRunner::ProcessCatch(ReturnObject& ret, TcStatement& statement)
 {
+	while (statement.statementType != statement_type::st_catch)
+	{
+		if (statement.next.Get())
+			statement = *statement.next.Get();
+		else
+			return;
+	}
+
+	if (statement.statementType == statement_type::st_catch)
+	{
+		TString eName;
+		TrecPointer<TVariable> exception = ret.errorObject;
+		try
+		{
+			statement.primeExpression->Express(GetProcedureRunner(), environment, ret);
+			TrecPointer<TStringVariable> veName = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(ret.errorObject);
+			eName.Set(veName->GetString());
+		}
+		catch (...) {
+			ret.errorMessage.Append(L"!!! Failed to properly handle Excetpion in Catch Block!");
+			return;
+		}
+
+		ret.returnCode = 0;
+
+		auto processor = this->GenerateBlockRunner(statement);
+		processor->variables.addEntry(eName, TcVariableHolder(true, L"", exception));
+		processor->Run(ret);
+	}
+
+	ProcessFinally(ret, statement);
 }
 
 void TcObjectRunner::ProcessFinally(ReturnObject& ret, TcStatement& statement)
 {
+	while (statement.statementType != statement_type::st_finally)
+	{
+		if (statement.next.Get())
+			statement = *statement.next.Get();
+		else
+		{
+			this->statementCounter++;
+			return;
+		}
+	}
+
+	ProcessBlock(ret, statement);
+	statementCounter++;
 }
 
 void TcObjectRunner::ProcessThrow(ReturnObject& ret, TcStatement& statement)
 {
+	if (statement.primeExpression.Get())
+		statement.primeExpression->Express(GetProcedureRunner(), environment, ret);
+
+	ret.returnCode = ret.ERR_THROWN;
+	statementCounter++;
 }
 
 void TcObjectRunner::ProcessReturn(ReturnObject& ret, TcStatement& statement)
