@@ -63,6 +63,7 @@ protected:
 
     TDataArray<TcLex> lexList;
     TDataArray<TcCompMessage> messages;
+    TrecPointer<TJsonVariable> languageDetails;
 
     UCHAR stage;
 
