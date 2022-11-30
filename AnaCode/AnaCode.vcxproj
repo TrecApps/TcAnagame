@@ -147,6 +147,7 @@
     <ClInclude Include="AnaCode.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="TcCompiler.h" />
     <ClInclude Include="TcExpression.h" />
     <ClInclude Include="TcNativeRunner.h" />
     <ClInclude Include="TcObjectRunner.h" />
@@ -162,6 +163,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TcCompiler.cpp" />
     <ClCompile Include="TcExpression.cpp" />
     <ClCompile Include="TcNativeRunner.cpp" />
     <ClCompile Include="TcObjectRunner.cpp" />
