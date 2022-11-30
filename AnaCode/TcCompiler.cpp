@@ -4,6 +4,11 @@ TcCompiler::TcCompiler(TrecActivePointer<TFileShell> file, TrecActivePointer<TEn
 {
 }
 
+TString TcCompiler::Init()
+{
+	return TString();
+}
+
 TString TcCompiler::PerformLex()
 {
 	return TString();

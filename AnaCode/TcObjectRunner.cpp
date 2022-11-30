@@ -436,18 +436,49 @@ void TcObjectRunner::ProcessThrow(ReturnObject& ret, TcStatement& statement)
 
 void TcObjectRunner::ProcessReturn(ReturnObject& ret, TcStatement& statement)
 {
+	ret.errorObject.Nullify();
+	if (statement.primeExpression.Get())
+	{
+		statement.primeExpression->Express(GetProcedureRunner(), environment, ret);
+	}
+	if (!ret.returnCode)
+		ret.mode = return_mode::rm_return;
 }
 
 void TcObjectRunner::ProcessBreak(ReturnObject& ret, TcStatement& statement)
 {
+	ret.errorObject.Nullify();
+	if (statement.primeExpression.Get())
+	{
+		statement.primeExpression->Express(GetProcedureRunner(), environment, ret);
+	}
+	if (!ret.returnCode)
+		ret.mode = return_mode::rm_break;
 }
 
 void TcObjectRunner::ProcessContinue(ReturnObject& ret, TcStatement& statement)
 {
+	ret.errorObject.Nullify();
+	if (statement.primeExpression.Get())
+	{
+		statement.primeExpression->Express(GetProcedureRunner(), environment, ret);
+	}
+	if (!ret.returnCode)
+		ret.mode = return_mode::rm_continue;
 }
 
 void TcObjectRunner::ProcessYeild(ReturnObject& ret, TcStatement& statement)
 {
+	ret.errorObject.Nullify();
+	if (statement.primeExpression.Get())
+	{
+		statement.primeExpression->Express(GetProcedureRunner(), environment, ret);
+	}
+	if (!ret.returnCode)
+	{
+		ret.mode = return_mode::rm_yield;
+		this->statementCounter++;
+	}
 }
 
 void TcObjectRunner::ProcessGoTo(ReturnObject& ret, TcStatement& statement)
