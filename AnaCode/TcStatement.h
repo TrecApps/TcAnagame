@@ -78,6 +78,9 @@ public:
     UINT GetSize() override;
 
     TcStatement& GetStatement(UINT index);
+
+    TrecPointer<TVariable> Clone()override;
+    procedure_type GetProcedureType(void)override;
 };
 
 using TcStatement = TcObjectProcedure::TcStatement;

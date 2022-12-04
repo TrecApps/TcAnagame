@@ -37,6 +37,11 @@ TcObjectRunner::TcObjectRunner(TrecActivePointer<TcObjectProcedure> proc, TrecPo
 	statementHandlers.push_back(&TcObjectRunner::ProcessGoToTarget);
 }
 
+TrecPointer<TVariable> TcObjectRunner::Clone()
+{
+	return TrecPointer<TVariable>();
+}
+
 void TcObjectRunner::SetIntialVariables(TDataArray<TrecPointer<TVariable>>& params)
 {
 }
@@ -502,7 +507,7 @@ TrecPointer<TcObjectRunner> TcObjectRunner::GenerateBlockRunner(TcStatement& sta
 		firstParam = TrecPointerKey::ConvertPointer<TVariable, TcObjectProcedure>(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TcObjectProcedure>());
 	TrecPointer<TcObjectRunner> ret = TrecPointerKey::ConvertPointer<TVariable, TcObjectRunner>(
 		TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TcObjectRunner>(
-			TrecActivePointer<TcObjectProcedure>(firstParam),
+			TrecPointerKey::TrecToActive<TcObjectProcedure>(firstParam),
 			environment,
 			GetProcedureRunner()
 			)

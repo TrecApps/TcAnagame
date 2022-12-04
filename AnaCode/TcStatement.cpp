@@ -13,5 +13,15 @@ TcStatement& TcObjectProcedure::GetStatement(UINT index)
     return statements.at(index);
 }
 
+TrecPointer<TVariable> TcObjectProcedure::Clone()
+{
+    return TrecPointer<TVariable>();
+}
+
+procedure_type TcObjectProcedure::GetProcedureType(void)
+{
+    return procedure_type::object;
+}
+
 
 

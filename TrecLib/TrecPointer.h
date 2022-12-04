@@ -226,7 +226,7 @@ public:
 template<class T> class _TREC_LIB_DLL TrecActivePointer : public TrecPointerBase
 {
 	friend class TrecPointerKey;
-
+	TrecActivePointer() = default;
 public:
 
 	TrecActivePointer(const TrecActivePointer<T>& copy)
@@ -235,14 +235,14 @@ public:
 		Increment();
 	}
 
-	TrecActivePointer(const TrecPointer<T>& copy)
-	{
-		auto temp = copy;
-		if (!temp.Get())
-			throw 0;
-		pointer = copy.pointer;
-		Increment();
-	}
+	//TrecActivePointer(const TrecPointer<T>& copy)
+	//{
+	//	auto temp = copy;
+	//	if (!temp.Get())
+	//		throw 0;
+	//	pointer = temp.pointer;
+	//	Increment();
+	//}
 
 	~TrecActivePointer()
 	{
@@ -339,6 +339,17 @@ public:
 	{
 		TrecPointer<T> ret;
 		ret.pointer = active.pointer;
+		ret.Increment();
+		return ret;
+	}
+
+	template <class T> static TrecActivePointer<T>& TrecToActive(TrecPointer<T>& trec)
+	{
+		// The Purpose of the Active Pointer is to NOT be null
+		if (!trec.Get())
+			throw 0;
+		TrecActivePointer<T> ret;
+		ret.pointer = trec.pointer;
 		ret.Increment();
 		return ret;
 	}

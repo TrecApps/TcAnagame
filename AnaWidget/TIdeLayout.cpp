@@ -104,7 +104,7 @@ void TIdeLayout::OnMouseMove(UINT nFlags, TPoint point, message_output& mOut, TD
     {
         float newBarrier = captured->isVertical ? (point.x - captured->bounds.left) : (point.y - captured->bounds.top);
 
-        if (DivideRectangle(captured->bounds, captured->isVertical, true, newBarrier))
+        if (DivideRectangle(captured->bounds, captured->isVertical, true, newBarrier) && newBarrier != captured->leftTop)
         {
             captured->leftTop = newBarrier;
             if (captured->first.Get())
@@ -124,10 +124,21 @@ void TIdeLayout::OnMouseMove(UINT nFlags, TPoint point, message_output& mOut, TD
                     r.top = newBarrier;
                 captured->second->OnResize(r, 0, er);
             }
+            mOut = message_output::mo_positive_continue;
+            er.push_back(EventID_Cred(R_Message_Type::On_Redraw, TrecPointerKey::TrecFromSoft<>(self)));
         }
     }
-    else if (rootSection.Get())
+    else if (rootSection.Get()) {
         rootSection->OnMouseMove(nFlags, point, mOut, er);
+        RECT_F r;
+        TrecPointer<IdeSection> section;
+        if (GetBounds(point, r, section) && dynamic_cast<IdeDividerSection*>(section.Get()))
+        {
+            drawingBoard->SetCursor(dynamic_cast<IdeDividerSection*>(section.Get())->isVertical ?
+                ag_mouse_pointer::h_arrows : ag_mouse_pointer::v_arrows);
+        }
+    }
+        
 }
 
 void TIdeLayout::OnLButtonDblClk(UINT nFlags, TPoint point, message_output& mOut, TDataArray<EventID_Cred>& args)
@@ -149,7 +160,9 @@ void TIdeLayout::OnLButtonDown(UINT nFlags, const TPoint& point, message_output&
     RECT_F r;
     TrecPointer<IdeSection> section;
     if (GetBounds(point, r, section) && dynamic_cast<IdeDividerSection*>(section.Get()))
+    {
         captured = TrecPointerKey::ConvertPointer<IdeSection, IdeDividerSection>(section);
+    }
 }
 
 void TIdeLayout::OnResize(RECT_F& newLoc, UINT nFlags, TDataArray<EventID_Cred>& eventAr)
@@ -438,7 +451,7 @@ void IdeDividerSection::OnResize(RECT_F& newLoc, UINT nFlags, TDataArray<TPage::
     float widthFactor = (newLoc.right - newLoc.left) / (bounds.right - bounds.left);
     float heightFactor = (newLoc.bottom - newLoc.top) / (bounds.bottom - bounds.top);
 
-    this->leftTop = (leftTop - (isVertical ? bounds.left : bounds.top)) * (isVertical ? widthFactor : heightFactor);
+    this->leftTop *= (isVertical ? widthFactor : heightFactor);
 
     this->bounds = newLoc;
 

@@ -54,10 +54,22 @@ typedef struct AnagameCaret
     bool OnDraw;
 };
 
+using ag_mouse_pointer = enum class ag_mouse_pointer
+{
+    standard,
+    input,
+    crosshair,
+    hand,
+    h_arrows,
+    v_arrows
+};
+
 class _TC_GRAPH DrawingBoard :
     public TVObject
 {
     friend class CaretRunner;
+
+    TDataArray<GLFWcursor*> cursors;
 
 
     TColor defaultClearColor;
@@ -96,6 +108,8 @@ protected:
     bool needsRefresh, needsConstantRefresh;
 
 public:
+
+    void SetCursor(ag_mouse_pointer mPointer);
 
     void NormalizePoint(const TPoint& input, TPoint& output);
 

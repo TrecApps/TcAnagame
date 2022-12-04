@@ -83,20 +83,19 @@ void TRandomLayout::OnLButtonUp(UINT nFlags, const TPoint& point, message_output
 
 void TRandomLayout::OnMouseMove(UINT nFlags, TPoint point, message_output& mOut, TDataArray<EventID_Cred>& cred)
 {
-    if (isMouseIn)
-        TControl::OnMouseMove(nFlags, point, mOut, cred);
-    else
-    {
-        for (UINT Rust = 0; Rust < childControls.Size() && mOut == message_output::mo_negative; Rust++)
-        {
-            auto page = childControls[Rust].control;
-            if (page.Get())
-                page->OnMouseMove(nFlags, point, mOut, cred);
-        }
+    if (!DrawingBoard::IsContained(point, area))
+        return;
 
-        if (mOut != message_output::mo_positive_override)
-            TControl::OnMouseMove(nFlags, point, mOut, cred);
+    for (UINT Rust = 0; Rust < childControls.Size() && mOut == message_output::mo_negative; Rust++)
+    {
+        auto page = childControls[Rust].control;
+        if (page.Get())
+            page->OnMouseMove(nFlags, point, mOut, cred);
     }
+
+    if (mOut != message_output::mo_positive_override)
+        TControl::OnMouseMove(nFlags, point, mOut, cred);
+    
 }
 
 void TRandomLayout::OnLButtonDblClk(UINT nFlags, TPoint point, message_output& mOut, TDataArray<EventID_Cred>& args)

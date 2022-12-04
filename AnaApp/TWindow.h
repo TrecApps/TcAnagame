@@ -24,6 +24,8 @@ protected:
 
     void HandleWindowEvents(TDataArray<TPage::EventID_Cred>& cred);
 
+    bool isClicked;
+
 public:
 
     TrecPointer<DrawingBoard> GetDrawingBoard();

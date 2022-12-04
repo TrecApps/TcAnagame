@@ -34,7 +34,8 @@ using R_Message_Type = enum class R_Message_Type
 	On_LDoubleClick,    // Double Click detected
 	On_Scrolled,		// Control was scrolled
 	On_Resized,
-	On_SubmitDrag		// Added to Event-Cred when a Page is being dragged around
+	On_SubmitDrag,		// Added to Event-Cred when a Page is being dragged around
+	On_Redraw			// Sends a signal to the Window that it is time to Redraw
 };
 
 class _ANA_WIDGET EventArgs : public TObject

@@ -16,6 +16,8 @@ public:
     TcObjectRunner(TrecActivePointer<TcObjectProcedure> proc, TrecPointer<TEnvironment> environment, TrecPointer<TcProcedureRunner> parentRunner);
     virtual ~TcObjectRunner() = default;
 
+    TrecPointer<TVariable> Clone() override;
+
     void SetIntialVariables(TDataArray<TrecPointer<TVariable>>& params) override;
 
     void Run(ReturnObject& ret) override;

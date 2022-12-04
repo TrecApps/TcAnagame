@@ -3,7 +3,7 @@
 
 TWindow::TWindow(GLFWwindow* window) : DrawingBoard(window)
 {
-
+    isClicked = false;
 }
 
 bool TWindow::IsWindow(GLFWwindow* test)
@@ -31,6 +31,8 @@ void TWindow::HandleWindowEvents(TDataArray<TPage::EventID_Cred>& cred)
     {
         if (cred[Rust].textIntercepter.Get())
             this->caret.intercepter = cred[Rust].textIntercepter;
+        if (cred[Rust].eventType == R_Message_Type::On_Redraw)
+            needsRefresh = true;
     }
 
 }
@@ -53,6 +55,11 @@ void TWindow::OnChar(UINT ch)
 
 void TWindow::OnMouseMove(double x, double y)
 {
+
+    if (!isClicked)
+    {
+        this->SetCursor(ag_mouse_pointer::standard);
+    }
     mousePoint.x = x;
     mousePoint.y = y;
 
@@ -79,6 +86,8 @@ void TWindow::OnLButtonDown(int mods)
     message_output mOut = message_output::mo_negative;
     TDataArray<TPage::EventID_Cred> cred;
 
+    isClicked = true;
+
     if (currentScrollBar.Get()) {
         currentScrollBar->OnLButtonDown(0, mousePoint, mOut);
         this->needsRefresh = true;
@@ -98,6 +107,7 @@ void TWindow::OnLButtonUp(int mods)
 {
     message_output mOut = message_output::mo_negative;
     TDataArray<TPage::EventID_Cred> cred;
+    isClicked = false;
 
     if (currentScrollBar.Get()) {
         currentScrollBar->OnLButtonUp(0, mousePoint, mOut);

@@ -71,6 +71,14 @@ DrawingBoard::DrawingBoard(GLFWwindow* window)
 	if (!window) throw 0;
 	this->window = window;
 
+	cursors.push_back(glfwCreateStandardCursor(GLFW_ARROW_CURSOR));
+	cursors.push_back(glfwCreateStandardCursor(GLFW_IBEAM_CURSOR));
+	cursors.push_back(glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR));
+	cursors.push_back(glfwCreateStandardCursor(GLFW_HAND_CURSOR));
+	cursors.push_back(glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR));
+	cursors.push_back(glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR));
+
+
 	defaultClearColor.SetColor(L"white");
 
 	int w = 0;
@@ -96,6 +104,11 @@ DrawingBoard::DrawingBoard(GLFWwindow* window)
 	needsConstantRefresh = false;
 
 	TcInitLock(&drawingThread);
+}
+
+void DrawingBoard::SetCursor(ag_mouse_pointer mPointer)
+{
+	glfwSetCursor(window, cursors[static_cast<UINT>(mPointer)]);
 }
 
 void DrawingBoard::NormalizePoint(const TPoint& input, TPoint& output)
