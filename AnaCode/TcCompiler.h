@@ -67,6 +67,18 @@ protected:
 
     UCHAR stage;
 
+    TDataArray<TString> statementseperator, // How to recognize when a Statement ends
+        singleLineComment,                  // Token for recognizing the start of a single line comment
+        multiLineCommentStart,              // Tokens for recognizing start of  multiline comment
+        multiLineCommentEnd,                // Tokens for recognizing End of a multiline comment
+        singleString,                       // Tokens for recognizing a single line String
+        multiString,                        // Tokens for recognizing a multiline String
+        blockStart,                         // Tokens for recognizing the start of a block (if this is blank, indentation is assumed)
+        blockEnd,                           // Tokens for recognizing the end of a block
+        flexString,                   // Strings that, if they start the statement, signal that the statement should be one line
+        flexStringBlock;                    // Signal that an expression in a flex string has been encountered
+    bool PrepParsing(TDataArray<TString>& parsList, const TString& propKey, TrecPointer<TJsonVariable> propSource);
+
 public:
     TcCompiler(
         TrecActivePointer<TFileShell> file,                 // The File that the Compiler will be Processing
