@@ -149,6 +149,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="TcCompiler.h" />
     <ClInclude Include="TcExpression.h" />
+    <ClInclude Include="TcLanguage.h" />
     <ClInclude Include="TcNativeRunner.h" />
     <ClInclude Include="TcObjectRunner.h" />
     <ClInclude Include="TcOperator.h" />
@@ -165,6 +166,7 @@
     </ClCompile>
     <ClCompile Include="TcCompiler.cpp" />
     <ClCompile Include="TcExpression.cpp" />
+    <ClCompile Include="TcLanguage.cpp" />
     <ClCompile Include="TcNativeRunner.cpp" />
     <ClCompile Include="TcObjectRunner.cpp" />
     <ClCompile Include="TcOperator.cpp" />
