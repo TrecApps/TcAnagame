@@ -1,6 +1,7 @@
 #pragma once
 #include "TRandomLayout.h"
 #include "TSwitchControl.h"
+#include <TContainerVariable.h>
 
 using ide_section_type = enum class ide_section_type
 {
@@ -49,12 +50,15 @@ public:
 	virtual void OnResize(RECT_F& newLoc, UINT nFlags, TDataArray<TPage::EventID_Cred>& eventAr) override;
 
 	void Draw(TrecPointer<TVariable> obj, TrecPointer<TColorBrush> col, float thickness) override;
+
+	RECT_F GetSectionArea(bool first);
 };
 
 class IdeTabSection : public IdeSection
 {
 	friend class TIdeLayout;
 	TrecPointer<TSwitchControl> tab;
+	TString name;
 public:
     ide_section_type GetSectionType() override;
 
@@ -130,6 +134,9 @@ public:
 
 	// Methods for Manipulating Sections
 	TrecPointer<IdeSection> GetRootSection();
+
+	void SetUpLayout(TrecPointer<TJsonVariable> variable, bool doOverride = true);
+
 	bool AppendSection(TrecPointer<IdeSection> section, TrecPointer<TPage> page);
 	bool AppendSection(TrecPointer<IdeSection> section, TrecPointer<TSwitchControl> tabs);
 
@@ -140,5 +147,11 @@ public:
 	bool DivideSection(TrecPointer<IdeSection> section, bool verticle, bool totalSpace, float dividePoint);
 	bool GetBounds(const TPoint& point, RECT_F& bounds, TrecPointer<IdeSection>& section);
 	bool GetBounds(TrecPointer<IdeSection> section, RECT_F& bounds);
+
+protected:
+	void HandleVariable(TrecPointer<IdeSection>& section, TrecPointer<TJsonVariable>& variable, const RECT_F& bounds);
+	void HandleDividerVariable(TrecPointer<IdeSection>& section, TrecPointer<TJsonVariable>& variable, const RECT_F& bounds);
+	void HandleTabVariable(TrecPointer<IdeSection>& section, TrecPointer<TJsonVariable>& variable, const RECT_F& bounds);
+	void HandlePageVariable(TrecPointer<IdeSection>& section, TrecPointer<TJsonVariable>& variable, const RECT_F& bounds);
 };
 

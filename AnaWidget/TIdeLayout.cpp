@@ -1,4 +1,5 @@
 #include "TIdeLayout.h"
+#include <TPrimitiveVariable.h>
 
 bool DivideRectangle(const RECT_F& rect, bool vertical, bool isTotal, float& divide)
 {
@@ -202,6 +203,14 @@ TrecPointer<TPage> TIdeLayout::GetPage(UINT row, UINT col)
 TrecPointer<IdeSection> TIdeLayout::GetRootSection()
 {
     return rootSection;
+}
+
+void TIdeLayout::SetUpLayout(TrecPointer<TJsonVariable> variable, bool doOverride)
+{
+    if (rootSection.Get() && !doOverride)
+        return;
+
+    
 }
 
 bool TIdeLayout::AppendSection(TrecPointer<IdeSection> section, TrecPointer<TSwitchControl> page)
@@ -417,6 +426,95 @@ bool TIdeLayout::GetBounds(TrecPointer<IdeSection> section, RECT_F& bounds)
     return true;
 }
 
+void TIdeLayout::HandleVariable(TrecPointer<IdeSection>& section, TrecPointer<TJsonVariable>& variable, const RECT_F& bounds)
+{
+    TrecPointer<TVariable> field;
+    variable->RetrieveField(L"SectionType", field);
+
+    auto strField = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(field);
+
+    if (!strField.Get())
+        return;
+
+    TString secType(strField->GetString());
+
+    if (!secType.CompareNoCase(L"Divider"))
+        HandleDividerVariable(section, variable, bounds);
+
+    if (!secType.CompareNoCase(L"Tab"))
+        HandleTabVariable(section, variable, bounds);
+
+    if (!secType.CompareNoCase(L"Page"))
+        HandlePageVariable(section, variable, bounds);
+}
+
+void TIdeLayout::HandleDividerVariable(TrecPointer<IdeSection>& section, TrecPointer<TJsonVariable>& variable, const RECT_F& bounds)
+{
+    section = TrecPointerKey::GetNewTrecPointerAlt<IdeSection, IdeDividerSection>();
+    auto divSection = TrecPointerKey::ConvertPointer<IdeSection, IdeDividerSection>(section);
+
+    TrecPointer<TVariable> field;
+
+    divSection->isVertical = true;
+    if (variable->RetrieveField(L"Vertical", field))
+        divSection->isVertical = field->Get4Value();
+
+    bool totalSpace = variable->RetrieveField(L"UseTotalSpace", field) && field->Get4Value();
+
+    float fVal = 0.5f;
+    if (variable->RetrieveField(L"DivideField", field))
+    {
+        UINT uVal = field->Get4Value();
+
+        memcpy_s(&fVal, sizeof(fVal), &uVal, sizeof(uVal));
+
+       
+    } 
+    DivideRectangle(bounds, divSection->isVertical, totalSpace, fVal);
+
+    divSection->leftTop = fVal;
+    divSection->bounds = bounds;
+
+    if (variable->RetrieveField(L"First", field))
+    {
+        TrecPointer<TJsonVariable> firstJson = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(field);
+        RECT_F chLoc = divSection->GetSectionArea(true);
+        if (firstJson.Get())
+            HandleVariable(divSection->first, firstJson, chLoc);
+    }
+
+    if (variable->RetrieveField(L"Second", field))
+    {
+        TrecPointer<TJsonVariable> secondJson = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(field);
+        RECT_F chLoc = divSection->GetSectionArea(false);
+        if (secondJson.Get())
+            HandleVariable(divSection->second, secondJson, chLoc);
+    }
+}
+
+void TIdeLayout::HandleTabVariable(TrecPointer<IdeSection>& section, TrecPointer<TJsonVariable>& variable, const RECT_F& bounds)
+{
+    section = TrecPointerKey::GetNewTrecPointerAlt<IdeSection, IdeTabSection>();
+    auto tabSection = TrecPointerKey::ConvertPointer<IdeSection, IdeTabSection>(section);
+
+    tabSection->bounds = bounds;
+    tabSection->tab = TrecPointerKey::ConvertPointer<TPage, TSwitchControl>(
+        TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TSwitchControl>(drawingBoard, TDataMap<TDataMap<TString>>()));
+
+    TrecPointer<TVariable> field;
+    variable->RetrieveField(L"Name", field);
+
+    auto strField = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(field);
+
+    if (!strField.Get())
+        tabSection->name.Set(strField->GetString());
+}
+
+void TIdeLayout::HandlePageVariable(TrecPointer<IdeSection>& section, TrecPointer<TJsonVariable>& variable, const RECT_F& bounds)
+{
+
+}
+
 ide_section_type IdeDividerSection::GetSectionType()
 {
     return ide_section_type::divider;
@@ -508,6 +606,18 @@ void IdeDividerSection::Draw(TrecPointer<TVariable> obj, TrecPointer<TColorBrush
         first->Draw(obj, col, thickness);
     if (second.Get())
         second->Draw(obj, col, thickness);
+}
+
+RECT_F IdeDividerSection::GetSectionArea(bool first)
+{
+    RECT_F ret = this->bounds;
+
+    float& update = isVertical ?
+        (first ? ret.right : ret.left) :
+        (first ? ret.bottom : ret.top);
+    update = this->leftTop;
+
+    return ret;
 }
 
 ide_section_type IdeTabSection::GetSectionType()
