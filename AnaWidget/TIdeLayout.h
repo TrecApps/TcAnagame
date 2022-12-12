@@ -33,6 +33,8 @@ public:
 	virtual void OnResize(RECT_F& newLoc, UINT nFlags, TDataArray<TPage::EventID_Cred>& eventAr) = 0;
 
 	virtual void Draw(TrecPointer<TVariable> obj, TrecPointer<TColorBrush> col, float thickness) = 0;
+
+	virtual TrecPointer<TVariable> SaveToVariable() = 0;
 };
 
 class IdeDividerSection : public IdeSection
@@ -52,6 +54,8 @@ public:
 	void Draw(TrecPointer<TVariable> obj, TrecPointer<TColorBrush> col, float thickness) override;
 
 	RECT_F GetSectionArea(bool first);
+
+	TrecPointer<TVariable> SaveToVariable() override;
 };
 
 class IdeTabSection : public IdeSection
@@ -68,6 +72,8 @@ public:
 	virtual void OnResize(RECT_F& newLoc, UINT nFlags, TDataArray<TPage::EventID_Cred>& eventAr) override;
 
 	void Draw(TrecPointer<TVariable> obj, TrecPointer<TColorBrush> col, float thickness) override;
+
+	TrecPointer<TVariable> SaveToVariable() override;
 };
 
 class IdePageSection : public IdeSection
@@ -83,6 +89,8 @@ public:
 	virtual void OnResize(RECT_F& newLoc, UINT nFlags, TDataArray<TPage::EventID_Cred>& eventAr) override;
 
 	void Draw(TrecPointer<TVariable> obj, TrecPointer<TColorBrush> col, float thickness) override;
+
+	TrecPointer<TVariable> SaveToVariable() override;
 };
 
 class _ANA_WIDGET TIdeLayout :
@@ -136,6 +144,7 @@ public:
 	TrecPointer<IdeSection> GetRootSection();
 
 	void SetUpLayout(TrecPointer<TJsonVariable> variable, bool doOverride = true);
+	TrecPointer<TVariable> SaveToVariable()override;
 
 	bool AppendSection(TrecPointer<IdeSection> section, TrecPointer<TPage> page);
 	bool AppendSection(TrecPointer<IdeSection> section, TrecPointer<TSwitchControl> tabs);

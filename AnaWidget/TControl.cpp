@@ -1,5 +1,6 @@
 #include "TControl.h"
 #include <cassert>
+#include <TContainerVariable.h>
 
 typedef struct EventInString
 {
@@ -363,6 +364,29 @@ TControl::TControl(TrecPointer<DrawingBoard> drawingBoard, TDataMap<TDataMap<TSt
 	fixedWidth = fixedHeight = false;
 
 	this->styles = styles;
+}
+
+TrecPointer<TVariable> TControl::SaveToVariable()
+{
+	TrecPointer<TVariable> ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TJsonVariable>();
+	TrecPointer<TJsonVariable> jRet = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(ret);
+
+	for (UINT Rust = 0; Rust < attributes.count(); Rust++)
+	{
+		TDataEntry<TString> entry;
+		if (attributes.GetEntryAt(Rust, entry))
+		{
+			jRet->SetField(entry.key, TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(entry.object));
+		}
+
+	}
+
+	return ret;
+}
+
+TString TControl::VariableName()
+{
+	return L"TControl";
 }
 
 /**

@@ -28,6 +28,9 @@ public:
 
 	virtual bool onCreate(const RECT_F& loc, TrecPointer<TFileShell> d)override;
 
+	TrecPointer<TVariable> SaveToVariable() override;
+	TString VariableName()override;
+
 	TLayout(TrecPointer<DrawingBoard> drawingBoard, TDataMap<TDataMap<TString>> styles);
 
 	virtual ~TLayout();

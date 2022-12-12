@@ -210,7 +210,19 @@ void TIdeLayout::SetUpLayout(TrecPointer<TJsonVariable> variable, bool doOverrid
     if (rootSection.Get() && !doOverride)
         return;
 
-    
+    HandleVariable(rootSection, variable, area);
+}
+
+TrecPointer<TVariable> TIdeLayout::SaveToVariable()
+{
+    auto ret = TControl::SaveToVariable();
+    auto jRet = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(ret);
+
+    if (rootSection.Get())
+        jRet->SetField(L"RootSection", rootSection->SaveToVariable());
+
+
+    return ret;
 }
 
 bool TIdeLayout::AppendSection(TrecPointer<IdeSection> section, TrecPointer<TSwitchControl> page)
@@ -439,13 +451,20 @@ void TIdeLayout::HandleVariable(TrecPointer<IdeSection>& section, TrecPointer<TJ
     TString secType(strField->GetString());
 
     if (!secType.CompareNoCase(L"Divider"))
+    {
+        section = TrecPointerKey::GetNewTrecPointerAlt<IdeSection, IdeDividerSection>();
         HandleDividerVariable(section, variable, bounds);
-
+    }
     if (!secType.CompareNoCase(L"Tab"))
+    {
+        section = TrecPointerKey::GetNewTrecPointerAlt<IdeSection, IdeTabSection>();
         HandleTabVariable(section, variable, bounds);
-
+    }
     if (!secType.CompareNoCase(L"Page"))
+    {
+        section = TrecPointerKey::GetNewTrecPointerAlt<IdeSection, IdePageSection>();
         HandlePageVariable(section, variable, bounds);
+    }
 }
 
 void TIdeLayout::HandleDividerVariable(TrecPointer<IdeSection>& section, TrecPointer<TJsonVariable>& variable, const RECT_F& bounds)
@@ -620,6 +639,28 @@ RECT_F IdeDividerSection::GetSectionArea(bool first)
     return ret;
 }
 
+TrecPointer<TVariable> IdeDividerSection::SaveToVariable()
+{
+    TrecPointer<TVariable> ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TJsonVariable>();
+    TrecPointer<TJsonVariable> jRet = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(ret);
+
+    float& min = isVertical ? bounds.left : bounds.top;
+    float& max = isVertical ? bounds.right : bounds.bottom;
+
+    float dividerLine = (leftTop - min) / (max - min);
+    
+    jRet->SetField(L"DivideField", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TPrimitiveVariable>(dividerLine));
+    jRet->SetField(L"Vertical", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TPrimitiveVariable>(true));
+    jRet->SetField(L"Type", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"Divider"));
+
+    if (first.Get())
+        jRet->SetField(L"First", first->SaveToVariable());
+    if (second.Get())
+        jRet->SetField(L"Second", second->SaveToVariable());
+
+    return ret;
+}
+
 ide_section_type IdeTabSection::GetSectionType()
 {
     return ide_section_type::tab;
@@ -671,6 +712,17 @@ void IdeTabSection::Draw(TrecPointer<TVariable> obj, TrecPointer<TColorBrush> co
         tab->Draw(obj);
 }
 
+TrecPointer<TVariable> IdeTabSection::SaveToVariable()
+{
+    TrecPointer<TVariable> ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TJsonVariable>();
+    TrecPointer<TJsonVariable> jRet = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(ret);
+
+    jRet->SetField(L"Type", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"Tab"));
+    jRet->SetField(L"Name", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(name));
+
+    return ret;
+}
+
 ide_section_type IdePageSection::GetSectionType()
 {
     return ide_section_type::page;
@@ -720,6 +772,16 @@ void IdePageSection::Draw(TrecPointer<TVariable> obj, TrecPointer<TColorBrush> c
 {
     if (tab.Get())
         tab->Draw(obj);
+}
+
+TrecPointer<TVariable> IdePageSection::SaveToVariable()
+{
+    TrecPointer<TVariable> ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TJsonVariable>();
+    TrecPointer<TJsonVariable> jRet = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(ret);
+
+    jRet->SetField(L"Type", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"Page"));
+
+    return ret;
 }
 
 IdeSection::IdeSection()

@@ -1,5 +1,7 @@
 #include "TLayout.h"
 #include "TScrollerPage.h"
+#include <TContainerVariable.h>
+#include <TPrimitiveVariable.h>
 
 LayoutSpace::LayoutSpace()
 {
@@ -63,6 +65,76 @@ bool TLayout::onCreate(const RECT_F& loc, TrecPointer<TFileShell> d)
 	} while (++Rust < childControls.Size() && Rust < primDem.Size());
 
 	return res;
+}
+
+TrecPointer<TVariable> TLayout::SaveToVariable()
+{
+	TrecPointer<TVariable> ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TJsonVariable>();
+	TrecPointer<TJsonVariable> jRet = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(ret);
+
+	TString positionAttribute(L"RowPosition");
+	TString sizeParition(L"RowHeights");
+	if (!primaryStack)
+	{
+		jRet->SetField(L"IsGallery", TPrimitiveVariable::GetTrue());
+		positionAttribute.Set(L"ColPosition");
+		sizeParition.Set(L"ColumnWidths");
+	}
+
+	TrecPointer<TVariable> partitions = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TArrayVariable>();
+	TrecPointer<TArrayVariable> aPartitions = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(partitions);
+
+	jRet->SetField(sizeParition, partitions);
+
+	for (UINT Rust = 0; Rust < primDem.Size(); Rust++)
+	{
+		TString att;
+		att.Format(L"%u", primDem[Rust].space);
+		if (primDem[Rust].isFlex)
+			att.Append(L'*');
+
+		aPartitions->Push(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(att));
+	}
+
+	auto conRet = TControl::SaveToVariable();
+	auto conJRet = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(conRet);
+
+	TrecPointer<TVariable> v;
+	TString n;
+	for (UINT Rust = 0; conJRet->RetrieveFieldAt(Rust, n, v); Rust++)
+	{
+		jRet->SetField(n, v);
+	}
+
+	TrecPointer<TVariable> children = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TArrayVariable>();
+	TrecPointer<TArrayVariable> aChildren = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(partitions);
+
+	for (UINT Rust = 0; Rust < childControls.Size(); Rust++)
+	{
+		auto& cControl = childControls[Rust];
+
+		auto cont = TrecPointerKey::ConvertPointer<TPage, TControl>(cControl.control);
+		assert(cont.Get());
+
+		auto chVariable = cont->SaveToVariable();
+		auto chJVariable = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(chVariable);
+		chJVariable->SetField(positionAttribute, TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TPrimitiveVariable>(primaryStack ? cControl.row : cControl.col));
+
+		TrecPointer<TVariable> element = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TJsonVariable>();
+		TrecPointer<TJsonVariable> jElement = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(element);
+		jElement->SetField(cont->VariableName(), chVariable);
+
+		aChildren->Push(element);
+	}
+
+	jRet->SetField(L"Children", children);
+
+	return ret;
+}
+
+TString TLayout::VariableName()
+{
+	return L"TLayout";
 }
 
 TLayout::TLayout(TrecPointer<DrawingBoard> drawingBoard, TDataMap<TDataMap<TString>> styles) : TRandomLayout(drawingBoard, styles)

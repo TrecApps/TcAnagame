@@ -148,6 +148,9 @@ public:
 	void AddAttribute(const TString& att, const TString& value);
 	TControl(TrecPointer<DrawingBoard> drawingBoard, TDataMap<TDataMap<TString>> styles);
 
+	virtual TrecPointer<TVariable> SaveToVariable();
+	virtual TString VariableName();
+
 	void setActive(bool act);
 
 	bool GetActive();
