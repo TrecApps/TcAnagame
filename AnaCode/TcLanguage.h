@@ -59,7 +59,14 @@ protected:
         blockStart,                         // Tokens for recognizing the start of a block (if this is blank, indentation is assumed)
         blockEnd,                           // Tokens for recognizing the end of a block
         flexString,                   // Strings that, if they start the statement, signal that the statement should be one line
-        flexStringBlock;                    // Signal that an expression in a flex string has been encountered
+        flexStringBlock,                    // Signal that an expression in a flex string has been encountered
+        keyWords;
+    TString varStart;
+    TString numStart;
+    TString varSection;
+    TString numSection;
+    TString operatorChars;
+    
     UCHAR stage;
 
     using lex_mode = enum class lex_mode
@@ -71,17 +78,23 @@ protected:
         multi_string
     };
 
-    void ProcessComment(UINT& index, const TString& text, TDataArray<TcLex>& lexList, lex_mode mode);
+    void ProcessComment(UINT& index, const TString& text, TDataArray<TcLex>& lexList, lex_mode mode, UINT size);
     void ProcessString(UINT& index, const TString& text, const TString& end, TDataArray<TcLex>& lexList, lex_mode mode);
 
+    void ProcessNumber(UINT& index, const TString&, TDataArray<TcLex>& lexList);
+    void ProcessVariable(UINT& index, const TString&, TDataArray<TcLex>& lexList);
+    void ProcessOperator(UINT& index, const TString&, TDataArray<TcLex>& lexList);
 
-    lex_mode GetNextMode(UINT index, const TString& text, UINT& begins);
+    lex_mode GetNextMode(UINT index, const TString& text, UINT& begins, UINT& size);
 
 
 public: 
     TcLanguage(TrecPointer<TJsonVariable> languageDetails);
     TString Init();
     bool PrepParsing(TDataArray<TString>& parsList, const TString& propKey, TrecPointer<TJsonVariable> propSource);
+
+    bool PrepParsing(TrecPointer<TVariable> prop, TString& result);
+
 
     TString PerformLex(TrecPointer<TStringVariable> var, TDataArray<TcLex>& lexList);   // Run Lex Parsing on the Source String
 };

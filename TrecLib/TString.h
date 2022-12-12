@@ -244,6 +244,8 @@ public:
 
 	int FindOneOf(const TString& chars, int start = 0)const;
 
+	int FindOneOf(const TDataArray<TString>& strs, UINT& index, int start = 0, bool ignoreEscape = true)const;
+
 	int FindLast(const TString& sub, int start = -1) const;
 
 	int FindLast(WCHAR sub, int start = -1)const;

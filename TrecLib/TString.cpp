@@ -1642,6 +1642,24 @@ int TString::FindOneOf(const TString& chars, int start) const
 	return -1;
 }
 
+int TString::FindOneOf(const TDataArray<TString>& strs, UINT& index, int start, bool ignoreEscape)const
+{
+	int ret = -1;
+	for (UINT Rust = 0; Rust < strs.Size(); Rust++)
+	{
+		int tempRet = Find(strs[Rust], start, ignoreEscape);
+		if (tempRet == -1)
+			continue;
+
+		if (ret == -1 || tempRet < ret)
+		{
+			ret = tempRet;
+			index = Rust;
+		}
+	}
+	return ret;
+}
+
 int TString::FindLast(const TString& sub, int start) const
 {
 	TObjectLocker threadLock(&thread);
