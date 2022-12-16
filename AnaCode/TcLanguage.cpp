@@ -453,25 +453,25 @@ TString TcLanguage::Init()
 			ret.AppendChar(L',');
 		ret.Append(" Start of Variables");
 	}
-	if (!jProp->RetrieveField(L"numStart", prop) || !PrepParsing(prop, numStart))
+	if (!jProp->RetrieveField(L"NumStart", prop) || !PrepParsing(prop, numStart))
 	{
 		if (failures++)
 			ret.AppendChar(L',');
 		ret.Append(" Start of Number");
 	}
-	if (!jProp->RetrieveField(L"varSection", prop) || !PrepParsing(prop, varSection))
+	if (!jProp->RetrieveField(L"VarSection", prop) || !PrepParsing(prop, varSection))
 	{
 		if (failures++)
 			ret.AppendChar(L',');
 		ret.Append(" Characters in Variable");
 	}
-	if (!jProp->RetrieveField(L"numSection", prop) || !PrepParsing(prop, numSection))
+	if (!jProp->RetrieveField(L"NumSection", prop) || !PrepParsing(prop, numSection))
 	{
 		if (failures++)
 			ret.AppendChar(L',');
 		ret.Append(" Characters in Numbers");
 	}
-	if (!jProp->RetrieveField(L"operatorChars", prop) || !PrepParsing(prop, operatorChars))
+	if (!jProp->RetrieveField(L"OperatorChars", prop) || !PrepParsing(prop, operatorChars))
 	{
 		if (failures++)
 			ret.AppendChar(L',');
