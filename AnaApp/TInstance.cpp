@@ -1,6 +1,9 @@
 #include <GLFW/glfw3.h>
-#include "TInstance.h"
+#include "TDialog.h"
 #include "TIdeWindow.h"
+
+
+TrecPointer<TInstance> theInstance;
 
 
 TrecPointer<TWindow> TInstance::GetWindow(GLFWwindow* win)
@@ -33,10 +36,24 @@ TInstance::TInstance()
 	windowCount = 0;
 }
 
+TrecPointer<TInstance> TInstance::GetInstance()
+{
+	if (!theInstance.Get())
+		theInstance = TrecPointerKey::GetNewTrecPointer<TInstance>();
+	return theInstance;
+}
+
 TInstance::~TInstance()
 {
 	if (glfwInitResult)
 		glfwTerminate();
+}
+
+void TInstance::SetSelf(TrecPointer<TInstance> newSelf)
+{
+	if (this != newSelf.Get())
+		throw 1;
+	self = TrecPointerKey::SoftFromTrec<>(newSelf);
 }
 
 void TInstance::DoDraw()
@@ -102,6 +119,71 @@ UINT TInstance::GenerateWindow(TrecPointer<TWindow>& window, TrecPointer<TFileSh
 
 	if (Rust == windows.Size())
 		windows.push_back(window);
+
+	//window->instance = self;
+
+	windowCount++;
+
+	if (charFunction)
+		glfwSetCharCallback(glfwWindow, charFunction);
+	if (cursorFunction)
+		glfwSetCursorPosCallback(glfwWindow, cursorFunction);
+	if (keyFunction)
+		glfwSetKeyCallback(glfwWindow, keyFunction);
+	if (mouseFunction)
+		glfwSetMouseButtonCallback(glfwWindow, mouseFunction);
+	if (scrollFunction)
+		glfwSetScrollCallback(glfwWindow, scrollFunction);
+	if (focusFunction)
+		glfwSetWindowFocusCallback(glfwWindow, focusFunction);
+	if (resizeFunction)
+		glfwSetWindowSizeCallback(glfwWindow, resizeFunction);
+
+	if (closeFunction)
+		glfwSetWindowCloseCallback(glfwWindow, closeFunction);
+
+	return Rust;
+}
+
+UINT TInstance::GenerateDialog(TrecPointer<TWindow>& window, TrecPointer<TWindow> parent,
+	const TString& name, TrecPointer<TPageBuilder> page,
+	TrecPointer<TFileShell> uiInterface, const TString& details, t_dialog_modal_mode modalMode)
+{
+	TString useName(name);
+	if (!useName.GetSize())
+		useName.Set(L"Anagame Dialog");
+	return 0;
+	GLFWwindow* glfwWindow = glfwCreateWindow(640, 480, useName.GetRegString().c_str(), nullptr, nullptr);
+	if (!glfwWindow)
+		return 1;
+
+	TrecPointer<DrawingBoard> board = TrecPointerKey::GetNewSelfTrecPointerAlt<DrawingBoard, TDialog>(parent, glfwWindow);
+
+	window = TrecPointerKey::ConvertPointer<DrawingBoard, TWindow>(board);
+
+	UINT Rust = 0;
+	for (; Rust < windows.Size(); Rust++)
+	{
+		if (!windows[Rust].Get())
+		{
+			windows[Rust] = window;
+			break;
+		}
+	}
+
+	if (Rust == windows.Size())
+		windows.push_back(window);
+
+	//window->instance = self;
+	if (page.Get())
+	{
+		page->SetDrawingBoard(board);
+		page->SetSpace(board->GetArea());
+		window->SetMainPage(uiInterface.Get() ? page->GetPage(uiInterface) : page->GetPage(details));
+	}
+
+
+	
 
 	windowCount++;
 

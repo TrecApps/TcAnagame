@@ -23,7 +23,7 @@ int main()
 	
 	TrecPointer<TWindow> mainWindow;
 
-	mainInstance->GenerateWindow(mainWindow, TrecPointer<TFileShell>(), L"", t_window_type::t_window_type_plain);
+	mainInstance->GenerateWindow(mainWindow, TrecPointer<TFileShell>(), L"", t_window_type::t_window_type_ide);
 
 	if (!mainWindow.Get())
 	{
@@ -36,20 +36,20 @@ int main()
 
 	TDataMap<TDataMap<TString>> styles;
 
-	TrecPointer<TPage> page = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TControl>(TrecPointerKey::ConvertPointer<TWindow, DrawingBoard>(mainWindow), styles);
+	//TrecPointer<TPage> page = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TControl>(TrecPointerKey::ConvertPointer<TWindow, DrawingBoard>(mainWindow), styles);
 
-	TrecPointer<TControl> control = TrecPointerKey::ConvertPointer<TPage, TControl>(page);
-	control->AddAttribute(L"Margin", L"50,50,80,80");
-	control->AddAttribute(L"BorderThickness", L"3.0");
-	control->AddAttribute(L"BorderColor", L"0.1,1.0,0.1,1.0");
+	//TrecPointer<TControl> control = TrecPointerKey::ConvertPointer<TPage, TControl>(page);
+	//control->AddAttribute(L"Margin", L"50,50,80,80");
+	//control->AddAttribute(L"BorderThickness", L"3.0");
+	//control->AddAttribute(L"BorderColor", L"0.1,1.0,0.1,1.0");
 
-	control->AddAttribute(L"ContentColor", L"0.2,0.5,0.2,1.0");
+	//control->AddAttribute(L"ContentColor", L"0.2,0.5,0.2,1.0");
 
-	control->AddAttribute(L"Caption", L"DirectWrite");
-	control->AddAttribute(L"FontColor", L"0.9,0.3,0.2,0.7");
-	control->AddAttribute(L"FontSize", L"48.0");
+	//control->AddAttribute(L"Caption", L"DirectWrite");
+	//control->AddAttribute(L"FontColor", L"0.9,0.3,0.2,0.7");
+	//control->AddAttribute(L"FontSize", L"48.0");
 
-	control->onCreate(mainWindow->GetArea(), TrecPointer<TFileShell>());
+	//control->onCreate(mainWindow->GetArea(), TrecPointer<TFileShell>());
 
 	mainWindow->SetMainPage(TrecPointer<TPage>());
 

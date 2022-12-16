@@ -26,7 +26,13 @@ protected:
 
     bool isClicked;
 
+    bool locked;
+
+    //TrecPointerSoft<TInstance> instance;
+
 public:
+
+    //TrecPointer<TInstance> GetInstance();
 
     TrecPointer<DrawingBoard> GetDrawingBoard();
 
@@ -42,7 +48,10 @@ public:
     void OnFocus();
     void OnLoseFocus();
     void OnResize(int w, int h);
-    bool Close();
+    virtual bool Close();
+
+    void LockWindow();
+    void UnlockWindow();
 
 };
 

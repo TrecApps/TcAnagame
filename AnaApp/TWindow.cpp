@@ -3,7 +3,7 @@
 
 TWindow::TWindow(GLFWwindow* window) : DrawingBoard(window)
 {
-    isClicked = false;
+    isClicked = locked = false;
 }
 
 bool TWindow::IsWindow(GLFWwindow* test)
@@ -36,6 +36,11 @@ void TWindow::HandleWindowEvents(TDataArray<TPage::EventID_Cred>& cred)
     }
 
 }
+//
+//TrecPointer<TInstance> TWindow::GetInstance()
+//{
+//    return TrecPointerKey::TrecFromSoft<>(instance);
+//}
 
 TrecPointer<DrawingBoard> TWindow::GetDrawingBoard()
 {
@@ -49,13 +54,14 @@ void TWindow::SetMainPage(TrecPointer<TPage> mainPage)
 
 void TWindow::OnChar(UINT ch)
 {
+    if (locked) return;
     if (caret.intercepter.Get())
         caret.intercepter->OnChar(ch, 0, 0);
 }
 
 void TWindow::OnMouseMove(double x, double y)
 {
-
+    if (locked) return;
     if (!isClicked)
     {
         this->SetCursor(ag_mouse_pointer::standard);
@@ -83,6 +89,7 @@ void TWindow::OnMouseMove(double x, double y)
 
 void TWindow::OnLButtonDown(int mods)
 {
+    if (locked) return;
     message_output mOut = message_output::mo_negative;
     TDataArray<TPage::EventID_Cred> cred;
 
@@ -105,6 +112,7 @@ void TWindow::OnLButtonDown(int mods)
 
 void TWindow::OnLButtonUp(int mods)
 {
+    if (locked) return;
     message_output mOut = message_output::mo_negative;
     TDataArray<TPage::EventID_Cred> cred;
     isClicked = false;
@@ -126,6 +134,7 @@ void TWindow::OnLButtonUp(int mods)
 
 void TWindow::OnRButtonDown(int mods)
 {
+    if (locked) return;
     message_output mOut = message_output::mo_negative;
     TDataArray<TPage::EventID_Cred> cred;
     if (mainPage.Get())
@@ -139,6 +148,7 @@ void TWindow::OnRButtonDown(int mods)
 
 void TWindow::OnRButtonUp(int mods)
 {
+    if (locked) return;
     message_output mOut = message_output::mo_negative;
     TDataArray<TPage::EventID_Cred> cred;
 
@@ -153,6 +163,7 @@ void TWindow::OnRButtonUp(int mods)
 
 void TWindow::OnScroll(double x, double y)
 {
+    if (locked) return;
     if (mainPage.Get())
     {
         TDataArray<TPage::EventID_Cred> cred;
@@ -187,5 +198,17 @@ void TWindow::OnResize(int w, int h)
 bool TWindow::Close()
 {
     return true;
+}
+
+void TWindow::LockWindow()
+{
+    TObjectLocker lock(&thread);
+    locked = true;
+}
+
+void TWindow::UnlockWindow()
+{
+    TObjectLocker lock(&thread);
+    locked = false;
 }
 
