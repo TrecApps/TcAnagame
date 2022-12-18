@@ -367,6 +367,11 @@ TPage::TPage(TrecPointer<DrawingBoard> board)
 	this->drawingBoard = board;
 }
 
+TrecPointer<DrawingBoard> TPage::GetDrawingBoard()
+{
+	return drawingBoard;
+}
+
 TString TPage::PrepPage(TrecPointer<TFileShell> file, TrecPointer<EventHandler> handler)
 {
 	return L"Not Supported";

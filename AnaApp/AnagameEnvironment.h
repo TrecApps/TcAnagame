@@ -50,6 +50,18 @@ public:
     virtual TString Save() = 0;
 
     AGProjectEnvironment(const TString& name, TrecActivePointer<TFileShell> directory);
+
+    virtual void Refresh() = 0;
+
+    /**
+     * Returns a list of Libraries that should be loaded by the Anagame Builder then a project is loaded
+     */
+    virtual TDataArray<TString> GetBuilderDependencies() = 0;
+
+    /**
+     * Returns a list of Libraries that should be loaded by the tap once it is launched
+     */
+    virtual TDataArray<TString> GetDependencies() = 0;
 };
 
 class _ANA_APP BasicAnagameEnvironment :

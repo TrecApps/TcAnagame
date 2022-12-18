@@ -147,6 +147,7 @@
     <ClInclude Include="AnaApp.h" />
     <ClInclude Include="AnagameEnvironment.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="PageTypes.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="TDialog.h" />
     <ClInclude Include="TIdeWindow.h" />
@@ -156,6 +157,7 @@
   <ItemGroup>
     <ClCompile Include="AnagameEnvironment.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="PageTypes.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

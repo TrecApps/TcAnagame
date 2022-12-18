@@ -206,6 +206,8 @@ public:
 
 		TPage(TrecPointer<DrawingBoard> board);
 
+		TrecPointer<DrawingBoard> GetDrawingBoard();
+
 		virtual bool HandlesEvents() = 0;
 
 		virtual TString PrepPage(TrecPointer<TFileShell> file, TrecPointer<EventHandler> handler);
