@@ -3,6 +3,7 @@
 #include "TWindow.h"
 #include <GLFW/glfw3.h>
 #include "AnaApp.h"
+#include <TEnvironment.h>
 
 using t_window_type = enum class t_window_type
 {
@@ -17,6 +18,36 @@ using t_dialog_modal_mode = enum class t_dialog_modal_mode {
     no_modal,   // Parent Window continues to operate while Child Window is open
     soft_modal, // Parent window can still move around and be resized, but is otherwise disabled while Child Window is open
     hard_modal  // Parent Window is utterly disabled while the child window is open
+};
+
+using LibHandle =
+#ifdef _WINDOWS
+HMODULE
+#elif defined(__linux__) || (defined (__APPLE__) && defined (__MACH__))
+void*
+#endif
+;
+
+
+class _ANA_APP TLibrary {
+    TString name;
+    TDataArray<TString> projectFiles;           // If a certain file name is located in a given directory, This Library holds an environment that can read it into a project 
+    TDataArray<TString> projectFileExtensions;  // If a certain File Type is located in a given directory, This Library holds an environment that can read it into a project
+    LibHandle libraryHandle;                    // Reference to the library. If it is 0/null, this library has NOT been loaded
+
+    bool ScanProjectFiles(TrecPointer<TFileShell> file);
+    bool ScanProjectExts(TrecPointer<TFileShell> file);
+public:
+    TLibrary();
+    TLibrary(const TLibrary& copy) = default;
+    void SetName(const TString& name);
+    TString GetName();
+    void AppendProjectFile(const TString& fileName);
+    void AppendProjectExt(const TString& fileExt);
+    bool SupportsProjectDirectory(TrecPointer<TFileShell> directory);
+
+    bool IsLoaded();
+    bool Load(TrecPointer<TFileShell> directory);
 };
 
 class _ANA_APP TInstance :
@@ -43,9 +74,33 @@ class _ANA_APP TInstance :
 
     TrecPointerSoft<TInstance> self;
     TInstance();
+
+    // Help Manage Extension Libraries available to Anagame
+    void ReadLibraryList();
+    TrecPointer<TFileShell> libraryFolder;
+    TDataArray<TLibrary> libraryList;
+
+    TDataArray<TrecPointer<TEnvironmentBuilder>> environmentBuilders;
+
 public:
     static TrecPointer<TInstance> GetInstance();
     ~TInstance();
+
+    /**
+     * Will Scan for a given resource. If 'env' is provided, then it will first check to see if the environment will provide it.
+     * If 'env' is not provided, or it does not provide the resource, The Instance scans for a list of Registered Builders that can support the resource
+     * 
+     * If a Builder is found, then true is returned. If 'env' is provided then the Builder builds a new environment, which is added to 'env'
+     */
+    bool ScanForResource(const TString& resource, TrecPointer<TEnvironment> env);
+
+    /**
+     * Causes Anagame to load the requested Set of Libraries. In the future, if a library is not currently listed, then it will reach out to a repository for the requested Library
+     * For now, any missing library will imply be added to the return value.
+     * 
+     * An Empty list returned indicates that all requested Libraries were successfully loaded.
+     */
+    TDataArray<TString> LoadLibraries(const TDataArray<TString>& libraries);
 
     void SetSelf(TrecPointer<TInstance> newSelf);
 

@@ -31,3 +31,19 @@ public:
     UINT ChildEnvironmentCount()const;
 };
 
+
+class _TREC_LIB_DLL TEnvironmentBuilder : TCoreObject
+{
+public:
+    /**
+     * Reports the name of the Environment that can support the requested Resource type (empty string if the resource is not supported)
+     */
+    virtual TString SupportsResource(const TString& resource) = 0;
+    /**
+     * Report the name of the Environments, resource TYpes, and Resuorces that can manage that File Type (strings should use 2 semicolons 
+     * as a separater i.e. '[Environment Name];[Resource Type];[Resource Name]'
+     */
+    virtual void SupportsFileType(TDataArray<TString>& envResources) = 0;
+
+    virtual TrecPointer<TEnvironment> BuildEnvironment(TString& name) = 0;
+};
