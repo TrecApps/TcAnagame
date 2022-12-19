@@ -1067,6 +1067,17 @@ bool TControl::SupportsChildTemplateInjection()
 	return false;
 }
 
+TrecPointer<TControl> TControl::GetControlById(const TString& id)
+{
+	return id.GetSize() && !id.Compare(this->ID) ? (TrecPointerKey::ConvertPointer<TPage, TControl>(
+		TrecPointerKey::TrecFromSoft<>(self))) : TrecPointer<TControl>();
+}
+
+TrecPointer<TTextElement> TControl::GetTextElement()
+{
+	return text;
+}
+
 void TControl::InspectEventAttributes()
 {
 	TString valpoint;

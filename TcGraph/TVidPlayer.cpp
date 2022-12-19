@@ -102,7 +102,10 @@ bool TVidPlayer::Initialize()
 
     avFrame = av_frame_alloc();
     avPacket = av_packet_alloc();
-    return avFrame && avPacket;
+    bool worked = avFrame && avPacket;
+    if (worked)
+        videoState = video_state::vs_init;
+    return worked;
 }
 
 bool TVidPlayer::RunRound()
@@ -118,6 +121,9 @@ bool TVidPlayer::RunRound()
         if (streams[Rust].frames.GetSize())
             ret = false;
     }
+
+    if (ret)
+        videoState = video_state::vs_stopped;
     return ret;
 }
 
@@ -178,20 +184,43 @@ TrecPointer<TVariable> TVidPlayer::Clone()
 
 void TVidPlayer::Run(ReturnObject& ret)
 {
-    baseTime = glfwGetTime();
-    TcAsyncRunner::Run(ret);
+    if (videoState == video_state::vs_init)
+    {
+        baseTime = glfwGetTime();
+        TcAsyncRunner::Run(ret);
+        videoState = video_state::vs_playing;
+    }
 }
 
 void TVidPlayer::Pause()
 {
-    TcAsyncRunner::Pause();
-    pauseTime = glfwGetTime();
+    if (videoState == video_state::vs_playing)
+    {
+        TcAsyncRunner::Pause();
+        pauseTime = glfwGetTime();
+        videoState = video_state::vs_paused;
+    }
 }
 
 void TVidPlayer::Resume()
 {
-    baseTime = (glfwGetTime() - pauseTime);
-    TcAsyncRunner::Resume();
+    if (videoState == video_state::vs_paused)
+    {
+        baseTime = (glfwGetTime() - pauseTime);
+        TcAsyncRunner::Resume();
+        videoState = video_state::vs_playing;
+    }
+}
+
+void TVidPlayer::Stop()
+{
+    videoState = video_state::vs_stopped;
+    TcAsyncRunner::Stop();
+}
+
+video_state TVidPlayer::GetVideoState()
+{
+    return videoState;
 }
 
 TVidPlayer::~TVidPlayer()
@@ -249,6 +278,7 @@ TrecPointer<TVidPlayer> TVidPlayer::GetPlayer(TrecPointer<DrawingBoard> board, T
 
     ret = TrecPointerKey::ConvertPointer<TVariable, TVidPlayer>(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TVidPlayer>());
     ret->board = board;
+    ret->videoState = video_state::vs_not_init;
     for (UINT Rust = 0; Rust < avFormatContext->nb_streams; Rust++)
     {
         AVCodecParameters* av_codec_params = avFormatContext->streams[Rust]->codecpar;

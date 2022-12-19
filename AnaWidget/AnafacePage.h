@@ -71,7 +71,11 @@ public:
 	 */
 	virtual TrecPointer<EventHandler> GetHandler() override;
 
+	TrecPointer<TControl> GetControlById(const TString& id);
+
 protected:
+
+
 	/**
 	 * The root Page (TControl)
 	 */

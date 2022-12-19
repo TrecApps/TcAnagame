@@ -61,6 +61,14 @@ using tc_player_state = enum class tc_player_state
 
 };
 
+using video_state = enum class video_state {
+    vs_not_init,
+    vs_init,
+    vs_playing,
+    vs_paused,
+    vs_stopped
+};
+
 class _TC_GRAPH TVidPlayer :
     public TcAsyncRunner
 {
@@ -82,6 +90,8 @@ class _TC_GRAPH TVidPlayer :
 
     double baseTime;
     double pauseTime;
+
+    video_state videoState;
 protected:
     bool RunRound() override;
 
@@ -93,6 +103,8 @@ protected:
 
 
 public:
+    video_state GetVideoState();
+
     TrecPointer<TVariable> Clone()override;
 
     void Run(ReturnObject& ret)override;
@@ -100,6 +112,10 @@ public:
     void Pause()override;
 
     void Resume()override;
+
+    void Stop() override;
+
+    video_state GetVideoState();
 
     ~TVidPlayer()override;
 

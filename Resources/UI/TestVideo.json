@@ -1,0 +1,40 @@
+{
+	"TLayout": {
+		"RowHeights" : ["1*", 50],
+		"Children" : [
+		{
+			"TVideo" : {
+				"RowPosition" : 0,
+				"ID": "Player",
+				"EventOnClick" : "PlayPause",
+				"BorderColor": "1.0,0.0,0.0,1.0",
+				"BorderThickness" : 5.0 
+			},
+			"TLayout": {
+				"IsGallery": true,
+				"RowPosition" : 1,
+				"ColumnWidths": [ "1*", "1*" ],
+				"Children" : [
+				{
+					"TControl": {
+						"ColPosition" : 0,
+						"ID": "PlayButton",
+						"BorderColor": "0.0,0.0,1.0,0.9",
+						"Caption": "Play"
+						"EventOnClick": "PlayPause"
+					}
+				},
+				{
+					"TControl": {
+						"ColPosition" : 0,
+						"BorderColor": "0.0,0.0,1.0,0.9",
+						"Caption": "Select"
+						"EventOnClick": "SelectVid"
+					}
+				}
+				]
+			}
+		}
+		]
+	}
+}

@@ -199,6 +199,10 @@ public:
 
 	virtual bool SupportsChildTemplateInjection();
 
+	virtual TrecPointer<TControl> GetControlById(const TString& id);
+
+	TrecPointer<TTextElement> GetTextElement();
+
 protected:
 
 	virtual void SetUpTextElement();

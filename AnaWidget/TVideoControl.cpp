@@ -55,6 +55,7 @@ bool TVideoControl::Pause()
 	if(!player.Get())
 	return false;
 	player->Pause();
+	
 }
 
 bool TVideoControl::Stop()
@@ -86,6 +87,11 @@ bool TVideoControl::onCreate(const RECT_F& loc, TrecPointer<TFileShell> d)
 			returnable = false;
 	}
 	return returnable;
+}
+
+video_state TVideoControl::GetVideoState()
+{
+	return player.Get() ? player->GetVideoState() : video_state::vs_not_init;
 }
 
 void TVideoControl::Draw(TrecPointer<TVariable> object)

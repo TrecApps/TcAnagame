@@ -579,3 +579,10 @@ TrecPointer<TPage::EventHandler> AnafacePage::GetHandler()
 {
 	return handler;
 }
+
+TrecPointer<TControl> AnafacePage::GetControlById(const TString& id)
+{
+	TrecPointer<TControl> cMainPage = TrecPointerKey::ConvertPointer < TPage, TControl>(rootPage);
+
+	return cMainPage.Get() ? cMainPage->GetControlById(id) : TrecPointer<TControl>();
+}

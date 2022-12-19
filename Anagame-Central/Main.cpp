@@ -1,6 +1,8 @@
 #include <include/GL/glew.h>
 #include <TInstance.h>
 #include "../AnaWidget/TControl.h"
+#include <AnagameEnvironment.h>
+#include "VideoHandler.h"
 
 TrecPointer<TInstance> mainInstance;
 
@@ -36,22 +38,31 @@ int main()
 
 	TDataMap<TDataMap<TString>> styles;
 
-	TrecPointer<TPage> page = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TControl>(TrecPointerKey::ConvertPointer<TWindow, DrawingBoard>(mainWindow), styles);
+	TrecPointer<AnafaceBuilder> builder = TrecPointerKey::GetNewTrecPointer<AnafaceBuilder>();
+	builder->SetDrawingBoard(TrecPointerKey::ConvertPointer<TWindow, DrawingBoard>(mainWindow));
+	builder->SetSpace(mainWindow->GetArea());
+	builder->SetHandler(TrecPointerKey::GetNewSelfTrecPointerAlt<TPage::EventHandler, VideoHandler>());
 
-	TrecPointer<TControl> control = TrecPointerKey::ConvertPointer<TPage, TControl>(page);
-	control->AddAttribute(L"Margin", L"50,50,80,80");
-	control->AddAttribute(L"BorderThickness", L"3.0");
-	control->AddAttribute(L"BorderColor", L"0.1,1.0,0.1,1.0");
+	TString uiJson(GetDirectoryWithSlash(CentralDirectories::cd_Executable));
+	uiJson.Append(L"UI/TestVideo.json");
+	TrecPointer<TFileShell> jsonFile = TFileShell::GetFileInfo(uiJson);
 
-	control->AddAttribute(L"ContentColor", L"0.2,0.5,0.2,1.0");
+	//TrecPointer<TPage> page = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TControl>(TrecPointerKey::ConvertPointer<TWindow, DrawingBoard>(mainWindow), styles);
 
-	control->AddAttribute(L"Caption", L"DirectWrite");
-	control->AddAttribute(L"FontColor", L"0.9,0.3,0.2,0.7");
-	control->AddAttribute(L"FontSize", L"48.0");
+	//TrecPointer<TControl> control = TrecPointerKey::ConvertPointer<TPage, TControl>(page);
+	//control->AddAttribute(L"Margin", L"50,50,80,80");
+	//control->AddAttribute(L"BorderThickness", L"3.0");
+	//control->AddAttribute(L"BorderColor", L"0.1,1.0,0.1,1.0");
 
-	control->onCreate(mainWindow->GetArea(), TrecPointer<TFileShell>());
+	//control->AddAttribute(L"ContentColor", L"0.2,0.5,0.2,1.0");
 
-	mainWindow->SetMainPage(TrecPointer<TPage>());
+	//control->AddAttribute(L"Caption", L"DirectWrite");
+	//control->AddAttribute(L"FontColor", L"0.9,0.3,0.2,0.7");
+	//control->AddAttribute(L"FontSize", L"48.0");
+
+	//control->onCreate(mainWindow->GetArea(), TrecPointer<TFileShell>());
+	if(jsonFile.Get())
+	mainWindow->SetMainPage(builder->GetPage(jsonFile));
 
 
 

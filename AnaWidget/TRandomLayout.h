@@ -57,6 +57,8 @@ public:
 
 	virtual TrecPointer<TPage> GetPage(UINT row, UINT col);
 
+	virtual TrecPointer<TControl> GetControlById(const TString& id);
+
 protected:
 
 	/**
