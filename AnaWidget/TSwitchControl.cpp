@@ -169,8 +169,13 @@ bool TSwitchControl::onCreate(const RECT_F& loc, TrecPointer<TFileShell> d)
             }
         }
         if (!updated)
-            unknownCount++;
-
+        {
+            TString s(control.control->GetName());
+            if (s.GetSize())
+                tabName.Set(s);
+            else
+                unknownCount++;
+        }
         tabBar->AddNewTab(tabName, control.control, false);
     }
 

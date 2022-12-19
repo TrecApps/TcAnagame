@@ -73,3 +73,13 @@ ag_msg bool TPageEx::OnScroll(bool fromBars, const TPoint& point, const TPoint& 
     area = mainPage->GetArea();
     return ret;
 }
+
+TRibbonPage::TRibbonPage(TrecActivePointer<TPage> page, const TString& name, bool isMain) : TPageEx(page, name)
+{
+    this->isMain = isMain;
+}
+
+page_type TRibbonPage::GetPageType()
+{
+    return isMain ? page_type::main_ribbon : page_type::ribbon_sup;
+}

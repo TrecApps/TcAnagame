@@ -238,6 +238,8 @@ public:
 		virtual void InjectScrollerPage(const RECT_F& bounds, const RECT_F& needs, TrecPointer<TPage> page);
 		virtual TrecPointer<EventHandler> GetHandler();
 
+		virtual TString GetName();
+
 protected:
 
 

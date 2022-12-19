@@ -3,6 +3,7 @@
 #include <TLayout.h>
 #include <TSwitchControl.h>
 #include <TIdeLayout.h>
+#include "PageTypes.h"
 
 TIdeWindow::TIdeWindow(GLFWwindow* window): TWindow(window)
 {
@@ -21,11 +22,19 @@ void TIdeWindow::SetMainPage(TrecPointer<TPage> mainPage)
 	mainLayout->AddRow(1, true);
 
 	TrecPointer<TPage> page = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TSwitchControl>(TWindow::GetDrawingBoard(), TDataMap<TDataMap<TString>>());
+	TrecPointer<TSwitchControl> tabControl = TrecPointerKey::ConvertPointer<TPage, TSwitchControl>(page);
 	mainLayout->AddPage(page, 0, 0);
 
 	page = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TIdeLayout>(TWindow::GetDrawingBoard(), TDataMap<TDataMap<TString>>());
 	TrecPointer<TIdeLayout> ideLayout = TrecPointerKey::ConvertPointer<TPage, TIdeLayout>(page);
 	mainLayout->AddPage(page, 1, 0);
+
+	// Now Set up The Main Page Provided
+	TrecPointer<TRibbonPage> ribbonPage = TrecPointerKey::ConvertPointer<TPage, TRibbonPage>(mainPage);
+	if (ribbonPage.Get() && ribbonPage->GetPageType() == page_type::main_ribbon)
+	{
+		tabControl->AddPage(mainPage, 0, 0, true);
+	}
 
 	mainLayout->onCreate(this->area, TrecPointer<TFileShell>());
 

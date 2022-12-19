@@ -342,6 +342,11 @@ TrecPointer<TPage::EventHandler> TPage::GetHandler()
 	return TrecPointer<TPage::EventHandler>();
 }
 
+TString TPage::GetName()
+{
+	return L"";
+}
+
 TObject::ObjectType TPage::GetObjectType()
 {
 	return ObjectType::ot_page;
