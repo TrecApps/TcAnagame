@@ -598,5 +598,6 @@ TString TcLanguage::PerformLex(TrecPointer<TStringVariable> var, TDataArray<TcLe
 				ProcessVariable(Rust, actString, lexList);
 		}
 	}
+	return L"";
 }
 

@@ -5,6 +5,7 @@ class TDialog :
     public TWindow
 {
     friend class TInstance;
+    friend class TrecPointerKey;
 protected:
     TrecPointer<TVariable> result;
     TrecPointer<TWindow> parent;
@@ -25,3 +26,5 @@ public:
     
 };
 
+
+TrecPointer<TFileShell> OpenLoadFileDialog(const TString& fileInfo, TrecPointer<TDirectory> dir, TString& error);

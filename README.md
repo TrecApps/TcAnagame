@@ -44,9 +44,12 @@ _Note:_ As of right now, only **TcGraph** and **TrecLib** have been created
 
 Also, the *TcGraph* relies on 2 3rd Party projects to help load images to be used with OpenGL, and manage OpenGL math. To ensure that the project builds:
 
-In the same Directory you cloned `TcAnagame` in, run `git clone https://github.com/nothings/stb.git` and `git clone https://github.com/g-truc/glm.git`
+In the same Directory you cloned `TcAnagame` in, run 
+* `git clone https://github.com/nothings/stb.git` 
+* `git clone https://github.com/g-truc/glm.git`
+* `git clone https://github.com/btzy/nativefiledialog-extended.git`
 
-In Visual Studio (for Windows), the Project is already configured to look for the files there (it uses a relative file path, so you don't have to do anything)
+In Visual Studio (for Windows), the Project is already configured to look for the files there (it uses a relative file path, so you don't have to do anything). However, when Building the Project for nativefilefialog-extended with Visual Studio for Windows, make sure that the **C++ CMake Tools for Windows** component under **Desktop Development with C++** is installed.
 
 ### Windows
 
