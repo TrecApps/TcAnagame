@@ -2,6 +2,8 @@
 #include "TWindow.h"
 #include <TEnvironment.h>
 #include "AnagameEnvironment.h"
+#include <TSwitchControl.h>
+#include "PageTypes.h"
 
 using ide_property = enum class ide_property
 {
@@ -18,7 +20,7 @@ protected:
     TrecPointer<TPage> dragManager;
     UINT mainPageSpace;
 
-
+    TrecPointer<TSwitchControl> ribbonTabs;
 
 public:
     TIdeWindow(GLFWwindow* window);
@@ -28,5 +30,11 @@ public:
     void SetProject(TrecActivePointer<AGProjectEnvironment> project);
 
     void SetIdeProperty(ide_property, const TString& prop);
+
+    void ActivateRibbons(const TDataArray<TString>& names);
+
+    UINT AddRibbon(TrecActivePointer<TPageEx> ribbon);
+
+    void RemoveRibbon(const TString& ribbonName);
 };
 
