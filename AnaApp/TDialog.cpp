@@ -86,6 +86,28 @@ bool IsValidFileExtParam(const TString& param)
 	return true;
 }
 
+bool GenerateFileInfo(TString& error, TrecPointer<TDataArray<TString>> pieces, TDataArray<std::string>& fileParams, TDataArray< nfdfilteritem_t>& filterItems)
+{
+	for (UINT Rust = 0; Rust < pieces->Size(); Rust++)
+	{
+		if (Rust % 2 && !IsValidFileExtParam(pieces->at(Rust)))
+		{
+			error.Format(L"Extension List %ws must only have alpha-numeric characters and comma's as dividers!", pieces->at(Rust).GetConstantBuffer().getBuffer());
+			return false;
+		}
+
+		fileParams.push_back(pieces->at(Rust).GetRegString());
+	}
+
+	assert(!(fileParams.Size() % 2));
+
+	for (UINT Rust = 1; Rust < fileParams.Size(); Rust += 2)
+	{
+		filterItems.push_back({ fileParams[Rust - 1].c_str(), fileParams[Rust].c_str() });
+	}
+	return true;
+}
+
 TrecPointer<TFileShell> OpenLoadFileDialog(const TString& fileInfo, TrecPointer<TDirectory> dir, TString& error)
 {
 	error.Empty();
@@ -99,26 +121,9 @@ TrecPointer<TFileShell> OpenLoadFileDialog(const TString& fileInfo, TrecPointer<
 		return ret;
 	}
 	TDataArray<std::string> fileParams;
-
-	for (UINT Rust = 0; Rust < pieces->Size(); Rust++)
-	{
-		if (Rust % 2 && !IsValidFileExtParam(pieces->at(Rust)))
-		{
-			error.Format(L"Extension List %ws must only have alpha-numeric characters and comma's as dividers!", pieces->at(Rust).GetConstantBuffer().getBuffer());
-			return ret;
-		}
-
-		fileParams.push_back(pieces->at(Rust).GetRegString());
-	}
-
-	assert(!(fileParams.Size() % 2));
-
 	TDataArray< nfdfilteritem_t> filterItems;
-
-	for (UINT Rust = 1; Rust < fileParams.Size(); Rust += 2)
-	{
-		filterItems.push_back({ fileParams[Rust - 1].c_str(), fileParams[Rust].c_str() });
-	}
+	if (!GenerateFileInfo(error, pieces, fileParams, filterItems))
+		return ret;
 
 	nfdchar_t* outPath = nullptr;
 
@@ -140,7 +145,7 @@ TrecPointer<TFileShell> OpenLoadFileDialog(const TString& fileInfo, TrecPointer<
 		outPath = nullptr;
 		ret = TFileShell::GetFileInfo(path);
 		if (!ret.Get())
-			error.Format(L"Retrieved Path '%ws' but could not generate File MetaData");
+			error.Format(L"Retrieved Path '%ws' but could not generate File MetaData", path.GetConstantBuffer().getBuffer());
 	}
 	else if (result == NFD_ERROR)
 	{
@@ -149,4 +154,90 @@ TrecPointer<TFileShell> OpenLoadFileDialog(const TString& fileInfo, TrecPointer<
 	
 	NFD_Quit();
 	return ret;
+}
+
+bool OpenSaveFileDialog(const TString& fileInfo, TrecPointer<TDirectory> dir, const TString& name, TString& error)
+{
+	error.Empty();
+	auto pieces = fileInfo.split(L';');
+
+
+	if (pieces->Size() % 2)
+	{
+		error.Set(L"File Info needs to be Set with an even number of peices dividable by ';'");
+		return false;
+	}
+	TDataArray<std::string> fileParams;
+	TDataArray< nfdfilteritem_t> filterItems;
+	if (!GenerateFileInfo(error, pieces, fileParams, filterItems))
+		return false;
+
+	nfdchar_t* outPath = nullptr;
+
+	std::string openDirectory = dir.Get() ? dir->GetPath().GetRegString() : std::string();
+
+	nfdresult_t result = NFD_Init();
+	if (result != NFD_OKAY)
+	{
+		error.Set(L"Failed to Launch File Dialog Library!");
+		return false;
+	}
+
+	std::string nameU8(name.GetRegString());
+
+	result = NFD_SaveDialogU8(&outPath, filterItems.data(), filterItems.Size(), dir.Get() ? openDirectory.c_str() : nullptr, nameU8.size() ? nameU8.c_str() : nullptr);
+
+	bool ret = true;
+
+	if (result == NFD_OKAY)
+	{
+		error.Set(outPath);
+		NFD_FreePath(outPath);
+		outPath = nullptr;
+	}
+	else if (result == NFD_ERROR)
+	{
+		error.Set(L"Programmatic Error Occured with Save File Dialog!");
+		ret = false;
+	}
+
+	NFD_Quit();
+	return ret;
+}
+
+TrecPointer<TFileShell> OpenDirectoryDialog(TrecPointer<TDirectory> dir, TString& error)
+{
+	error.Empty();
+	TrecPointer<TFileShell> ret;
+
+	nfdnchar_t* outPath = nullptr;
+
+	TString openDirectory( dir.Get() ? dir->GetPath() : L"");
+
+	nfdresult_t result = NFD_Init();
+	if (result != NFD_OKAY)
+	{
+		error.Set(L"Failed to Launch File Dialog Library!");
+		return ret;
+	}
+
+	result = NFD_PickFolderN(&outPath, openDirectory.GetSize() ? openDirectory.GetConstantBuffer().getBuffer() : nullptr);
+
+	if (result == NFD_OKAY)
+	{
+		TString path(outPath);
+		NFD_FreePathN(outPath);
+		outPath = nullptr;
+		ret = TFileShell::GetFileInfo(path);
+		if (!ret.Get())
+			error.Format(L"Retrieved Path '%ws' but could not generate Folder MetaData", path.GetConstantBuffer().getBuffer());
+	}
+	else if (result == NFD_ERROR)
+	{
+		error.Set(L"Programmatic Error Occured with Load Folder Dialog!");
+	}
+
+	NFD_Quit();
+	return ret;
+
 }

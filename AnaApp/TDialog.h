@@ -28,3 +28,5 @@ public:
 
 
 TrecPointer<TFileShell> OpenLoadFileDialog(const TString& fileInfo, TrecPointer<TDirectory> dir, TString& error);
+bool OpenSaveFileDialog(const TString& fileInfo, TrecPointer<TDirectory> dir, const TString& name, TString& error);
+TrecPointer<TFileShell> OpenDirectoryDialog(TrecPointer<TDirectory> dir, TString& error);

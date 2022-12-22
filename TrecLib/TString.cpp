@@ -789,7 +789,7 @@ bool TString::IsEmpty() const
 
 
 
-std::string TString::GetRegString()
+std::string TString::GetRegString()const
 {
 	TObjectLocker threadLock(&thread);
 	std::string reg;

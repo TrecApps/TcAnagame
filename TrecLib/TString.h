@@ -319,7 +319,7 @@ public:
 
 	bool IsEmpty() const;
 
-	std::string GetRegString();
+	std::string GetRegString()const;
 
 private:
 	UINT size;			// Note: these values focus on the number of WCHARs
