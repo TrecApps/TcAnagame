@@ -7,7 +7,7 @@
 
 TIdeWindow::TIdeWindow(GLFWwindow* window): TWindow(window)
 {
-	mainPageSpace = 100;
+	mainPageSpace = 180;
 }
 
 void TIdeWindow::SetMainPage(TrecPointer<TPage> mainPage)
@@ -37,7 +37,8 @@ void TIdeWindow::SetMainPage(TrecPointer<TPage> mainPage)
 	}
 
 	mainLayout->onCreate(this->area, TrecPointer<TFileShell>());
-
+	TDataArray<TPage::EventID_Cred> cred;
+	mainLayout->OnResize(this->area, 0, cred);
 
 	TrecPointer<IdeSection> ideSection;
 	assert(ideLayout->InitDivide(true, false, 0.75f));
@@ -120,7 +121,7 @@ UINT TIdeWindow::AddRibbon(TrecActivePointer<TPageEx> ribbon)
 	if (!ribbonTabs.Get())
 		return 1;
 
-	TrecPointer<TPageEx> baseRibbon = TrecPointerKey::ActiveToTrec<>(ribbon);
+	TrecPointer<TPageEx> baseRibbon = ribbon.GetTrecPointer();
 
 	if(baseRibbon->GetPageType() == page_type::file || baseRibbon->GetPageType() == page_type::file_sup)
 		return 2;

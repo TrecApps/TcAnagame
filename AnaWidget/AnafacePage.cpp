@@ -285,10 +285,12 @@ void AnafacePage::HandleAttributes(TString& result, TrecPointer<TPage>& curPage,
 	for (UINT Rust = 0; dynamic_cast<TJsonVariable*>(var.Get())->RetrieveFieldAt(Rust, attName, chVar); Rust++)
 	{
 		if (result.GetSize()) return;
-		if (!dynamic_cast<TStringVariable*>(chVar.Get()))
+		if (!chVar.Get())
 			continue;
 
-		auto strVar = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(chVar);
+		auto strVar = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(chVar->ToString());
+		if (!strVar.Get())
+			continue;
 
 		if (!attName.CompareNoCase(L"IsGallery") && (chVar->Get4Value() || strVar->GetString().GetTrim().CompareNoCase(L"true")))
 		{

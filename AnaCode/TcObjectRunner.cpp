@@ -3,7 +3,7 @@
 TcObjectRunner::TcObjectRunner(TrecActivePointer<TcObjectProcedure> proc, TrecPointer<TEnvironment> environment, TrecPointer<TcProcedureRunner> parentRunner)
 	:TcProcedureRunner(environment, parentRunner)
 {
-	procedure = TrecPointerKey::ActiveToTrec<>(proc);
+	procedure = proc.GetTrecPointer();
 
 	statementHandlers.push_back(&TcObjectRunner::ProcessRegular);
 
@@ -507,7 +507,7 @@ TrecPointer<TcObjectRunner> TcObjectRunner::GenerateBlockRunner(TcStatement& sta
 		firstParam = TrecPointerKey::ConvertPointer<TVariable, TcObjectProcedure>(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TcObjectProcedure>());
 	TrecPointer<TcObjectRunner> ret = TrecPointerKey::ConvertPointer<TVariable, TcObjectRunner>(
 		TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TcObjectRunner>(
-			TrecPointerKey::TrecToActive<TcObjectProcedure>(firstParam),
+			TrecActivePointer<TcObjectProcedure>(firstParam),
 			environment,
 			GetProcedureRunner()
 			)

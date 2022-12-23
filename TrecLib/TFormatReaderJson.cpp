@@ -95,7 +95,7 @@ TrecPointer<TVariable> TFormatReaderJson::ProcessObject(TString& worked)
     TString readable;
     UINT read;
 
-    TrecPointer<TJsonVariable> ret = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TArrayVariable>());
+    TrecPointer<TJsonVariable> ret = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TJsonVariable>());
     UINT loopCount = 1;
     do
     {

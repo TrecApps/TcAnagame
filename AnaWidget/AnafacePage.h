@@ -1,6 +1,7 @@
 #pragma once
 #include <TDataMap.h>
 #include "HandlerPage.h"
+#include "TControl.h"
 
 typedef struct LayoutData
 {

@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "TPrimitiveVariable.h"
+#include "TString.h"
 
 
 /**
@@ -545,14 +546,54 @@ TrecPointer<TVariable> TPrimitiveVariable::Clone()
     return ret;
 }
 
-TrecPointer<TObject::TVariable> TPrimitiveVariable::ToString(TrecPointer<TObject::TVariable>)
+TrecPointer<TObject::TVariable> TPrimitiveVariable::ToString(TrecPointer<TObject::TVariable> stats)
 {
-    return TrecPointer<TObject::TVariable>();
+    bool useExponent = false;
+    TString format(L"%");
+    TString ret;
+    if (type & TPrimitiveVariable::type_bool)
+    {
+        if (value)
+            ret.Set(L"true");
+        else
+            ret.Set(L"false");
+    }
+
+    else if (type & TPrimitiveVariable::type_char && type & TPrimitiveVariable::type_one)
+    {
+        char v = static_cast<char>(value);
+        ret.Format(format + (useExponent ? L"e" : L"c"), v);
+    }
+    else if (type & TPrimitiveVariable::type_char && type & TPrimitiveVariable::type_two)
+    {
+        WCHAR v[2] = { static_cast<WCHAR>(value), L'\0' };
+        ret.Format(format + (useExponent ? L"e" : L"ls"), v);
+    }
+    else if (type & TPrimitiveVariable::type_float)
+    {
+        double d;
+
+        memcpy_s(&d, sizeof(d), &value, sizeof(value));
+
+        ret.Format(format + (useExponent ? L"e" : L"f"), d);
+    }
+    else if (type & TPrimitiveVariable::type_unsigned)
+    {
+        ret.Format(format + (useExponent ? L"e" : L"llu"), value);
+    }
+    else
+    {
+        LONG64 l = static_cast<LONG64>(value);
+
+        ret.Format(format + (useExponent ? L"e" : L"lld"), l);
+    }
+    
+    return TrecPointerKey::GetNewSelfTrecPointerAlt<TObject::TVariable, TStringVariable>(ret);
 }
 
 TrecPointer<TObject::TVariable> TPrimitiveVariable::ToString()
 {
-    return TrecPointer<TObject::TVariable>();
+    return ToString(TrecPointer<TVariable>());
 }
 
 

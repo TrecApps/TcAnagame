@@ -223,31 +223,40 @@ public:
 	}
 };
 
-template<class T> class _TREC_LIB_DLL TrecActivePointer : public TrecPointerBase
+template<class T> class _TREC_LIB_DLL TrecActivePointer
 {
 	friend class TrecPointerKey;
 	TrecActivePointer() = default;
+protected:
+	TrecPointer<T> actPointer;
 public:
+
+	TrecPointer<T> GetTrecPointer()const 
+	{
+		return actPointer;
+	}
 
 	TrecActivePointer(const TrecActivePointer<T>& copy)
 	{
-		pointer = copy.pointer;
-		Increment();
+		actPointer = copy.GetTrecPointer();
+
 	}
 
-	//TrecActivePointer(const TrecPointer<T>& copy)
-	//{
-	//	auto temp = copy;
-	//	if (!temp.Get())
-	//		throw 0;
-	//	pointer = temp.pointer;
-	//	Increment();
-	//}
-
-	~TrecActivePointer()
+	TrecActivePointer<T>& operator=(const TrecPointer<T>& other)
 	{
-		// Make sure we decriment the coutner before deletion is complete
-		Decrement();
+		if (!other.Get())
+			throw 0;
+		actPointer = other;
+		return *this;
+	}
+
+
+	TrecActivePointer(const TrecPointer<T>& copy)
+	{
+		auto temp = copy;
+		if (!temp.Get())
+			throw 0;
+		actPointer = copy;
 	}
 
 };
@@ -335,22 +344,5 @@ public:
 		return ret;
 	}
 
-	template <class T> static TrecPointer<T>& ActiveToTrec(TrecActivePointer<T>& active)
-	{
-		TrecPointer<T> ret;
-		ret.pointer = active.pointer;
-		ret.Increment();
-		return ret;
-	}
 
-	template <class T> static TrecActivePointer<T>& TrecToActive(TrecPointer<T>& trec)
-	{
-		// The Purpose of the Active Pointer is to NOT be null
-		if (!trec.Get())
-			throw 0;
-		TrecActivePointer<T> ret;
-		ret.pointer = trec.pointer;
-		ret.Increment();
-		return ret;
-	}
 };

@@ -1,3 +1,4 @@
+#pragma once
 #include <TPage.h>
 #include <TEnvironment.h>
 #include "AnaApp.h"

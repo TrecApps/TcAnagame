@@ -115,8 +115,6 @@ public:
 
     void Stop() override;
 
-    video_state GetVideoState();
-
     ~TVidPlayer()override;
 
     TDataArray<UINT> GetVideoStreams();

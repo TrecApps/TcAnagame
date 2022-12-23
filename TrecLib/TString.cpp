@@ -20,7 +20,7 @@
 
 #ifdef _WINDOWS
 
-#define TC_MBSTOWCS(retSize, size, dest, source) mbstowcs_s(&retSize, dest, size, source, size)
+#define TC_MBSTOWCS(retSize, size, dest, source) retSize = MultiByteToWideChar(CP_UTF8, 0, source, size, dest, size * sizeof(WCHAR))
 #define TC_WCSTOMBS(size, dest, source, winFlag) WideCharToMultiByte(CP_ACP, 0, source, size, dest, size, NULL, &winFlag)
 
 #elif defined(__linux__) || (defined (__APPLE__) && defined (__MACH__))
@@ -36,6 +36,7 @@ static TDataArray<WCHAR> whiteChar;
 
 void fillWhiteChar()
 {
+	
 	if (whiteChar.Size())
 		return;
 

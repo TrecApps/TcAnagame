@@ -1,8 +1,8 @@
 #include "PageTypes.h"
 
-TPageEx::TPageEx(TrecActivePointer<TPage> page, const TString& name) : TPage(TrecPointerKey::ActiveToTrec<>(page)->GetDrawingBoard())
+TPageEx::TPageEx(TrecActivePointer<TPage> page, const TString& name) : TPage(page.GetTrecPointer()->GetDrawingBoard())
 {
-    this->mainPage = TrecPointerKey::ActiveToTrec<>(page);
+    this->mainPage = page.GetTrecPointer();
     this->name.Set(name);
     this->area = mainPage->GetArea();
 }
@@ -29,36 +29,36 @@ void TPageEx::Draw(TrecPointer<TVariable> object)
 
 ag_msg void TPageEx::OnRButtonUp(UINT nFlags, const TPoint& point, message_output& mOut, TDataArray<EventID_Cred>& cred)
 {
-    OnRButtonUp(nFlags, point, mOut, cred);
+    mainPage->OnRButtonUp(nFlags, point, mOut, cred);
 }
 
 ag_msg void TPageEx::OnRButtonDown(UINT nFlags, const TPoint& point, message_output& mOut, TDataArray<EventID_Cred>& cred)
 {
-    OnRButtonDown(nFlags, point, mOut, cred);
+    mainPage->OnRButtonDown(nFlags, point, mOut, cred);
 }
 
 ag_msg void TPageEx::OnLButtonUp(UINT nFlags, const TPoint& point, message_output& mOut, TDataArray<EventID_Cred>& cred)
 {
-    OnLButtonUp(nFlags, point, mOut, cred);
+    mainPage->OnLButtonUp(nFlags, point, mOut, cred);
 }
 ag_msg void TPageEx::OnLButtonDown(UINT nFlags, const TPoint& point, message_output& mOut, TDataArray<EventID_Cred>& cred)
 {
-    OnLButtonDown(nFlags, point, mOut, cred);
+    mainPage->OnLButtonDown(nFlags, point, mOut, cred);
 }
 
 ag_msg void TPageEx::OnMouseMove(UINT nFlags, TPoint point, message_output& mOut, TDataArray<EventID_Cred>& cred)
 {
-    OnMouseMove(nFlags, point, mOut, cred);
+    mainPage->OnMouseMove(nFlags, point, mOut, cred);
 }
 
 ag_msg void TPageEx::OnLButtonDblClk(UINT nFlags, TPoint point, message_output& mOut, TDataArray<EventID_Cred>& eventAr)
 {
-    OnLButtonDblClk(nFlags, point, mOut, eventAr);
+    mainPage->OnLButtonDblClk(nFlags, point, mOut, eventAr);
 }
 
 ag_msg void TPageEx::OnResize(RECT_F& newLoc, UINT nFlags, TDataArray<EventID_Cred>& eventAr)
 {
-    OnResize(newLoc, nFlags, eventAr);
+    mainPage->OnResize(newLoc, nFlags, eventAr);
     area = mainPage->GetArea();
 }
 

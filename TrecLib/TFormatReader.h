@@ -24,7 +24,7 @@ public:
      * Class: TFormatReaderBuilder
      * Purpose: Enables third Parties to provide their own Builders and Readers for formats not directly supported by Anagame
      */
-    class _TREC_LIB_DLL TFormatReaderBuilder
+    class _TREC_LIB_DLL TFormatReaderBuilder: public TCoreObject
     {
     public:
         /**

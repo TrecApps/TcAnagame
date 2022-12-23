@@ -1,4 +1,5 @@
 #include <GL/glew.h>
+#include <GL/glew.h>
 #include "TTextElement.h"
 #include "TImageBrush.h"
 #include "TColorBrush.h"
@@ -526,6 +527,19 @@ void TTextElement::ReCreateLayout()
 		ch.location.left = x;
 		x += curFace->glyph->bitmap.width;
 		ch.location.right = x;
+
+		// Since a space yields 0 space, use 'o' as a dummy face to aritficially shift the x
+		if (ch.character == L' ')
+		{
+			FT_Face tempFace = nullptr;
+			assert(RetrieveFont(chFormatting.font, tempFace));
+			FT_Set_Pixel_Sizes(curFace, 0, chFormatting.fontSize);
+			FT_UInt tempGlyphIndex = FT_Get_Char_Index(tempFace, L'o');
+
+
+			assert(tempGlyphIndex && !FT_Load_Glyph(tempFace, tempGlyphIndex, FT_LOAD_COLOR) && !FT_Render_Glyph(tempFace->glyph, FT_RENDER_MODE_NORMAL));
+			x += tempFace->glyph->bitmap.width;
+		}
 
 		ch.backgroundColor = chFormatting.defaultBackgroundColor;
 

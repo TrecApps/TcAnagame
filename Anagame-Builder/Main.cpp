@@ -1,6 +1,8 @@
 #include <include/GL/glew.h>
 #include <TInstance.h>
 #include "../AnaWidget/TControl.h"
+#include <AnagameEnvironment.h>
+#include "MainPageIdeHandler.h"
 
 TrecPointer<TInstance> mainInstance;
 
@@ -51,7 +53,25 @@ int main()
 
 	//control->onCreate(mainWindow->GetArea(), TrecPointer<TFileShell>());
 
-	mainWindow->SetMainPage(TrecPointer<TPage>());
+	TrecPointer<AnafaceBuilder> builder = TrecPointerKey::GetNewTrecPointer<AnafaceBuilder>();
+	builder->SetDrawingBoard(TrecPointerKey::ConvertPointer<TWindow, DrawingBoard>(mainWindow));
+	builder->SetSpace(mainWindow->GetArea());
+	builder->SetHandler(TrecPointerKey::GetNewSelfTrecPointerAlt<TPage::EventHandler, MainPageIdeHandler>());
+
+
+	TString tmlFile(GetDirectoryWithSlash(CentralDirectories::cd_Executable));
+	tmlFile.Append(L"UI\\MainIdeRibbon.json");
+	TrecPointer<TFileShell> jsonFile = TFileShell::GetFileInfo(tmlFile);
+
+
+	TrecPointer<TPage> ribbon = builder->GetPage(jsonFile);
+
+	TrecActivePointer<TPage> activePage(ribbon);
+
+	TrecPointer<TPage> mainRibbon = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TRibbonPage>(activePage, L"AnagameBuilder", true);
+
+	if (jsonFile.Get())
+		mainWindow->SetMainPage(mainRibbon);
 
 
 

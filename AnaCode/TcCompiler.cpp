@@ -25,12 +25,12 @@ bool TcCompiler::PrepParsing(TDataArray<TString>& parsList, const TString& propK
 TcCompiler::TcCompiler(TrecActivePointer<TFileShell> file, TrecActivePointer<TEnvironment> env, TrecActivePointer<TcLanguage> languageDetails)
 {
 	stage = 0;
-	this->file = TrecPointerKey::ActiveToTrec<>(file);
+	this->file = file.GetTrecPointer();
 	if (this->file->IsDirectory())
 		throw 3;
-
-	environment = TrecPointerKey::SoftFromTrec<>(TrecPointerKey::ActiveToTrec<>(env));
-	this->language = TrecPointerKey::ActiveToTrec<>(languageDetails);
+	auto tEnv = env.GetTrecPointer();
+	environment = TrecPointerKey::SoftFromTrec<>(tEnv);
+	this->language = languageDetails.GetTrecPointer();
 }
 
 TString TcCompiler::Init()

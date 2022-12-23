@@ -147,7 +147,7 @@ bool TSwitchControl::onCreate(const RECT_F& loc, TrecPointer<TFileShell> d)
     TRandomLayout::onCreate(loc, d);
 
     UINT unknownCount = 1;
-    for (UINT Rust = 0; childControls.Size(); Rust++)
+    for (UINT Rust = 0; Rust < childControls.Size(); Rust++)
     {
         auto control = childControls[Rust];
         if (!control.control.Get())

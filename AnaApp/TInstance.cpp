@@ -170,7 +170,7 @@ UINT TInstance::GenerateWindow(TrecPointer<TWindow>& window, TrecPointer<TFileSh
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-	GLFWwindow* glfwWindow = glfwCreateWindow(640, 480, useName.GetRegString().c_str(), nullptr, nullptr);
+	GLFWwindow* glfwWindow = glfwCreateWindow(800,600, useName.GetRegString().c_str(), nullptr, nullptr);
 	if (!glfwWindow)
 		return 1;
 
