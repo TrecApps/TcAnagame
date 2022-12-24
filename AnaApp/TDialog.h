@@ -1,7 +1,8 @@
 #pragma once
 #include "TInstance.h"
 #include <TcProcedureRunner.h>
-class TDialog :
+
+class _ANA_APP TDialog :
     public TWindow
 {
     friend class TInstance;
@@ -27,6 +28,6 @@ public:
 };
 
 
-TrecPointer<TFileShell> OpenLoadFileDialog(const TString& fileInfo, TrecPointer<TDirectory> dir, TString& error);
-bool OpenSaveFileDialog(const TString& fileInfo, TrecPointer<TDirectory> dir, const TString& name, TString& error);
-TrecPointer<TFileShell> OpenDirectoryDialog(TrecPointer<TDirectory> dir, TString& error);
+TrecPointer<TFileShell> _ANA_APP OpenLoadFileDialog(const TString& fileInfo, TrecPointer<TDirectory> dir, TString& error);
+bool _ANA_APP OpenSaveFileDialog(const TString& fileInfo, TrecPointer<TDirectory> dir, const TString& name, TString& error);
+TrecPointer<TFileShell> _ANA_APP OpenDirectoryDialog(TrecPointer<TDirectory> dir, TString& error);

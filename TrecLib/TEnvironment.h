@@ -48,6 +48,8 @@ public:
 
     virtual TrecPointer<TEnvironment> BuildEnvironment(TString& name) = 0;
 
+    virtual TrecPointer<TEnvironment> BuildProjectEnvironment(TString& name, TString& projectName, TrecActivePointer<TFileShell> directory);
+
     virtual void GetProjectTypes(TDataArray<TString>& types) = 0;
 
     virtual void GetProjectTypes(TDataArray<TString>& types, TrecActivePointer<TDirectory> workspace) = 0;

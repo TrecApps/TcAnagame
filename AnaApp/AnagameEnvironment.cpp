@@ -79,6 +79,9 @@ TrecPointer<TPage> AnafaceBuilder::GetPage(TrecPointer<TFileShell> file)
 
 	anaRet->Create(this->space);
 
+	auto pHandler = anaRet->GetHandler();
+	pHandler->Initialize(ret);
+
 	return ret;
 }
 

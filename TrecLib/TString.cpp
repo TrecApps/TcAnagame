@@ -728,7 +728,7 @@ void TString::TrimRight()
 {
 	TObjectLocker threadLock(&thread);
 	int end = size - 1;
-	while (end >= 0 && iswspace(string[end]))
+	while (end >= 0 && (iswspace(string[end]) || string[end] == 0xFEFF))
 	{
 		end--;
 	}
@@ -750,7 +750,7 @@ void TString::TrimLeft()
 {
 	TObjectLocker threadLock(&thread);
 	UINT end = 0;
-	while (end < size && iswspace(string[end])) end++;
+	while (end < size && (iswspace(string[end]) || string[end] == 0xFEFF)) end++;
 	UINT sEnd = end;
 	for (UINT Rust = 0; end < size; Rust++, end++)
 	{

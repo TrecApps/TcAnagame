@@ -446,9 +446,6 @@ TString AnafacePage::PrepPage(TrecPointer<TFileShell> file, TrecPointer<EventHan
 
 	HandleNode(L"", ret, uiData, rootPage, ld);
 
-	if (!ret.GetSize() && this->handler.Get())
-		handler->Initialize(TrecPointerKey::TrecFromSoft<>(self));
-
 	directory = file->GetParent();
 
 	return ret;

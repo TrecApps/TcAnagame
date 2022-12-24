@@ -4,7 +4,7 @@
 
 
 
-class TVideoControl :
+class _ANA_WIDGET TVideoControl :
     public TControl
 {
     TrecPointer<TVidPlayer> player;

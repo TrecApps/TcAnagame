@@ -217,7 +217,8 @@ TrecPointer<TPage> TRandomLayout::GetPage(UINT row, UINT col)
 
 TrecPointer<TControl> TRandomLayout::GetControlById(const TString& id)
 {
-    TrecPointer<TControl> ret = TControl::GetControlById(id);
+    TrecPointer<TControl> ret;
+    ret = TControl::GetControlById(id);
 
     for (UINT Rust = 0; !ret.Get() && Rust < childControls.Size(); Rust++)
     {

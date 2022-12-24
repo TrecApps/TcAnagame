@@ -1276,7 +1276,7 @@ void TControl::SetUpTextElement()
 	{
 		details.defaultTextColor.SetColor(fontColor);
 
-		text = TrecPointerKey::GetNewTrecPointer<TTextElement>(drawingBoard);
+		text = TrecPointerKey::GetNewSelfTrecPointer<TTextElement>(drawingBoard);
 
 		text->SetBounds(area);
 		text->SetBasicFormatting(details);

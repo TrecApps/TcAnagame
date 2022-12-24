@@ -58,3 +58,8 @@ UINT TEnvironment::ChildEnvironmentCount() const
 {
     return childEnvironments.Size();
 }
+
+TrecPointer<TEnvironment> TEnvironmentBuilder::BuildProjectEnvironment(TString& name, TString& projectName, TrecActivePointer<TFileShell> directory)
+{
+    return TrecPointer<TEnvironment>();
+}
