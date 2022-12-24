@@ -2,6 +2,7 @@
 #include "TString.h"
 #include "TDataArray.h"
 #include "TDataMap.h"
+#include "TFile.h"
 
 class _TREC_LIB_DLL TEnvironment :
     public TObject
@@ -46,4 +47,10 @@ public:
     virtual void SupportsFileType(TDataArray<TString>& envResources) = 0;
 
     virtual TrecPointer<TEnvironment> BuildEnvironment(TString& name) = 0;
+
+    virtual void GetProjectTypes(TDataArray<TString>& types) = 0;
+
+    virtual void GetProjectTypes(TDataArray<TString>& types, TrecActivePointer<TDirectory> workspace) = 0;
+
+    virtual void SupportsFileType(TDataArray<TString>& types, const TString& ext) = 0;
 };
