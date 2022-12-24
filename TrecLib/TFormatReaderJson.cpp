@@ -26,6 +26,9 @@ TString TFormatReaderJson::Read()
     return ret;
 }
 
+void WriteArrayObject(TFile& file, TrecPointer<TArrayVariable> var, UINT level, TFormatReader::write_mode mode);
+void WriteJsonObject(TFile& file, TrecPointer<TJsonVariable> var, UINT level, TFormatReader::write_mode mode);
+
 TString TFormatReaderJson::Write(TrecPointer<TVariable> data, write_mode mode)
 {
     if (!fileShell.Get())
@@ -36,10 +39,117 @@ TString TFormatReaderJson::Write(TrecPointer<TVariable> data, write_mode mode)
     if (!file.IsOpen())
         return L"Failed to open file!";
 
+    TrecPointer<TJsonVariable> rootObject = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(data);
+    if (!rootObject.Get())
+        return L"Json Files expect a JSON object at the root";
+
+    WriteJsonObject(file, rootObject, 0, mode);
 
 
     return TString();
 }
+
+void WriteJsonObject(TFile& file, TrecPointer<TJsonVariable> var, UINT level, TFormatReader::write_mode mode)
+{
+    file.WriteString(L"{");
+
+    TString tabSpace;
+    if(mode == TFormatReader::write_mode::line_formated)
+        for (UINT Rust = 0; Rust < level; Rust++)
+            tabSpace.AppendChar(L'\t');
+
+    bool doNewLine = mode != TFormatReader::write_mode::condensed;
+
+    TString field;
+    TrecPointer<TVariable> value;
+
+    for (UINT Rust = 0; var->RetrieveFieldAt(Rust, field, value); Rust++)
+    {
+        if (Rust)
+            file.WriteString(L",");
+        if (doNewLine)
+            file.WriteString(TString(L"\n") + tabSpace);
+        file.WriteString(TString(L"\"") + field.GetTrim() + L"\": ");
+
+        if (!value.Get())
+        {
+            file.WriteString(L"null");
+            continue;
+        }
+
+        TrecPointer<TStringVariable> strVar;
+
+        switch (value->GetVarType())
+        {
+        case var_type::primitive:
+            strVar = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(value->ToString());
+            file.WriteString(strVar->GetString());
+            break;
+        case var_type::string:
+            strVar = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(value);
+            file.WriteString(TString(L"\"") + strVar->GetString() + L"\"");
+            break;
+        case var_type::json:
+            WriteJsonObject(file, TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(value), level + 1, mode);
+            break;
+        case var_type::list:
+            WriteArrayObject(file, TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(value), level, mode);
+            break;
+        default:
+            file.WriteString(L"null"); // we are not supporting other datatypes
+        }
+    }
+
+    if (doNewLine)
+        file.WriteString(TString(L"\n") + tabSpace + L'}');
+}
+
+void WriteArrayObject(TFile& file, TrecPointer<TArrayVariable> var, UINT level, TFormatReader::write_mode mode)
+{
+    file.WriteString(L"[");
+
+    TString tabSpace;
+    if (mode == TFormatReader::write_mode::line_formated)
+        for (UINT Rust = 0; Rust < level; Rust++)
+            tabSpace.AppendChar(L'\t');
+
+    bool doNewLine = mode != TFormatReader::write_mode::condensed;
+
+    TrecPointer<TVariable> value;
+    for (UINT Rust = 0; var->GetValueAt(Rust, value); Rust++)
+    {
+        if (Rust)
+            file.WriteString(L",");
+        if (doNewLine)
+            file.WriteString(TString(L"\n") + tabSpace);
+
+        TrecPointer<TStringVariable> strVar;
+
+        switch (value->GetVarType())
+        {
+        case var_type::primitive:
+            strVar = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(value->ToString());
+            file.WriteString(strVar->GetString());
+            break;
+        case var_type::string:
+            strVar = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(value);
+            file.WriteString(TString(L"\"") + strVar->GetString() + L"\"");
+            break;
+        case var_type::json:
+            WriteJsonObject(file, TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(value), level + 1, mode);
+            break;
+        case var_type::list:
+            WriteArrayObject(file, TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(value), level + 1, mode);
+            break;
+        default:
+            file.WriteString(L"null"); // we are not supporting other datatypes
+        }
+    }
+
+    if (doNewLine)
+        file.WriteString(TString(L"\n") + tabSpace + L']');
+}
+
 
 TrecPointer<TVariable> TFormatReaderJson::GetData()
 {
