@@ -1,6 +1,7 @@
 #include "TString.h"
 #include <cassert>
 #include <stdlib.h>
+#include "FileFunctions.hpp"
 
 
 #ifndef _WINDOWS
@@ -20,12 +21,10 @@
 
 #ifdef _WINDOWS
 
-#define TC_MBSTOWCS(retSize, size, dest, source) retSize = MultiByteToWideChar(CP_UTF8, 0, source, size, dest, size * sizeof(WCHAR))
 #define TC_WCSTOMBS(size, dest, source, winFlag) WideCharToMultiByte(CP_ACP, 0, source, size, dest, size, NULL, &winFlag)
 
 #elif defined(__linux__) || (defined (__APPLE__) && defined (__MACH__))
 
-#define TC_MBSTOWCS(retSize, size, dest, source) retSize = mbstowcs(dest, source, size);
 #define TC_WCSTOMBS(size, dest, source, winFlag) wcstombs(dest, source, size)
 
 #endif
@@ -283,16 +282,14 @@ TString::TString(const char* cps)
 		return;
 	}
 	
-	size_t s = 0;
-
-	TC_MBSTOWCS(s, 0, nullptr, cps);
+	size_t s = TcMultiByteToWideChar(cps, strlen(cps), nullptr);
 
 	size = s;
 	capacity = size + 1;
 
 	string = new WCHAR[capacity];
 	
-	TC_MBSTOWCS(s, size, string, cps);
+	s = TcMultiByteToWideChar(cps, strlen(cps), string, size);
 	string[capacity - 1] = L'\0';
 }
 
@@ -328,19 +325,15 @@ TString::TString(std::string& str)
 {
 	fillWhiteChar();
 
-	size_t sizeNeeded = 0;
-	
-	
+	size_t s = TcMultiByteToWideChar(str.c_str(), str.size(), nullptr);
 
-	capacity = str.size() + 1;
+	size = s;
+	capacity = size + 1;
 
 	string = new WCHAR[capacity];
 
-	string[sizeNeeded] = string[sizeNeeded - 1] = '\0';
-
-	size = str.size();
-
-	TC_MBSTOWCS(sizeNeeded, size, string, str.c_str());
+	s = TcMultiByteToWideChar(str.c_str(), str.size(), string, size);
+	string[capacity - 1] = L'\0';
 }
 
 TString::TString(WCHAR c)
@@ -1356,18 +1349,16 @@ float ConvertHueToRGB(float p, float q, int hue)
 WCHAR ReturnCharType(char c)
 {
 	WCHAR w[] = { L'0',L'\0' };
-	size_t conv = 0;
 	char charTo[] = { c, '\0' };
-	TC_MBSTOWCS(conv, 1, w, charTo);
+	TcMultiByteToWideChar(charTo, 1, w, 1);
 	return w[0];
 }
 
 WCHAR ReturnWCharType(char c)
 {
 	WCHAR w[] = { L'0',L'\0' };
-	size_t conv = 0;
 	char charTo[] = { c, '\0' };
-	TC_MBSTOWCS(conv, 1, w, charTo);
+	TcMultiByteToWideChar(charTo, 1, w, 1);
 	return w[0];
 }
 

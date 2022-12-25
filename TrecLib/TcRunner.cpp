@@ -183,9 +183,11 @@ void TcAsyncRunner::Resume()
 void TcAsyncRunner::Stop()
 {
 	if (bridge.Get() && bridge->GetState() != thread_state::finished)
+	{
 		bridge->SetState(thread_state::stopped);
 
-	while (!bridge->CanDelete());
+		while (!bridge->CanDelete());
+	}
 	bridge.Nullify();
 }
 

@@ -45,5 +45,5 @@ void TcFileWrite(FILE_HANDLE fileName, const UCHAR* bytes, DWORD sizeToRead, DWO
 void TcFileClose(FILE_HANDLE& fileName);
 void TcFileFlush(FILE_HANDLE& fileName);
 
-UINT TcMultiByteToWideChar(const char* source, UINT sourceSize, WCHAR* target);
+UINT TcMultiByteToWideChar(const char* source, UINT sourceSize, WCHAR* target, UINT targetSize = 0);
 UINT TcWideCharToMultiByte(const WCHAR* source, UINT sourceSize, char* target);

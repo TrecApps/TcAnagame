@@ -38,6 +38,19 @@ void Stream::ProcessFrames(TrecPointer<DrawingBoard>& board)
 
     if (streamType == av_stream_type::t_video)
     {
+        if (!codec.scalerContext)
+        {
+            auto source_pix_fmt = correct_for_deprecated_pixel_format(codec.av_codec_ctx->pix_fmt);
+            codec.scalerContext = sws_getContext(
+                codec.width, codec.height, source_pix_fmt,
+                codec.width, codec.height, AV_PIX_FMT_RGB0,
+                SWS_BILINEAR, nullptr, nullptr, nullptr);
+            
+        }
+        if (!codec.scalerContext)
+        {
+            return;
+        }
         for (UINT Rust = 0; Rust < this->frames.GetSize(); Rust++)
         {
             auto& frame = frames.at(Rust);
@@ -275,7 +288,7 @@ TrecPointer<TVidPlayer> TVidPlayer::GetPlayer(TrecPointer<DrawingBoard> board, T
         avFormatContext = nullptr; // Function call automatically deallocates context upon failure
         return ret;
     }
-
+    
     ret = TrecPointerKey::ConvertPointer<TVariable, TVidPlayer>(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TVidPlayer>());
     ret->board = board;
     ret->videoState = video_state::vs_not_init;
@@ -307,25 +320,6 @@ TrecPointer<TVidPlayer> TVidPlayer::GetPlayer(TrecPointer<DrawingBoard> board, T
         }
         if (av_codec_params->codec_type == AVMEDIA_TYPE_VIDEO)
         {
-            SwsContext* context = nullptr;
-
-            auto source_pix_fmt = correct_for_deprecated_pixel_format(codecContext->pix_fmt);
-
-            context = sws_getContext(
-                av_codec_params->width, 
-                av_codec_params->height,
-                source_pix_fmt,
-                av_codec_params->width,
-                av_codec_params->height,
-                AV_PIX_FMT_RGB0,
-                SWS_BILINEAR, NULL, NULL, NULL);
-
-            if (!context)
-            {
-                avcodec_free_context(&codecContext);
-                codecContext = nullptr;
-                continue;
-            }
 
             stream.codec = {
             av_codec_params,
@@ -333,8 +327,10 @@ TrecPointer<TVidPlayer> TVidPlayer::GetPlayer(TrecPointer<DrawingBoard> board, T
             av_codec_params->width,
             av_codec_params->height,
             codecContext,
-            avFormatContext->streams[Rust]->time_base, Rust, context };
+            avFormatContext->streams[Rust]->time_base, Rust, nullptr };
             stream.streamType = av_stream_type::t_video;
+
+
         }
 
         ret->streams.push_back(stream);

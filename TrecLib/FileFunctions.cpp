@@ -28,9 +28,9 @@ void TcFileFlush(FILE_HANDLE& fileName)
 		FlushFileBuffers(fileName);
 }
 
-UINT TcMultiByteToWideChar(const char* source, UINT sourceSize, WCHAR* target)
+UINT TcMultiByteToWideChar(const char* source, UINT sourceSize, WCHAR* target, UINT targetSize)
 {
-	return MultiByteToWideChar(CP_UTF8, 0, source, sourceSize, target, sourceSize * 2);
+	return MultiByteToWideChar(CP_UTF8, 0, source, sourceSize, target, targetSize);
 }
 
 UINT TcWideCharToMultiByte(const WCHAR* source, UINT sourceSize, char* target)
@@ -67,9 +67,9 @@ void TcFileFlush(FILE_HANDLE& fileName)
 		fsync(fileName);
 }
 
-UINT TcMultiByteToWideChar(const char* source, UINT sourceSize, WCHAR* target)
+UINT TcMultiByteToWideChar(const char* source, UINT sourceSize, WCHAR* target, UINT targetSize)
 {
-	return mbstowcs(target, source, sourceSize * 2);
+	return mbstowcs(target, source, targetSize);
 }
 
 UINT TcWideCharToMultiByte(const WCHAR* source, UINT sourceSize, char* target)
