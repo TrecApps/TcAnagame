@@ -83,7 +83,7 @@ void TabBar::Tab::OnResize(RECT_F& newLoc, UINT nFlags, TDataArray<EventID_Cred>
     if (text.Get())
     {
         float f = 0.0f;
-        text->GetMinWidth(f,0);
+        text->GetMinWidth(f,-1);
         tArea = area;
         if (iArea.right)
             tArea.left = iArea.right;

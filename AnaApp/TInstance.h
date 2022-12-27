@@ -86,6 +86,8 @@ public:
     static TrecPointer<TInstance> GetInstance();
     ~TInstance();
 
+    void SubmitEnvironmentBuilder(TrecPointer<TEnvironmentBuilder> builder);
+
     /**
      * Will Scan for a given resource. If 'env' is provided, then it will first check to see if the environment will provide it.
      * If 'env' is not provided, or it does not provide the resource, The Instance scans for a list of Registered Builders that can support the resource

@@ -467,7 +467,7 @@ bool TPageBuilder::UsesFile()
 
 TrecPointer<TPage> TPageBuilder::GetPage()
 {
-
+	return TrecPointer<TPage>();
 }
 
 void TPageBuilder::SetUIFile(TrecPointer<TFileShell> file)

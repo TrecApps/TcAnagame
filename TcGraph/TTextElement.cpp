@@ -329,6 +329,11 @@ TrecPointer<TTextIntercepter> TTextElement::GetTextInterceptor()
 	return interceptor;
 }
 
+TrecPointer<TStringVariable> TTextElement::GetText()
+{
+	return this->text;
+}
+
 bool TTextElement::HitTestPoint(const TPoint& point, BOOL& isTrailingHit, BOOL& isInside, UINT& position)
 {
 	if(!DrawingBoard::IsContained(point, this->bounds))
@@ -492,6 +497,7 @@ void TTextElement::ReCreateLayout()
 			curLine.strIndex = startIndex;
 			startIndex = Rust;
 			AppendLine(curLine, y);
+			x = bounds.left;
 		}
 		if (ch.character == L'\n')
 		{
@@ -500,6 +506,7 @@ void TTextElement::ReCreateLayout()
 				curLine.strIndex = startIndex;
 				startIndex = Rust;
 				AppendLine(curLine, y);
+				x = bounds.left;
 			}
 		}
 
@@ -574,6 +581,7 @@ void TTextElement::ReCreateLayout()
 				curLine.strIndex = startIndex;
 				startIndex = Rust;
 				AppendLine(curLine, y);
+				x = bounds.left;
 				curLine.isCarryOver = true;
 			}
 		}
@@ -583,6 +591,7 @@ void TTextElement::ReCreateLayout()
 	{
 		curLine.strIndex = startIndex;
 		AppendLine(curLine, y);
+		x = bounds.left;
 	}
 
 	if (!lines.Size())
@@ -815,12 +824,12 @@ int TTextElement::GetMinWidth(float& width, int doWrap)
 
 	for (UINT Rust = 0; Rust < lines.Size(); Rust++)
 	{
-		auto& line = lines[Rust].characters;
-		float curWidth = 0;
+		auto& line = lines[Rust];
+		float curWidth = line.isCarryOver ? width : 0;
 
-		for (UINT C = 0; C < line.Size(); C++)
+		for (UINT C = 0; C < line.characters.Size(); C++)
 		{
-			auto& ch = line[C];
+			auto& ch = line.characters[C];
 			if (IsWhitespace(ch.character) && assumeWrap)
 			{
 				updateWidth(width, curWidth);

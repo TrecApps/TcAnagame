@@ -208,6 +208,7 @@ public:
 
     virtual bool SetText(const TString& text);
     virtual void GetText(TString& text);
+    virtual TrecPointer<TStringVariable> GetText();
     virtual bool LockText(bool doLock);
     virtual bool TakesInput();
     virtual bool CanTakeInput();

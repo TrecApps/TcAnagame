@@ -46,3 +46,58 @@ public:
 	TRibbonPage(TrecActivePointer<TPage> page, const TString& name, bool isMain = false);
 	page_type GetPageType() override;
 };
+
+class _ANA_APP TFileEventHandler : public TPage::EventHandler
+{
+protected:
+	TrecPointer<TFileShell> file;
+public:
+
+	void SetFile(TrecPointer<TFileShell> file);
+
+	virtual TString SaveFile() = 0;
+
+	virtual TString LoadFile() = 0;
+
+	virtual TrecPointer<TVariable> GetData() = 0;
+
+	virtual TString SubmitInfo(TrecPointer<TVariable>) = 0;
+
+
+};
+
+class _ANA_APP TFilePage : public TPageEx
+{
+	TrecPointer<TFileEventHandler> fileEventHandler;
+	TString type;
+public:
+
+	TFilePage(TrecActivePointer<TPage> page, const TString& name, const TString& type);
+
+	page_type GetPageType() override;
+
+	void SetFile(TrecPointer<TFileShell> file);
+
+	TString SaveFile();
+
+	TString LoadFile();
+
+	TrecPointer<TVariable> GetData();
+
+	TString SubmitInfo(TrecPointer<TVariable>);
+};
+
+class _ANA_APP TFileSupHandler : public TPage::EventHandler
+{
+public:
+	virtual void GetFilePageTypes(TDataArray<TString>& types) = 0;
+
+};
+
+class _ANA_APP TFileSupPage : public TPageEx
+{
+	TrecPointer<TFileSupHandler> fileSupHandler;
+public:
+	TFileSupPage(TrecActivePointer<TPage> page, const TString& name);
+	bool GetFilePageTypes(TDataArray<TString>& types);
+};

@@ -83,3 +83,67 @@ page_type TRibbonPage::GetPageType()
 {
     return isMain ? page_type::main_ribbon : page_type::ribbon_sup;
 }
+
+TFilePage::TFilePage(TrecActivePointer<TPage> page, const TString& name, const TString& type): TPageEx(page, name)
+{
+    TrecPointer<HandlerPage> handlerPage = TrecPointerKey::ConvertPointer<TPage, HandlerPage>(page.GetTrecPointer());
+    this->fileEventHandler = TrecPointerKey::ConvertPointer<TPage::EventHandler, TFileEventHandler>(handlerPage->GetHandler());
+    this->type.Set(type);
+}
+
+page_type TFilePage::GetPageType()
+{
+    return page_type::file;
+}
+
+void TFilePage::SetFile(TrecPointer<TFileShell> file)
+{
+    if (fileEventHandler.Get())
+        fileEventHandler->SetFile(file);
+}
+
+TString TFilePage::SaveFile()
+{
+    if(!fileEventHandler.Get())
+        return L"No Handler Set";
+    return fileEventHandler->SaveFile();
+}
+
+TString TFilePage::LoadFile()
+{
+    if (!fileEventHandler.Get())   
+        return L"No Handler Set";
+    return fileEventHandler->LoadFile();
+}
+
+TrecPointer<TVariable> TFilePage::GetData()
+{
+    if(!fileEventHandler.Get())
+        return TrecPointer<TVariable>();
+    return fileEventHandler->GetData();
+}
+
+TString TFilePage::SubmitInfo(TrecPointer<TVariable> obj)
+{
+    if(!fileEventHandler.Get())
+        return  L"No Handler Set";
+    return fileEventHandler->SubmitInfo(obj);
+}
+
+void TFileEventHandler::SetFile(TrecPointer<TFileShell> file)
+{
+    this->file = file;
+}
+
+TFileSupPage::TFileSupPage(TrecActivePointer<TPage> page, const TString& name): TPageEx(page, name)
+{
+    TrecPointer<HandlerPage> handlerPage = TrecPointerKey::ConvertPointer<TPage, HandlerPage>(page.GetTrecPointer());
+    this->fileSupHandler = TrecPointerKey::ConvertPointer<TPage::EventHandler, TFileSupHandler>(handlerPage->GetHandler());
+}
+
+bool TFileSupPage::GetFilePageTypes(TDataArray<TString>& types)
+{
+    if(!this->fileSupHandler.Get())
+        return false;
+    fileSupHandler->GetFilePageTypes(types);
+}

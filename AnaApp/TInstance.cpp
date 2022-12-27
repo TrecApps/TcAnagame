@@ -92,6 +92,12 @@ TInstance::~TInstance()
 		glfwTerminate();
 }
 
+void TInstance::SubmitEnvironmentBuilder(TrecPointer<TEnvironmentBuilder> builder)
+{
+	if (builder.Get())
+		this->environmentBuilders.push_back(builder);
+}
+
 bool TInstance::ScanForResource(const TString& resource, TrecPointer<TEnvironment> env)
 {
 	if(env.Get() && env->GetResource(resource).Get())
