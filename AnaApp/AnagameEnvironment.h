@@ -18,6 +18,7 @@ class _ANA_APP AnafaceBuilder : public TPageBuilder
 public:
     virtual TrecPointer<TPage> GetPage(const TString& details) override;
     virtual TrecPointer<TPage> GetPage(TrecPointer<TFileShell> file) override;
+    virtual TrecPointer<TPage> GetPage() override;
 };
 
 

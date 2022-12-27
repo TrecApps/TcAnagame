@@ -465,6 +465,17 @@ bool TPageBuilder::UsesFile()
 	return true;
 }
 
+TrecPointer<TPage> TPageBuilder::GetPage()
+{
+
+}
+
+void TPageBuilder::SetUIFile(TrecPointer<TFileShell> file)
+{
+	this->targetFile = file;
+}
+
+
 void TPageBuilder::SetDrawingBoard(TrecPointer<DrawingBoard> board)
 {
 	this->board = board;

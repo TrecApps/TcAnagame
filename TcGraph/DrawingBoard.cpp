@@ -303,8 +303,13 @@ void DrawingBoard::BeginDraw() const
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW); //Switch to the drawing perspective
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	glLoadIdentity(); //Reset the drawing perspective
 
+	auto brush = TrecPointerKey::ConvertPointer<TBrush, TColorBrush>( this->GetSolidColorBrush(defaultClearColor));
+	brush->FillRectangle(this->area);
 }
 
 void DrawingBoard::ConfirmDraw()
@@ -331,6 +336,11 @@ int DrawingBoard::SetShader(TrecPointer<TShader> shader, shader_type shaderType)
 			currentShader.Nullify();
 		}
 		this->shaderType = shaderType;
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+
+
 		return -1;
 	case shader_type::shader_texture:
 		if (!shaderTex2D.Get())

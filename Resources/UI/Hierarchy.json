@@ -1,0 +1,14 @@
+{
+	"TDataNodeControl": {
+		"EventOnDblClick":"OnOpenFile",
+		"NodeHighlightColor": "0.3,0.1,1.0,0.5",
+		"children" : [
+		{
+			"TControl" : {
+				"FontColor": "0.0,0.0,0.0,1.0",
+				"Caption":"{}"
+			}
+		}
+		]
+	}
+}

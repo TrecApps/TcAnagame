@@ -3,8 +3,10 @@
 #include "AnagameEnvironment.h"
 #include <TFile.h>
 #include <TContainerVariable.h>
+#include "FileHandler.h"
 
 TString resourceAnaface(L"anagame.anaface");
+TString filePageBuilder(L"anagame.pages.hierarchy");
 
 #ifdef _WINDOWS
 WCHAR w = L'\\';
@@ -14,13 +16,27 @@ WCHAR w = L'/';
 
 TrecPointer<TObject> BasicAnagameEnvironment::RetrieveResource(const TString& name)
 {
-	if (name.CompareNoCase(resourceAnaface))
+	if (!name.CompareNoCase(resourceAnaface))
 	{
 		return TrecPointerKey::GetNewTrecPointerAlt<TObject, AnafaceBuilder>();
 	}
+	if (!name.CompareNoCase(filePageBuilder))
+	{
+		auto ret = TrecPointerKey::GetNewTrecPointerAlt<TObject, AnafaceBuilder>();
+		auto pRet = TrecPointerKey::ConvertPointer<TObject, AnafaceBuilder>(ret);
+
+		pRet->SetHandler(TrecPointerKey::GetNewSelfTrecPointerAlt<TPage::EventHandler, FileHandler>());
+		TrecPointer<TFileShell> fileShell = TFileShell::GetFileInfo(GetDirectoryWithSlash(CentralDirectories::cd_Executable) + L"UI/Hierarchy.json");
+		assert(fileShell.Get());
+		pRet->SetUIFile(fileShell);
+
+		return ret;
+	}
+	return TrecPointer<TObject>();
 }
 void BasicAnagameEnvironment::RetrieveResourceListSub(TDataArray<TString>& resources) {
 	resources.push_back(resourceAnaface);
+	resources.push_back(filePageBuilder);
 }
 
 BasicAnagameEnvironment::BasicAnagameEnvironment()
@@ -83,6 +99,11 @@ TrecPointer<TPage> AnafaceBuilder::GetPage(TrecPointer<TFileShell> file)
 	pHandler->Initialize(ret);
 
 	return ret;
+}
+
+TrecPointer<TPage> AnafaceBuilder::GetPage()
+{
+	return GetPage(targetFile);
 }
 
 TrecPointer<TObject> UserProfileEnvironment::RetrieveResource(const TString& name)
