@@ -531,12 +531,26 @@ void TTextElement::ReCreateLayout()
 		ch.location.top = y;
 		ch.location.bottom = y + curFace->glyph->bitmap.rows;
 
+		ch.advanceY = curFace->glyph->advance.y;
+
+		float under = curFace->glyph->bitmap.rows - curFace->glyph->bitmap_top;
+		ch.location.top += under;
+		ch.location.bottom += under;
+
+		//float under = (static_cast<float>(curFace->glyph->metrics.height) - static_cast<float>(curFace->glyph->metrics.vertBearingY)) / static_cast<float>(curFace->glyph->metrics.height);
+
+		//under = (ch.location.bottom - ch.location.top) * under;
+
+		//ch.location.bottom -= under;
+		//ch.location.top -= under;
+
+		float advanceX = static_cast<float>(curFace->glyph->metrics.horiAdvance) / static_cast<float>(curFace->glyph->metrics.width);
+
 		ch.location.left = x;
-		x += curFace->glyph->bitmap.width;
-		ch.location.right = x;
+		ch.location.right = x + curFace->glyph->bitmap.width;
 
 		// Since a space yields 0 space, use 'o' as a dummy face to aritficially shift the x
-		if (ch.character == L' ')
+		if (!curFace->glyph->bitmap.width)
 		{
 			FT_Face tempFace = nullptr;
 			assert(RetrieveFont(chFormatting.font, tempFace));
@@ -546,7 +560,10 @@ void TTextElement::ReCreateLayout()
 
 			assert(tempGlyphIndex && !FT_Load_Glyph(tempFace, tempGlyphIndex, FT_LOAD_COLOR) && !FT_Render_Glyph(tempFace->glyph, FT_RENDER_MODE_NORMAL));
 			x += tempFace->glyph->bitmap.width;
+			//continue;
 		}
+		else
+			x += (curFace->glyph->bitmap.width * advanceX);
 
 		ch.backgroundColor = chFormatting.defaultBackgroundColor;
 
@@ -1082,6 +1099,7 @@ BasicCharacter::BasicCharacter()
 	location = { 0,0,0,0 };
 	format = 0;
 	isHighlighted = false;
+	advanceY = 0.0f;
 	//FT_Bitmap_Init(&bitmap);
 }
 
@@ -1092,6 +1110,7 @@ BasicCharacter::BasicCharacter(const BasicCharacter& copy)
 	format = copy.format;
 	isHighlighted = copy.isHighlighted;
 	location = copy.location;
+	advanceY = copy.advanceY;
 }
 
 BasicCharacter::~BasicCharacter()

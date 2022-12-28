@@ -57,6 +57,7 @@ public:
     TrecPointer<TColor> backgroundColor;
     //FT_Bitmap bitmap;
     UCHAR format;
+    float advanceY;
     bool isHighlighted;// , isBitmpInit;
 
     int GetWeightStrength()const;
