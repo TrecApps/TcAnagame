@@ -807,7 +807,7 @@ bool TFile::Open(TrecPointer<TFileShell> file, const TString& name, UINT nOpenFl
 
 	// If no attribute for opening is specified, use the value most likely to succeed
 	WCHAR sep = L'\0';
-	if (!atts) {
+
 #ifdef _WINDOWS
 		atts = OPEN_ALWAYS;
 		sep = L'\\';
@@ -815,12 +815,11 @@ bool TFile::Open(TrecPointer<TFileShell> file, const TString& name, UINT nOpenFl
 		atts = O_CREAT;
 		sep = L'/';
 #endif
-	}
 	TString newFileName(file->GetPath());
 
 	if (file->IsDirectory())
 	{
-		if (!newFileName.EndsWith(sep))
+		if (!newFileName.EndsWith(L'\\') && !newFileName.EndsWith(L'/'))
 			newFileName.AppendChar(sep);
 		newFileName.Append(name);
 	}

@@ -68,7 +68,37 @@ void TInstance::ReadLibraryList()
 			objectLib = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(data);
 			if (!objectLib.Get())continue;
 
+			TLibrary library;
+			TrecPointer<TVariable> var;
+			bool canProceed = objectLib->RetrieveField(L"Name", var) && var.Get() && var->GetVarType() == var_type::string;
+			if (!canProceed)
+				continue;
+			library.SetName(dynamic_cast<TStringVariable*>(var.Get())->GetString());
 
+			if (objectLib->RetrieveField(L"ProjectFiles", var) && var.Get() && var->GetVarType() == var_type::list)
+			{
+				auto projList = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(var);
+				for (UINT C = 0; projList->GetValueAt(C, var); C++)
+				{
+					if (!var.Get() || var->GetVarType() != var_type::string)
+						continue;
+					library.AppendProjectFile(dynamic_cast<TStringVariable*>(var.Get())->GetString());
+				}
+			}
+
+			if (objectLib->RetrieveField(L"ProjectExts", var) && var.Get() && var->GetVarType() == var_type::list)
+			{
+				auto projList = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(var);
+				for (UINT C = 0; projList->GetValueAt(C, var); C++)
+				{
+					if (!var.Get() || var->GetVarType() != var_type::string)
+						continue;
+					library.AppendProjectExt(dynamic_cast<TStringVariable*>(var.Get())->GetString());
+				}
+			}
+
+
+			this->libraryList.push_back(library);
 		}
 	}
 	else
@@ -130,7 +160,9 @@ TDataArray<TString> TInstance::LoadLibraries(const TDataArray<TString>& librarie
 			{
 				found = true;
 
-				if (!libraryList[C].Load(this->libraryFolder))
+				TrecPointer<TFileShell> shell = TFileShell::GetFileInfo(this->libraryFolder->GetPath() + libraries[Rust]);
+
+				if (!libraryList[C].Load(shell))
 					ret.push_back(libraries[Rust]);
 			}
 		}
