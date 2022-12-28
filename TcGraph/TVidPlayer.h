@@ -53,7 +53,7 @@ public:
     Stream(const Stream& copy) = default;
 
     void ProcessFrames(TrecPointer<DrawingBoard>& board);
-    void DoPresent(double& baseTime);
+    bool DoPresent(double& baseTime);
 };
 
 using tc_player_state = enum class tc_player_state

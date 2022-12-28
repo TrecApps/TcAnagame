@@ -76,19 +76,22 @@ void Stream::ProcessFrames(TrecPointer<DrawingBoard>& board)
     
 }
 
-void Stream::DoPresent(double& baseTime)
+bool Stream::DoPresent(double& baseTime)
 {
     double current = glfwGetTime();
     double timeBase = static_cast<double>(codec.timeBase.num) / static_cast<double>(codec.timeBase.den);
+
+    bool ret = false;
 
     for (UINT Rust = 0; Rust < frames.GetSize(); )
     {
         bool doPresent = (static_cast<double>(frames.at(Rust).frame->pts) * timeBase) > current;
         if (!doPresent)
-            return;
+            return ret;
         if (this->streamType == av_stream_type::t_video)
         {
             brush = frames.at(Rust).brush;
+            ret = true;
         }
         else if (streamType == av_stream_type::t_audio)
         {
@@ -96,6 +99,7 @@ void Stream::DoPresent(double& baseTime)
         }
         frames.DropHead();
     }
+    return ret;
 }
 
 bool TVidPlayer::Initialize()
@@ -123,14 +127,16 @@ bool TVidPlayer::Initialize()
 
 bool TVidPlayer::RunRound()
 {
-    if (!SupplementStreams()) return true;
+    if (!SupplementStreams()) 
+        return true;
 
     // Check to see if each Stream needs prcessing
     bool ret = true;
     for (UINT Rust = 0; Rust < streams.Size(); Rust++)
     {
         streams[Rust].ProcessFrames(board);
-        streams[Rust].DoPresent(baseTime);
+        if (streams[Rust].DoPresent(baseTime))
+            board->PrepRefresh();
         if (streams[Rust].frames.GetSize())
             ret = false;
     }
@@ -197,7 +203,7 @@ TrecPointer<TVariable> TVidPlayer::Clone()
 
 void TVidPlayer::Run(ReturnObject& ret)
 {
-    if (videoState == video_state::vs_init)
+    if (videoState == video_state::vs_init || videoState == video_state::vs_stopped)
     {
         baseTime = glfwGetTime();
         TcAsyncRunner::Run(ret);
@@ -343,6 +349,8 @@ TrecPointer<TVidPlayer> TVidPlayer::GetPlayer(TrecPointer<DrawingBoard> board, T
 
     if (!ret->Initialize())
         ret.Nullify();
+
+    ret->avFormatContext = avFormatContext;
     return ret;
 
 }

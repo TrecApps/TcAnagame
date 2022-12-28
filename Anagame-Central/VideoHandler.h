@@ -19,5 +19,6 @@ public:
 private:
 	TrecPointer<TControl> playPause;
 	TrecPointer<TVideoControl> videoPlayer;
+	TrecPointer<DrawingBoard> board;
 };
 

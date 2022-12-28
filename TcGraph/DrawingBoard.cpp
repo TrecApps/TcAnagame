@@ -106,6 +106,12 @@ DrawingBoard::DrawingBoard(GLFWwindow* window)
 	TcInitLock(&drawingThread);
 }
 
+void DrawingBoard::PrepRefresh()
+{
+	TObjectLocker lock(&thread);
+	this->needsRefresh = true;
+}
+
 void DrawingBoard::SetCursor(ag_mouse_pointer mPointer)
 {
 	glfwSetCursor(window, cursors[static_cast<UINT>(mPointer)]);

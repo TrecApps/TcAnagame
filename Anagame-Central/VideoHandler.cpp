@@ -12,6 +12,7 @@ void VideoHandler::Initialize(TrecPointer<TPage> page)
 
     this->playPause = mainPage->GetControlById(L"PlayButton");
     this->videoPlayer = TrecPointerKey::ConvertPointer<TControl, TVideoControl>(mainPage->GetControlById(L"Player"));
+    this->board = page->GetDrawingBoard();
     assert(playPause.Get() && videoPlayer.Get());
 }
 
@@ -45,12 +46,14 @@ void VideoHandler::HandleEvents(TDataArray<TPage::EventID_Cred>& eventAr)
                     videoPlayer->Play();
                     auto ppText = playPause->GetTextElement();
                     ppText->SetText(L"Pause");
+                    board->PrepRefresh();
                 }
                 else if (state == video_state::vs_playing)
                 {
                     videoPlayer->Pause();
                     auto ppText = playPause->GetTextElement();
                     ppText->SetText(L"Play");
+                    board->PrepRefresh();
                 }
             }
             else if (!args->methodID.Compare(L"SelectVid"))

@@ -99,6 +99,8 @@ protected:
     GLFWwindow* window;
     explicit DrawingBoard(GLFWwindow* window);
 
+
+
     RECT_F area;
 
     TDataArray<RECT_F> layers;
@@ -108,7 +110,7 @@ protected:
     bool needsRefresh, needsConstantRefresh;
 
 public:
-
+    void PrepRefresh();
     void SetCursor(ag_mouse_pointer mPointer);
 
     void NormalizePoint(const TPoint& input, TPoint& output);
