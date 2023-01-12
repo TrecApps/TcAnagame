@@ -5,7 +5,7 @@
 
 #include <ft2build.h>
 #include <TPoint.h>
-#include "TTextIntercepter.h"
+#include <TTextIntercepter.h>
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
 #include FT_OUTLINE_H

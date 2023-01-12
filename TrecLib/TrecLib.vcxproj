@@ -166,6 +166,8 @@
     <ClInclude Include="TrecLib.h" />
     <ClInclude Include="TrecPointer.h" />
     <ClInclude Include="TString.h" />
+    <ClInclude Include="TTextIntercepter.h" />
+    <ClInclude Include="TTextStreamer.h" />
     <ClInclude Include="TTypeVariable.h" />
   </ItemGroup>
   <ItemGroup>
@@ -195,6 +197,8 @@
     <ClCompile Include="TPrimitiveVariable.cpp" />
     <ClCompile Include="TrecPointer.cpp" />
     <ClCompile Include="TString.cpp" />
+    <ClCompile Include="TTextIntercepter.cpp" />
+    <ClCompile Include="TTextStreamer.cpp" />
     <ClCompile Include="TTypeVariable.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

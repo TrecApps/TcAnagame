@@ -96,6 +96,12 @@
     <ClInclude Include="TFormatReaderYaml.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TTextIntercepter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TTextStreamer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -162,6 +168,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TFormatReaderYaml.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TTextIntercepter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TTextStreamer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

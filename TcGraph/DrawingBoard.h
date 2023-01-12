@@ -7,7 +7,7 @@
 #include <map>
 #include <glm/gtc/matrix_transform.hpp>
 #include <TcRunner.h>
-#include "TTextIntercepter.h"
+#include <TTextIntercepter.h>
 
 using shader_type = enum class shader_type {
     shader_2d,

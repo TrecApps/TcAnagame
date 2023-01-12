@@ -1,11 +1,10 @@
 #pragma once
-#include <TObject.h>
-#include "TcGraph.h"
+#include "TObject.h"
 /**
  * Class: TTextIntercepter
  * Purpose: Retrieves a character from the message infrastructure and directs it towards some Text-based object
  */
-class _TC_GRAPH TTextIntercepter : public TObject
+class _TREC_LIB_DLL TTextIntercepter : public TObject
 {
 public:
     virtual void OnChar(UINT ch, UINT count, UINT flags) = 0;

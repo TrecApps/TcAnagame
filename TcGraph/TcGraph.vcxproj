@@ -161,7 +161,6 @@
     <ClInclude Include="TInputTextElement.h" />
     <ClInclude Include="TShader.h" />
     <ClInclude Include="TTextElement.h" />
-    <ClInclude Include="TTextIntercepter.h" />
     <ClInclude Include="TVidPlayer.h" />
   </ItemGroup>
   <ItemGroup>
@@ -184,7 +183,6 @@
     <ClCompile Include="TInputTextElement.cpp" />
     <ClCompile Include="TShader.cpp" />
     <ClCompile Include="TTextElement.cpp" />
-    <ClCompile Include="TTextIntercepter.cpp" />
     <ClCompile Include="TVidPlayer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
