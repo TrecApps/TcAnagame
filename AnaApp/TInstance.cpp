@@ -128,6 +128,82 @@ void TInstance::SubmitEnvironmentBuilder(TrecPointer<TEnvironmentBuilder> builde
 		this->environmentBuilders.push_back(builder);
 }
 
+TrecPointer<TVariable> TInstance::GetAvailableProjectTypes()
+{
+	TrecPointer<TVariable> ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TArrayVariable>();
+	TrecPointer<TArrayVariable> aRet = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(ret);
+
+	for (UINT Rust = 0; Rust < this->libraryList.Size(); Rust++)
+	{
+		TLibrary& lib = libraryList[Rust];
+		TString envName;
+
+		for (UINT C = 0; lib.GetProjectAt(C, envName); C++) {
+			TrecPointer<TVariable> obj = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TJsonVariable>();
+			TrecPointer<TJsonVariable> jObj = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(obj);
+
+			jObj->SetField(L"builderType", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(lib.GetBuilderName()));
+			jObj->SetField(L"projectType", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(envName));
+		}
+	}
+
+	return ret;
+}
+
+TrecPointer<TVariable> TInstance::GetExisitngProjects()
+{
+	TString anagameDirectory(GetDirectoryWithSlash(CentralDirectories::cd_AppData) + L"AnaGame");
+
+	ForgeDirectory(anagameDirectory);
+
+	TrecPointer<TFileShell> appDirectory = TFileShell::GetFileInfo(anagameDirectory);
+
+	TFile file(appDirectory, L"Projects.json", TFile::t_file_open_existing | TFile::t_file_read);
+
+	if (file.IsOpen())
+	{
+		file.Close();
+		TrecPointer<TFormatReader> reader = TFormatReader::GetReader(TFileShell::GetFileInfo(appDirectory->GetPath() + L"/Projects.json"));
+		assert(reader.Get());
+		reader->Read();
+		return reader->GetData();
+	}
+	else
+	{
+		file.Open(appDirectory, L"Projects.json", TFile::t_file_create_always | TFile::t_file_write);
+		file.WriteString(L"[]");
+		file.Close();
+		return TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TArrayVariable>();
+	}
+
+	return TrecPointer<TVariable>();
+}
+
+TString TInstance::SaveProject(const TProjectData& project)
+{
+	if (!project.directory.Get())
+		return L"Project must be located within a Directory!";
+	auto list = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(GetExisitngProjects());
+	if (!list.Get())
+		list = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TArrayVariable>());
+
+	TrecPointer<TVariable> newEntry = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TJsonVariable>();
+	TrecPointer<TJsonVariable> jsonEntry = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(newEntry);
+
+	jsonEntry->SetField(L"builderType", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(project.builderName));
+	jsonEntry->SetField(L"projectType", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(project.environmentName));
+	jsonEntry->SetField(L"name", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(project.projectName));
+	jsonEntry->SetField(L"directory", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(project.directory->GetPath()));
+
+	list->Push(newEntry);
+
+	TrecPointer<TFormatReader> writer = TFormatReader::GetReader(TFileShell::GetFileInfo(
+		GetDirectoryWithSlash(CentralDirectories::cd_AppData) + L"AnaGame/Projects.json"));
+
+	assert(writer.Get());
+	return writer->Write(TrecPointerKey::ConvertPointer<TArrayVariable, TVariable>(list));
+}
+
 bool TInstance::ScanForResource(const TString& resource, TrecPointer<TEnvironment> env)
 {
 	if(env.Get() && env->GetResource(resource).Get())
@@ -476,6 +552,29 @@ TString TLibrary::GetName()
 	return name;
 }
 
+void TLibrary::SetBuilderName(const TString& bName)
+{
+	this->builderName.Set(bName);
+}
+
+TString TLibrary::GetBuilderName()
+{
+	return builderName;
+}
+
+void TLibrary::AppendProjectType(const TString& pName)
+{
+	this->environmentNames.push_back(pName);
+}
+
+bool TLibrary::GetProjectAt(UINT c, TString& name)
+{
+	if(c >= environmentNames.Size())
+		return false;
+	name.Set(environmentNames[c]);
+	return true;
+}
+
 void TLibrary::AppendProjectFile(const TString& fileName)
 {
 	this->projectFiles.push_back(fileName);
@@ -537,4 +636,9 @@ bool TLibrary::Load(TrecPointer<TFileShell> directory)
 #endif
 
 	return false;
+}
+
+bool TProjectData::HasDirectory() const
+{
+	return directory.Get() != nullptr;
 }

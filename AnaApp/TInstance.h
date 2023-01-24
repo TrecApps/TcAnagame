@@ -31,6 +31,8 @@ void*
 
 class _ANA_APP TLibrary {
     TString name;
+    TString builderName;                        // The name of the Environment Builder provided (Empty if not available)
+    TDataArray<TString> environmentNames;       // Names of the Environments available
     TDataArray<TString> projectFiles;           // If a certain file name is located in a given directory, This Library holds an environment that can read it into a project 
     TDataArray<TString> projectFileExtensions;  // If a certain File Type is located in a given directory, This Library holds an environment that can read it into a project
     LibHandle libraryHandle;                    // Reference to the library. If it is 0/null, this library has NOT been loaded
@@ -42,12 +44,27 @@ public:
     TLibrary(const TLibrary& copy) = default;
     void SetName(const TString& name);
     TString GetName();
+    void SetBuilderName(const TString& bName);
+    TString GetBuilderName();
+    void AppendProjectType(const TString& pName);
+    bool GetProjectAt(UINT c, TString& name);
     void AppendProjectFile(const TString& fileName);
     void AppendProjectExt(const TString& fileExt);
     bool SupportsProjectDirectory(TrecPointer<TFileShell> directory);
 
     bool IsLoaded();
     bool Load(TrecPointer<TFileShell> directory);
+};
+
+class _ANA_APP TProjectData
+{
+public:
+    mutable TrecPointer<TDirectory> directory;
+    TString projectName;
+    TString builderName;
+    TString environmentName;
+
+    bool HasDirectory() const;
 };
 
 class _ANA_APP TInstance :
@@ -87,6 +104,11 @@ public:
     ~TInstance();
 
     void SubmitEnvironmentBuilder(TrecPointer<TEnvironmentBuilder> builder);
+
+    TrecPointer<TVariable> GetAvailableProjectTypes();
+
+    TrecPointer<TVariable> GetExisitngProjects();
+    TString SaveProject(const TProjectData& project);
 
     /**
      * Will Scan for a given resource. If 'env' is provided, then it will first check to see if the environment will provide it.

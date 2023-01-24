@@ -236,3 +236,8 @@ AGProjectEnvironment::AGProjectEnvironment(const TString& name, TrecActivePointe
 	this->projectName.Set(name);
 	this->directory = directory.GetTrecPointer();
 }
+
+TrecPointer<TFileShell> AGProjectEnvironment::GetDirectory()
+{
+	return directory;
+}

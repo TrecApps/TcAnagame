@@ -64,6 +64,8 @@ public:
      * Returns a list of Libraries that should be loaded by the tap once it is launched
      */
     virtual TDataArray<TString> GetDependencies() = 0;
+
+    TrecPointer<TFileShell> GetDirectory();
 };
 
 class _ANA_APP BasicAnagameEnvironment :

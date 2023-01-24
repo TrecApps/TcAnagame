@@ -22,6 +22,8 @@ protected:
 
     TrecPointer<TSwitchControl> ribbonTabs;
 
+    void SaveIde();
+
 public:
     TIdeWindow(GLFWwindow* window);
 

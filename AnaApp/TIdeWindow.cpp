@@ -4,6 +4,29 @@
 #include <TSwitchControl.h>
 #include <TIdeLayout.h>
 #include "PageTypes.h"
+#include <TFormatReader.h>
+
+void TIdeWindow::SaveIde()
+{
+	if (!dynamic_cast<AGProjectEnvironment*>(this->environment.Get()))return;
+	auto directory = dynamic_cast<AGProjectEnvironment*>(this->environment.Get())->GetDirectory();
+
+	if (!directory.Get())
+		return;
+
+	TFile file(directory, L".tc_ide.json", TFile::t_file_create_always | TFile::t_file_truncate_existing | TFile::t_file_share_write);
+	if (!file.IsOpen())
+		return;
+	directory = TFileShell::GetFileInfo(file.GetFilePath());
+	file.Close();
+
+	TrecPointer<TFormatReader> jsonWriter = TFormatReader::GetReader(directory);
+	if (!jsonWriter.Get())
+		return;
+	// To-Do: Collect Variables to write
+	jsonWriter->Write(TrecPointer<TVariable>());
+
+}
 
 TIdeWindow::TIdeWindow(GLFWwindow* window): TWindow(window)
 {
@@ -68,6 +91,40 @@ void TIdeWindow::SetProject(TrecActivePointer<AGProjectEnvironment> project)
 {
 	this->environment->SetProject(project);
 	SetMainPage(TrecPointer<TPage>());
+
+	auto actProject = project.GetTrecPointer();
+
+	TrecPointer<TFileShell> fileShell = actProject->GetDirectory();
+	if (!fileShell.Get())return;
+
+	TString path(fileShell->GetPath() + L"/.tc_ide.json");
+	fileShell = TFileShell::GetFileInfo(path);
+
+	if (!fileShell.Get())
+		SaveIde();
+
+	TrecPointer<TFormatReader> formatReader = TFormatReader::GetReader(fileShell);
+
+	if (!formatReader.Get())
+		return;
+
+	formatReader->Read();
+	auto vars = formatReader->GetData();
+
+	assert(vars.Get() && vars->GetVarType() == var_type::json);
+
+	TrecPointer<TJsonVariable> rootVar = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(vars);
+
+	auto mainLayout = TrecPointerKey::ConvertPointer<TPage, TLayout>(mainPage);
+	TrecPointer<TIdeLayout> ideLayout = TrecPointerKey::ConvertPointer<TPage, TIdeLayout>(mainLayout->GetPage(1, 0));
+
+	TrecPointer<TVariable> ideLayoutVar;
+	if (rootVar->RetrieveField(L"", ideLayoutVar))
+	{
+		auto jsonLayout = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(ideLayoutVar);
+		if(jsonLayout.Get())
+			ideLayout->SetUpLayout(jsonLayout);
+	}
 }
 
 void TIdeWindow::SetIdeProperty(ide_property ideProp, const TString& prop)
