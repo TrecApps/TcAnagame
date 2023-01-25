@@ -4,6 +4,7 @@
 #include <AnafacePage.h>
 #include <TTextInput.h>
 #include <TInstance.h>
+#include <TContainerVariable.h>
 class ProjectDialogHandler :
     public TPage::EventHandler
 {

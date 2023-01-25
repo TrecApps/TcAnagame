@@ -1,4 +1,7 @@
 #include "MainPageIdeHandler.h"
+#include <TDialog.h>
+#include <AnagameEnvironment.h>
+#include <TContainerVariable.h>
 
 // Found on the Home Tab
 TString on_LoadNewSolution(L"LoadNewSolution");
@@ -77,7 +80,29 @@ void MainPageIdeHandler::HandleEvents(TDataArray<TPage::EventID_Cred>& eventAr)
 
 void MainPageIdeHandler::OnLoadNewSolution(TrecPointer<TPage> tc, EventArgs ea)
 {
+	TrecPointer<TWindow> baseDialog;
+	TrecPointer<TInstance> instance = TInstance::GetInstance();
+	auto actWindow = TrecPointerKey::ConvertPointer<TIdeWindow, TWindow>(TrecPointerKey::TrecFromSoft<>(window));
 
+	instance->GenerateDialog(baseDialog,										// the dialog we're expecting
+		actWindow,																// The IDE Window Serving as a parent
+		L"Load Project",														// The Title of the dialog
+		TrecPointerKey::GetNewTrecPointerAlt<TPageBuilder, AnafaceBuilder>(),	// Builder for the Page within
+		TFileShell::GetFileInfo(GetDirectoryWithSlash(							// File to load the UI from
+			CentralDirectories::cd_Executable) + L"Resources/UI/ProjectDialog.json"),
+		L"",																	// Not needed, alternative to previous param
+		t_dialog_modal_mode::soft_modal);										// Move parent window around but otherwise DNI
+
+	TrecPointer<TDialog> dialog = TrecPointerKey::ConvertPointer<TWindow, TDialog>(baseDialog);
+	assert(dialog.Get());
+
+	dialog->RunModal();
+
+	TrecPointer<TJsonVariable> data = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(dialog->GetResult());
+	if (data.Get())
+	{
+		// User Pressed Okay
+	}
 }
 
 void MainPageIdeHandler::OnSaveFile(TrecPointer<TPage> tc, EventArgs ea)
