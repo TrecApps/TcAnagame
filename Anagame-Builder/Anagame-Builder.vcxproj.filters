@@ -21,9 +21,15 @@
     <ClCompile Include="MainPageIdeHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ProjectDialogHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainPageIdeHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectDialogHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

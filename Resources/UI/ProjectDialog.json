@@ -1,0 +1,194 @@
+{
+	"TLayout" : {
+		"RowHeights" : [ 100, "1*", 100, 100, 100 ],
+		"Children" : [
+		{
+			"TLayout": {
+				"RowPosition" : 0,
+				"ColumnWidths" : [ "1*", "1*" ],
+				"IsGallery": true,
+				"BorderColor": "0.0,0.0,0.0,1.0",
+				"Children": [
+				{
+					"TControl": {
+						"ColPosition": 0,
+						"Caption": "Project Type",
+						"BorderColor": "0.0,0.0,1.0,0.9"
+					}
+				},
+				{
+					"TControl": {
+						"ColPosition": 1,
+						"Caption": "Recent Projects",
+						"BorderColor": "0.0,0.0,1.0,0.9"
+					}
+				}
+				]
+			}
+		},
+		{
+			"TLayout": {
+				"RowPosition" : 1,
+				"ColumnWidths" : [ "1*", "1*" ],
+				"IsGallery": true,
+				"BorderColor": "0.0,0.0,0.0,1.0",
+				"Children": [
+				{
+					"TDataLayout": {
+						"ColPosition": 0,
+						"EventOnClick": "OnSelectNew",
+						"Children": [
+						{
+							"TLayout" : {
+								"RowHeights": [ 75, 75],
+								"BorderColor": "1.0,0.0,0.0,1.0",
+								"Children": [
+								{
+									"TControl" : {
+										"RowPosition": 0,
+										"Caption": "Project Type {builderType}"
+									}
+								},{
+									"TControl" : {
+										"RowPosition": 1,
+										"Caption": "Project Subtype {projectType}"
+									}
+								}
+								]
+							}
+						}
+						]
+					}
+				},
+				{
+					"TDataLayout": {
+						"ColPosition": 0,
+						"Children": [
+						{
+							"TLayout" : {
+								"RowHeights": [ 75, 75, 75, 75],
+								"BorderColor": "1.0,0.0,0.0,1.0",
+								"EventOnClick": "OnSelectRecent",
+								"Children": [
+								{
+									"TControl" : {
+										
+										"RowPosition": 0,
+										"Caption": "Project Type {builderType}"
+									}
+								},{
+									"TControl" : {
+										
+										"RowPosition": 1,
+										"Caption": "Project Subtype {projectType}"
+									}
+								},{
+									"TControl" : {
+										
+										"RowPosition": 2,
+										"Caption": "Project Name {name}"
+									}
+								},{
+									"TControl" : {
+										
+										"RowPosition": 3,
+										"Caption": "Directory {directory}"
+									}
+								}
+								]
+							}
+						}
+						]
+					}
+				}
+				]
+			}
+		},
+		{
+			"TLayout": {
+				"RowPosition" : 0,
+				"ColumnWidths" : [ 250, "1*" ],
+				"IsGallery": true,
+				"BorderColor": "0.0,0.0,0.0,1.0",
+				"Children": [
+				{
+					"TControl": {
+						"ColPosition": 0,
+						"FontColor: "Black",
+						"Caption": "Proj. Folder"
+					}
+				},
+				{
+					"TTextInput": {
+						"ID": "DirectoryField",
+						"CanEdit": false,
+						"ColPosition": 1
+					}
+				},
+				{
+					"TControl": {
+						"ColPosition": 2,
+						"FontColor: "Black",
+						"EventOnClick": "OnDirectorySelect"
+					}
+				}
+				]
+			}
+		},
+		{
+			"TLayout": {
+				"RowPosition" : 0,
+				"ColumnWidths" : [ 250, "1*"],
+				"IsGallery": true,
+				"BorderColor": "0.0,0.0,0.0,1.0",
+				"Children": [
+				{
+					"TControl": {
+						"ColPosition": 0,
+						"FontColor: "Black",
+						"Caption": "Project Name"
+					}
+				},
+				{
+					"TTextInput": {
+						"ID": "NameField",
+						"EventOnTextChange": "OnUpdateName",
+						"ColPosition": 1
+					}
+				}
+				]
+			}
+		},
+		{
+			"TLayout": {
+				"RowPosition" : 0,
+				"ColumnWidths" : [ "1*", "1*" ],
+				"IsGallery": true,
+				"BorderColor": "0.0,0.0,0.0,1.0",
+				"Children": [
+				{
+					"TControl": {
+						"ColPosition": 0,
+						"ID": "CancelButton",
+						"ContentColor": "Red",
+						"FontColor: "Black",
+						"Caption": "Cancel",
+						"EventOnClick": "OnCancel"
+					}
+				},
+				{
+					"TControl": {
+						"ColPosition": 0,
+						"ID": "OkButton",
+						"ContentColor": "Green",
+						"FontColor: "Black",
+						"Caption": "Okay",
+						"EventOnClick": "OnOkay"
+					}
+				}
+				]
+			}
+		}
+		]
+	}
+}
