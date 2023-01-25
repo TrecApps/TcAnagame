@@ -75,6 +75,9 @@ void TInstance::ReadLibraryList()
 				continue;
 			library.SetName(dynamic_cast<TStringVariable*>(var.Get())->GetString());
 
+			if(objectLib->RetrieveField(L"BuilderName", var) && var.Get() && var->GetVarType() == var_type::string)
+				library.SetBuilderName(dynamic_cast<TStringVariable*>(var.Get())->GetString());
+
 			if (objectLib->RetrieveField(L"ProjectFiles", var) && var.Get() && var->GetVarType() == var_type::list)
 			{
 				auto projList = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(var);
@@ -352,12 +355,13 @@ UINT TInstance::GenerateDialog(TrecPointer<TWindow>& window, TrecPointer<TWindow
 	TString useName(name);
 	if (!useName.GetSize())
 		useName.Set(L"Anagame Dialog");
-	return 0;
 	GLFWwindow* glfwWindow = glfwCreateWindow(640, 480, useName.GetRegString().c_str(), nullptr, nullptr);
 	if (!glfwWindow)
 		return 1;
 
 	TrecPointer<DrawingBoard> board = TrecPointerKey::GetNewSelfTrecPointerAlt<DrawingBoard, TDialog>(parent, glfwWindow);
+
+	dynamic_cast<TDialog*>(board.Get())->SetModalMode(modalMode);
 
 	window = TrecPointerKey::ConvertPointer<DrawingBoard, TWindow>(board);
 

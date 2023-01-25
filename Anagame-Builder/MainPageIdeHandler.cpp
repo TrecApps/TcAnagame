@@ -2,6 +2,7 @@
 #include <TDialog.h>
 #include <AnagameEnvironment.h>
 #include <TContainerVariable.h>
+#include "ProjectDialogHandler.h"
 
 // Found on the Home Tab
 TString on_LoadNewSolution(L"LoadNewSolution");
@@ -84,12 +85,15 @@ void MainPageIdeHandler::OnLoadNewSolution(TrecPointer<TPage> tc, EventArgs ea)
 	TrecPointer<TInstance> instance = TInstance::GetInstance();
 	auto actWindow = TrecPointerKey::ConvertPointer<TIdeWindow, TWindow>(TrecPointerKey::TrecFromSoft<>(window));
 
+	auto pageBuilder = TrecPointerKey::GetNewTrecPointerAlt<TPageBuilder, AnafaceBuilder>();
+	pageBuilder->SetHandler(TrecPointerKey::GetNewSelfTrecPointerAlt<TPage::EventHandler, ProjectDialogHandler>());
+
 	instance->GenerateDialog(baseDialog,										// the dialog we're expecting
 		actWindow,																// The IDE Window Serving as a parent
 		L"Load Project",														// The Title of the dialog
-		TrecPointerKey::GetNewTrecPointerAlt<TPageBuilder, AnafaceBuilder>(),	// Builder for the Page within
+		pageBuilder,	// Builder for the Page within
 		TFileShell::GetFileInfo(GetDirectoryWithSlash(							// File to load the UI from
-			CentralDirectories::cd_Executable) + L"Resources/UI/ProjectDialog.json"),
+			CentralDirectories::cd_Executable) + L"UI/ProjectDialog.json"),
 		L"",																	// Not needed, alternative to previous param
 		t_dialog_modal_mode::soft_modal);										// Move parent window around but otherwise DNI
 
