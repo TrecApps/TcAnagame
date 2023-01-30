@@ -1,12 +1,12 @@
 {
 	"TLayout" : {
-		"RowHeights" : [ 100, "1*", 100, 100, 100 ],
+		"RowHeights" : [ 50, "1*", 50, 50, 50 ],
 		"Children" : [
 		{
 			"TLayout": {
 				"RowPosition" : 0,
-				"ColumnWidths" : [ "1*", "1*" ],
 				"IsGallery": true,
+				"ColumnWidths" : [ "1*", "1*" ],
 				"BorderColor": "0.0,0.0,0.0,1.0",
 				"Children": [
 				{
@@ -29,8 +29,8 @@
 		{
 			"TLayout": {
 				"RowPosition" : 1,
-				"ColumnWidths" : [ "1*", "1*" ],
 				"IsGallery": true,
+				"ColumnWidths" : [ "1*", "1*" ],
 				"BorderColor": "0.0,0.0,0.0,1.0",
 				"Children": [
 				{
@@ -62,7 +62,7 @@
 				},
 				{
 					"TDataLayout": {
-						"ColPosition": 0,
+						"ColPosition": 1,
 						"Children": [
 						{
 							"TLayout" : {
@@ -106,29 +106,29 @@
 		},
 		{
 			"TLayout": {
-				"RowPosition" : 0,
-				"ColumnWidths" : [ 250, "1*" ],
+				"RowPosition" : 2,
 				"IsGallery": true,
+				"ColumnWidths" : [ 250, "1*", 100 ],
 				"BorderColor": "0.0,0.0,0.0,1.0",
 				"Children": [
 				{
 					"TControl": {
 						"ColPosition": 0,
-						"FontColor: "Black",
+						"FontColor": "Black",
 						"Caption": "Proj. Folder"
 					}
 				},
 				{
 					"TTextInput": {
+						"ColPosition": 1,
 						"ID": "DirectoryField",
-						"CanEdit": false,
-						"ColPosition": 1
+						"CanEdit": false
 					}
 				},
 				{
 					"TControl": {
 						"ColPosition": 2,
-						"FontColor: "Black",
+						"FontColor": "Black",
 						"EventOnClick": "OnDirectorySelect"
 					}
 				}
@@ -137,20 +137,21 @@
 		},
 		{
 			"TLayout": {
-				"RowPosition" : 0,
-				"ColumnWidths" : [ 250, "1*"],
+				"RowPosition" : 3,
 				"IsGallery": true,
+				"ColumnWidths" : [ 250, "1*"],
 				"BorderColor": "0.0,0.0,0.0,1.0",
 				"Children": [
 				{
 					"TControl": {
 						"ColPosition": 0,
-						"FontColor: "Black",
+						"FontColor": "Black",
 						"Caption": "Project Name"
 					}
 				},
 				{
 					"TTextInput": {
+						"ColPosition": 1,
 						"ID": "NameField",
 						"EventOnTextChange": "OnUpdateName",
 						"ColPosition": 1
@@ -161,9 +162,9 @@
 		},
 		{
 			"TLayout": {
-				"RowPosition" : 0,
-				"ColumnWidths" : [ "1*", "1*" ],
+				"RowPosition" : 4,
 				"IsGallery": true,
+				"ColumnWidths" : [ "1*", "1*" ],
 				"BorderColor": "0.0,0.0,0.0,1.0",
 				"Children": [
 				{
@@ -171,17 +172,17 @@
 						"ColPosition": 0,
 						"ID": "CancelButton",
 						"ContentColor": "Red",
-						"FontColor: "Black",
+						"FontColor": "Black",
 						"Caption": "Cancel",
 						"EventOnClick": "OnCancel"
 					}
 				},
 				{
 					"TControl": {
-						"ColPosition": 0,
+						"ColPosition": 1,
 						"ID": "OkButton",
 						"ContentColor": "Green",
-						"FontColor: "Black",
+						"FontColor": "Black",
 						"Caption": "Okay",
 						"EventOnClick": "OnOkay"
 					}

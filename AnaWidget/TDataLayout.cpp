@@ -414,33 +414,35 @@ RECT_F TDataLayout::GetAreaDefault()
 	RECT_F ret = area;
 	UINT actHeight = height;
 	UINT actWidth = width;
-	if (stackFirst)
+	if (var.Get())
 	{
-		actHeight *= (var.Get())->GetSize();
-		UINT maxWidth = 1;
-		TrecPointer<TVariable> value;
-		for (UINT Rust = 0; dynamic_cast<TContainerVariable*>(var.Get())->GetValueAt(Rust, value); Rust++)
+		if (stackFirst)
 		{
-			if (dynamic_cast<TContainerVariable*>(value.Get()))
-				maxWidth = std::max(maxWidth, value->GetSize());
-		}
+			actHeight *= (var.Get())->GetSize();
+			UINT maxWidth = 1;
+			TrecPointer<TVariable> value;
+			for (UINT Rust = 0; dynamic_cast<TContainerVariable*>(var.Get())->GetValueAt(Rust, value); Rust++)
+			{
+				if (dynamic_cast<TContainerVariable*>(value.Get()))
+					maxWidth = std::max(maxWidth, value->GetSize());
+			}
 
-		actWidth *= maxWidth;
-	}
-	else
-	{
-		actWidth *= (var.Get())->GetSize();
-		UINT maxHeight = 1;
-		TrecPointer<TVariable> value;
-		for (UINT Rust = 0; dynamic_cast<TContainerVariable*>(var.Get())->GetValueAt(Rust, value); Rust++)
+			actWidth *= maxWidth;
+		}
+		else
 		{
-			if (dynamic_cast<TContainerVariable*>(value.Get()))
-				maxHeight = std::max(maxHeight, value->GetSize());
+			actWidth *= (var.Get())->GetSize();
+			UINT maxHeight = 1;
+			TrecPointer<TVariable> value;
+			for (UINT Rust = 0; dynamic_cast<TContainerVariable*>(var.Get())->GetValueAt(Rust, value); Rust++)
+			{
+				if (dynamic_cast<TContainerVariable*>(value.Get()))
+					maxHeight = std::max(maxHeight, value->GetSize());
+			}
+
+			actHeight *= maxHeight;
 		}
-
-		actHeight *= maxHeight;
 	}
-
 	ret.bottom = ret.top + actHeight;
 	ret.right = ret.left + actWidth;
 	return ret;

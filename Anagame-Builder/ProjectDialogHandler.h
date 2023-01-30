@@ -13,9 +13,9 @@ class ProjectDialogHandler :
 	TDataMap<UINT> events;
 	TrecPointer<TDialog> dialogWindow;
 
-	TrecPointer<TTextInput> inputDirectory;
-	TrecPointer<TTextInput> inputName;
-	TrecPointer<TControl> okayButton;
+	TrecPointerSoft<TTextInput> inputDirectory;
+	TrecPointerSoft<TTextInput> inputName;
+	TrecPointerSoft<TControl> okayButton;
 
 	TProjectData projectData;
 

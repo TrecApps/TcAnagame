@@ -34,12 +34,12 @@ bool TGadget::onCreate(const RECT_F& r, TrecPointer<TFileShell> d)
 
 	bool setContent = (attributes.retrieveEntry(L"AutoGenContent", valpoint) && !valpoint.CompareNoCase(L"false")) ? false : true;
 
-	if (!this->content.Get() && setContent)
-	{
-		content = TControlComponent::GetControlContent(drawingBoard, TrecPointerKey::TrecFromSoft<>(self));
-		content->onCreate(area);                         // this this isn't covered by the TControl
-		// as it didn't exist yet
-	}
+	//if (!this->content.Get() && setContent)
+	//{
+	//	content = TControlComponent::GetControlContent(drawingBoard, TrecPointerKey::TrecFromSoft<>(self));
+	//	content->onCreate(area);                         // this this isn't covered by the TControl
+	//	// as it didn't exist yet
+	//}
 
 
 	if (attributes.retrieveEntry(L"BoxSize", valpoint))

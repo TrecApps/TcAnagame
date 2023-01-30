@@ -41,6 +41,7 @@ bool TDialog::Close()
 		closeCallback->Run(ret);
 	}
 
+	this->mainPage.Nullify();
 
 	dialogRunning = false;
 	return true;

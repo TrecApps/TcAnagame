@@ -322,6 +322,7 @@ void DrawingBoard::ConfirmDraw()
 {
 	DrawCaret();
 	glfwSwapBuffers(window);
+	glfwMakeContextCurrent(nullptr);
 }
 
 int DrawingBoard::SetShader(TrecPointer<TShader> shader, shader_type shaderType)

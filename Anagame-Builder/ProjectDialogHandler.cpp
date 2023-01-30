@@ -37,9 +37,13 @@ void ProjectDialogHandler::Initialize(TrecPointer<TPage> page)
 
     TrecPointer<AnafacePage> aPage = TrecPointerKey::ConvertPointer<TPage, AnafacePage>(page);
 
-    okayButton = aPage->GetControlById(L"OkButton");
-    inputDirectory = TrecPointerKey::ConvertPointer<TControl, TTextInput>(aPage->GetControlById(L"DirectoryField"));
-    inputName = TrecPointerKey::ConvertPointer<TControl, TTextInput>(aPage->GetControlById(L"NameField"));
+    auto control = aPage->GetControlById(L"OkButton");
+    okayButton = TrecPointerKey::SoftFromTrec<>( control );
+
+    auto textControl = TrecPointerKey::ConvertPointer<TControl, TTextInput>(aPage->GetControlById(L"DirectoryField"));
+    inputDirectory = TrecPointerKey::SoftFromTrec<>(textControl);
+    textControl = TrecPointerKey::ConvertPointer<TControl, TTextInput>(aPage->GetControlById(L"NameField"));
+    inputName = TrecPointerKey::SoftFromTrec<>(textControl);
 
     auto instance = TInstance::GetInstance();
 
@@ -108,7 +112,8 @@ void ProjectDialogHandler::AssessOkay()
     if (works && !projectData.directory.Get())
         works = false;
 
-    okayButton->setActive(works);
+    auto oButton = TrecPointerKey::TrecFromSoft<>(okayButton);
+    oButton->setActive(works);
 }
 
 void ProjectDialogHandler::OnDirectorySelect(TrecPointer<TPage> tc, EventArgs ea)
@@ -201,7 +206,8 @@ void ProjectDialogHandler::OnSelectRecent(TrecPointer<TPage> tc, EventArgs ea)
             auto strVar = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(proj);
             assert(strVar.Get());
             projectData.projectName.Set(strVar->GetString());
-            inputName->SetText(projectData.projectName);
+            auto iButton = TrecPointerKey::TrecFromSoft<>(inputName);
+            iButton->SetText(projectData.projectName);
         }
 
         if (jProj->RetrieveField(L"directory", proj))
@@ -209,8 +215,9 @@ void ProjectDialogHandler::OnSelectRecent(TrecPointer<TPage> tc, EventArgs ea)
             auto strVar = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(proj);
             assert(strVar.Get());
             projectData.directory = TrecPointerKey::ConvertPointer<TFileShell,TDirectory>(TFileShell::GetFileInfo(strVar->GetString()));
+            auto iDirectory = TrecPointerKey::TrecFromSoft<>(inputDirectory);
             if (projectData.directory.Get())
-                inputDirectory->SetText(projectData.directory->GetPath());
+                iDirectory->SetText(projectData.directory->GetPath());
         }
     }
     AssessOkay();

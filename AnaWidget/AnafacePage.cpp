@@ -21,6 +21,7 @@ TString objectTypes[] = {
 	L"TRadioButton",	// Control that acts as a radio button
 	L"TCheckBox",		// Control that acts as a Checkbox
 	L"TInput",			// Control that acts as a basic input element
+	L"TTextInput",		// Another name for 'TInput'
 	L"TLongInput",		// Control that provides more complex input
 	L"TBasicPrompt",	// Extends TLongInput to support Command Prompt-like interface
 	L"TComplexPrompt",	// Partitions components of a Prompt set-up
@@ -111,7 +112,7 @@ TrecPointer<TPage> AnafacePage::HandleControl(const TString& name, TString& resu
 		ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TRadioButton>(this->drawingBoard, styles);
 	if (name.StartsWith(L"TCheckBox", true))
 		ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TCheckBox>(this->drawingBoard, styles);
-	if (name.StartsWith(L"TInput", true))
+	if (name.StartsWith(L"TInput", true) || name.StartsWith(L"TTextInput", true))
 		ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TTextInput>(this->drawingBoard, styles);
 	if (name.StartsWith(L"TLongInput", true))
 		ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TTextLayout>(this->drawingBoard, styles);
