@@ -6,6 +6,24 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+CharWithSize::CharWithSize(WCHAR ch, int weight)
+{
+	this->ch = ch;
+	this->weight = weight;
+}
+
+int CharWithSize::compare(const CharWithSize& other) const
+{
+	int ret = ch - other.ch;
+	if (!ret)
+		ret = weight - other.weight;
+	return ret;
+}
+
+bool CharWithSize::operator<(const CharWithSize& other) const {
+	return compare(other) < 0;
+}
+
 UINT Animation::GetMillisecondRefresh()
 {
 	return millisecondRefresh;
@@ -104,6 +122,16 @@ DrawingBoard::DrawingBoard(GLFWwindow* window)
 	needsConstantRefresh = false;
 
 	TcInitLock(&drawingThread);
+}
+
+bool DrawingBoard::RetrieveFontEntry(const TString& name, std::map<CharWithSize, GLuint>& map)
+{
+	return charMap.retrieveEntry(name, map);
+}
+
+void DrawingBoard::SetFontEntry(const TString& name, const std::map<CharWithSize, GLuint>& map)
+{
+	charMap.setEntry(name, map);
 }
 
 void DrawingBoard::PrepRefresh()

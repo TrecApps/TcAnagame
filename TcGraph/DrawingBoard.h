@@ -8,6 +8,21 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <TcRunner.h>
 #include <TTextIntercepter.h>
+#include <TDataMap.h>
+
+class CharWithSize
+{
+public:
+    WCHAR ch;
+    int weight;
+    CharWithSize() = default;
+    CharWithSize(const CharWithSize& copy) = default;
+    CharWithSize(WCHAR ch, int weight);
+
+    int compare(const CharWithSize& other) const;
+
+    bool operator<(const CharWithSize& other) const;
+};
 
 using shader_type = enum class shader_type {
     shader_2d,
@@ -93,6 +108,8 @@ class _TC_GRAPH DrawingBoard :
 protected:
     TrecPointerSoft<DrawingBoard> self;
 
+    TDataMap<std::map<CharWithSize, GLuint>> charMap;
+
     glm::mat4 orthoProjection; 
 
     AnagameCaret caret;
@@ -110,6 +127,9 @@ protected:
     bool needsRefresh, needsConstantRefresh;
 
 public:
+    bool RetrieveFontEntry(const TString& name, std::map<CharWithSize, GLuint>& map);
+    void SetFontEntry(const TString& name, const std::map<CharWithSize, GLuint>& map);
+
     void PrepRefresh();
     void SetCursor(ag_mouse_pointer mPointer);
 

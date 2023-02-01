@@ -9,47 +9,23 @@
 
 FT_Library  freeTypeLibrary;
 
-class CharWithSize
-{
-public:
-	WCHAR ch;
-	int weight;
-	CharWithSize() = default;
-	CharWithSize(const CharWithSize& copy) = default;
-	CharWithSize(WCHAR ch, int weight)
-	{
-		this->ch = ch;
-		this->weight = weight;
-	}
 
-	int compare(const CharWithSize& other) const
-	{
-		int ret = ch - other.ch;
-		if (!ret)
-			ret = weight - other.weight;
-		return ret;
-	}
 
-	bool operator<(const CharWithSize& other) const {
-		return compare(other) < 0;
-	}
-};
 
-TDataMap<std::map<CharWithSize, GLuint>> charMap;
 
-void SetFontCharacter(const TString& font, WCHAR ch, int weight, GLuint id)
+void SetFontCharacter(const TString& font, WCHAR ch, int weight, GLuint id, TrecPointer<DrawingBoard> board)
 {
 	std::map<CharWithSize, GLuint> map;
-	charMap.retrieveEntry(font, map);
+	board->RetrieveFontEntry(font, map);
 
 	map.insert_or_assign(CharWithSize(ch, weight), id);
-	charMap.setEntry(font, map);
+	board->SetFontEntry(font, map);
 }
 
-bool GetFontCharacter(const TString& font, WCHAR ch, int weight, GLuint& id)
+bool GetFontCharacter(const TString& font, WCHAR ch, int weight, GLuint& id, TrecPointer<DrawingBoard> board)
 {
 	std::map<CharWithSize, GLuint> map;
-	if(!charMap.retrieveEntry(font, map)) return false;
+	if(!board->RetrieveFontEntry(font, map)) return false;
 
 	auto it = map.find(CharWithSize(ch,weight));
 
@@ -59,9 +35,9 @@ bool GetFontCharacter(const TString& font, WCHAR ch, int weight, GLuint& id)
 	return true;
 }
 
-void EmptyMap() {
-	charMap.clear();
-}
+//void EmptyMap() {
+//	charMap.clear();
+//}
 
 #ifdef _WINDOWS
 const TString fontDirectory(L"C:\\Windows\\Fonts\\");
@@ -568,7 +544,7 @@ void TTextElement::ReCreateLayout()
 		ch.backgroundColor = chFormatting.defaultBackgroundColor;
 
 		GLuint texId = 0;
-		if (!GetFontCharacter(chFormatting.font, ch.character, ch.GetWeightStrength(), texId))
+		if (!GetFontCharacter(chFormatting.font, ch.character, ch.GetWeightStrength(), texId, drawingBoard))
 		{
 			glGenTextures(1, &texId);
 			glBindTexture(GL_TEXTURE_2D, texId);
@@ -586,7 +562,7 @@ void TTextElement::ReCreateLayout()
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			SetFontCharacter(chFormatting.font, ch.character, ch.GetWeightStrength(), texId);
+			SetFontCharacter(chFormatting.font, ch.character, ch.GetWeightStrength(), texId, drawingBoard);
 		}
 		
 		curLine.characters.push_back(ch);
@@ -761,7 +737,7 @@ void TTextElement::OnDraw(TrecPointer<TVariable> dataText)
 			assert(this->GetTextFormattingDetails(chFormatting, C + line.strIndex));
 
 			GLuint texId = 0;
-			if (!GetFontCharacter(chFormatting.font, ch.character, ch.GetWeightStrength(), texId))
+			if (!GetFontCharacter(chFormatting.font, ch.character, ch.GetWeightStrength(), texId, drawingBoard))
 				continue;
 
 			glUniform4f(
