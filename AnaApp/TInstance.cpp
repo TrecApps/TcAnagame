@@ -299,7 +299,7 @@ UINT TInstance::GenerateWindow(TrecPointer<TWindow>& window, TrecPointer<TFileSh
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-	GLFWwindow* glfwWindow = glfwCreateWindow(800,600, useName.GetRegString().c_str(), nullptr, nullptr);
+	GLFWwindow* glfwWindow = glfwCreateWindow(900,700, useName.GetRegString().c_str(), nullptr, nullptr);
 	if (!glfwWindow)
 		return 1;
 
@@ -367,7 +367,7 @@ UINT TInstance::GenerateDialog(TrecPointer<TWindow>& window, TrecPointer<TWindow
 	TString useName(name);
 	if (!useName.GetSize())
 		useName.Set(L"Anagame Dialog");
-	GLFWwindow* glfwWindow = glfwCreateWindow(640, 480, useName.GetRegString().c_str(), nullptr, nullptr);
+	GLFWwindow* glfwWindow = glfwCreateWindow(800, 680, useName.GetRegString().c_str(), nullptr, nullptr);
 	if (!glfwWindow)
 		return 1;
 

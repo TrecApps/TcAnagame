@@ -429,6 +429,8 @@ RECT_F TTextElement::GetBounds()
 
 void TTextElement::ReCreateLayout()
 {
+	glfwMakeContextCurrent(drawingBoard->GetGlfwWindow());
+
 	if (VAO)
 	{
 		glDeleteVertexArrays(1, &VAO);

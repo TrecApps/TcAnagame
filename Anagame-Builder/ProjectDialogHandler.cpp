@@ -119,6 +119,8 @@ void ProjectDialogHandler::AssessOkay()
 
     auto oButton = TrecPointerKey::TrecFromSoft<>(okayButton);
     oButton->setActive(works);
+
+    dialogWindow->PrepRefresh();
 }
 
 void ProjectDialogHandler::OnDirectorySelect(TrecPointer<TPage> tc, EventArgs ea)
@@ -127,7 +129,10 @@ void ProjectDialogHandler::OnDirectorySelect(TrecPointer<TPage> tc, EventArgs ea
     TrecPointer<TFileShell> targetDirectory = OpenDirectoryDialog(TrecPointer<TDirectory>(), error);
     TrecPointer<TDirectory> actDirectory = TrecPointerKey::ConvertPointer<TFileShell, TDirectory>(targetDirectory);
     if (actDirectory.Get())
+    {
         this->projectData.directory = actDirectory;
+        TrecPointerKey::TrecFromSoft<>(this->inputDirectory)->SetText(actDirectory->GetPath());
+    }
     AssessOkay();
 }
 

@@ -147,6 +147,12 @@ bool TInputTextElement::OnCLickUp(const TPoint& point)
 	{
 		UINT mets = 0;
 		BOOL trailing = FALSE, inside = FALSE;
+
+		bool isEmpty = text->GetSize() == 0;
+
+		if (isEmpty)
+			SetText(L"O");
+
 		if (HitTestPoint(point, trailing, inside, mets))
 		{
 			UINT pos = trailing ? 1 : 0;
@@ -173,6 +179,8 @@ bool TInputTextElement::OnCLickUp(const TPoint& point)
 
 		}
 
+		if (isEmpty)
+			SetText(L"");
 		return true;
 	}
 	return false;

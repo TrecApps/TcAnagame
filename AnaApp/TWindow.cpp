@@ -57,7 +57,7 @@ void TWindow::OnChar(UINT ch)
 {
     if (locked) return;
     if (caret.intercepter.Get())
-        caret.intercepter->OnChar(ch, 0, 0);
+        caret.intercepter->OnChar(ch, 1, 0);
 }
 
 void TWindow::OnMouseMove(double x, double y)

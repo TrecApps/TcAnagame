@@ -269,7 +269,7 @@ TPage::EventID_Cred::EventID_Cred(const EventID_Cred& copy)
 	this->control = copy.control;
 	this->eventType = copy.eventType;
 	this->scroll = copy.scroll;
-	//this->textIntercepter = copy.textIntercepter;
+	this->textIntercepter = copy.textIntercepter;
 	this->data = copy.data;
 	this->args = copy.args;
 	this->expression.Set(copy.expression);
