@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "TWindow.h"
+#include "TInstance.h"
 
 TWindow::TWindow(GLFWwindow* window) : DrawingBoard(window)
 {
@@ -196,7 +197,9 @@ void TWindow::OnResize(int w, int h)
 }
 
 bool TWindow::Close()
-{
+{/*
+    auto instance = TInstance::GetInstance();
+    instance->RemoveWindow(window);*/
     return true;
 }
 

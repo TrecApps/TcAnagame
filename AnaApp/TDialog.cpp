@@ -44,7 +44,9 @@ bool TDialog::Close()
 	this->mainPage.Nullify();
 
 	dialogRunning = false;
-	return true;
+	/*glfwSetWindowShouldClose(window, 1);
+	window = nullptr;*/
+	return TWindow::Close();
 }
 
 bool TDialog::RunModal()

@@ -49,6 +49,8 @@ void ProjectDialogHandler::Initialize(TrecPointer<TPage> page)
 
     existingProjects = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(instance->GetExisitngProjects());
     availableProjects = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(instance->GetAvailableProjectTypes());
+
+    AssessOkay();
 }
 
 bool ProjectDialogHandler::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, message_output* mOut)
@@ -97,7 +99,10 @@ void ProjectDialogHandler::Close()
     auto win = dialogWindow;
     dialogWindow.Nullify();
     if (win.Get())
+    {
         win->Close();
+        
+    }
 }
 
 void ProjectDialogHandler::AssessOkay()
@@ -128,7 +133,8 @@ void ProjectDialogHandler::OnDirectorySelect(TrecPointer<TPage> tc, EventArgs ea
 
 void ProjectDialogHandler::OnCancel(TrecPointer<TPage> tc, EventArgs ea)
 {
-    Close();
+    TInstance::GetInstance()->OnWindowClose(dialogWindow->GetGlfwWindow());
+    glfwDestroyWindow(dialogWindow->GetGlfwWindow());
 }
 
 void ProjectDialogHandler::OnOkay(TrecPointer<TPage> tc, EventArgs ea)

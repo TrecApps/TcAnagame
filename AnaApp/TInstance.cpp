@@ -112,6 +112,18 @@ void TInstance::ReadLibraryList()
 	}
 }
 
+void TInstance::RemoveWindow(GLFWwindow* window)
+{
+	for (UINT Rust = 0; Rust < windows.Size(); Rust++)
+	{
+		if (!windows[Rust].Get() || window == windows[Rust]->GetGlfwWindow())
+		{
+			windows.RemoveAt(Rust);
+			break;
+		}
+	}
+}
+
 TrecPointer<TInstance> TInstance::GetInstance()
 {
 	if (!theInstance.Get())

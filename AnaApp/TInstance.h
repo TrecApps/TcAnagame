@@ -71,6 +71,7 @@ class _ANA_APP TInstance :
     public TVObject
 {
     friend class TrecPointerKey;
+    friend class TWindow;
 
     int glfwInitResult;
     TDataArray<TrecPointer<TWindow>> windows;
@@ -98,6 +99,9 @@ class _ANA_APP TInstance :
     TDataArray<TLibrary> libraryList;
 
     TDataArray<TrecPointer<TEnvironmentBuilder>> environmentBuilders;
+
+
+    void RemoveWindow(GLFWwindow* window);
 
 public:
     static TrecPointer<TInstance> GetInstance();
