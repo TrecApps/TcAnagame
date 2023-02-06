@@ -12,16 +12,17 @@ TString TFormatReaderJson::Read()
     TString lineStr;
     UINT line = 0;
 
-    file.ReadString(lineStr, L"{", 1);
+    file.ReadString(lineStr, L"[{", 1);
 
     lineStr.Trim();
     if (lineStr.GetSize() != 1)
-        return L"Unexpected Characters found before initial '{' token!";
+        return L"Unexpected Characters found before initial '{' or '[' token!";
 
     TString ret;
-
-    variable = this->ProcessObject(ret);
-
+    if (lineStr[0] == L'{')
+        variable = this->ProcessObject(ret);
+    else
+        variable = this->ProcessArray(ret);
 
     return ret;
 }
@@ -40,11 +41,12 @@ TString TFormatReaderJson::Write(TrecPointer<TVariable> data, write_mode mode)
         return L"Failed to open file!";
 
     TrecPointer<TJsonVariable> rootObject = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(data);
-    if (!rootObject.Get())
+    TrecPointer<TArrayVariable> aRootObject = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(data);
+    if (!rootObject.Get() && !aRootObject.Get())
         return L"Json Files expect a JSON object at the root";
-
-    WriteJsonObject(file, rootObject, 0, mode);
-
+    if (rootObject.Get())
+        WriteJsonObject(file, rootObject, 0, mode);
+    else WriteArrayObject(file, aRootObject, 0, mode);
 
     return TString();
 }
