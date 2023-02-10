@@ -100,6 +100,17 @@ void TInstance::ReadLibraryList()
 				}
 			}
 
+			if (objectLib->RetrieveField(L"ProjectTypes", var) && var.Get() && var->GetVarType() == var_type::list)
+			{
+				auto projList = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(var);
+				for (UINT C = 0; projList->GetValueAt(C, var); C++)
+				{
+					if (!var.Get() || var->GetVarType() != var_type::string)
+						continue;
+					library.AppendProjectType(dynamic_cast<TStringVariable*>(var.Get())->GetString());
+				}
+			}
+
 
 			this->libraryList.push_back(library);
 		}

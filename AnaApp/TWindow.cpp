@@ -140,7 +140,6 @@ void TWindow::OnRButtonDown(int mods)
     TDataArray<TPage::EventID_Cred> cred;
     if (mainPage.Get())
     {
-
         mainPage->OnRButtonDown(0, mousePoint, mOut, cred);
     }
 
