@@ -99,13 +99,14 @@ class _TC_GRAPH DrawingBoard :
     TrecPointer<TBrush> textHighlight;
 
 
-    TrecPointer<TcAsyncRunner> caretRunner;
+    
 
     void InitializeCaretRunner();
 
     void DrawCaret();
 
 protected:
+    TrecPointer<TcAsyncRunner> caretRunner;
     TrecPointerSoft<DrawingBoard> self;
 
     TDataMap<std::map<CharWithSize, GLuint>> charMap;

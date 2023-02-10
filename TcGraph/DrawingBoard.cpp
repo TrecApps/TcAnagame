@@ -183,6 +183,7 @@ void DrawingBoard::DrawCaret()
 {
 	if (caret.OnDraw && dynamic_cast<TColorBrush*>(caret.brush.Get()))
 	{
+		//ATLTRACE(L"");
 		this->SetShader(TrecPointer<TShader>(), shader_type::shader_2d);
 
 		dynamic_cast<TColorBrush*>(caret.brush.Get())->DrawLine(caret.bottom, caret.top, caret.thickness);

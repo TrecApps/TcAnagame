@@ -197,9 +197,12 @@ void TWindow::OnResize(int w, int h)
 }
 
 bool TWindow::Close()
-{/*
-    auto instance = TInstance::GetInstance();
-    instance->RemoveWindow(window);*/
+{
+    if (caretRunner.Get())
+    {
+        caretRunner->Stop();
+        caretRunner.Nullify();
+    }
     return true;
 }
 

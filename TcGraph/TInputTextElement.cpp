@@ -25,6 +25,25 @@ void TInputTextElement::UpdateCarotPoisition(UINT loc)
 {
 	carotActive = false;
 	if (!drawingBoard.Get()) return;
+
+	drawingBoard->PauseCaret();
+
+	if (!editAllowed)
+		return;
+	if (!loc && text.Get() && text->GetSize() == 0)
+	{
+		carotLoc = 0;
+		SetText(L'O');
+		auto loc = lines[0].characters[0].location;
+		SetText(L"");
+		lines.RemoveAll();
+		float x = ((loc.right - loc.left) / 2) + loc.left;
+		drawingBoard->SetCaret(GetTextInterceptor(),
+			TPoint(x, loc.top),
+			TPoint(x, loc.bottom));
+		carotActive = true;
+	}
+	else
 	for (UINT Rust = 0; Rust < lines.Size(); Rust++)
 	{
 		auto& line = lines[Rust];
@@ -34,7 +53,7 @@ void TInputTextElement::UpdateCarotPoisition(UINT loc)
 
 			drawingBoard->SetCaret(
 				GetTextInterceptor(),
-				TPoint(ch.location.left, ch.location.top),
+				TPoint(ch.location.left, line.top),
 				TPoint(ch.location.left, ch.location.bottom));
 			carotActive = true;
 			carotLoc = loc;
@@ -44,12 +63,27 @@ void TInputTextElement::UpdateCarotPoisition(UINT loc)
 			auto& ch = line.characters[line.characters.Size() -1];
 			drawingBoard->SetCaret(
 				GetTextInterceptor(),
-				TPoint(ch.location.left, ch.location.top),
-				TPoint(ch.location.left, ch.location.bottom));
+				TPoint(ch.location.right, line.top),
+				TPoint(ch.location.right, ch.location.bottom));
 			carotActive = true;
 			carotLoc = loc;
 		}
-		if (carotActive)return;
+
+		if (Rust + 1 == lines.Size() && loc > (line.strIndex + line.characters.Size()))
+		{
+			auto& ch = line.characters[line.characters.Size() - 1];
+			drawingBoard->SetCaret(
+				GetTextInterceptor(),
+				TPoint(ch.location.right, line.top),
+				TPoint(ch.location.right, ch.location.bottom));
+			carotActive = true;
+			carotLoc = loc;
+		}
+
+		if (carotActive) {
+			drawingBoard->ShowCaret();
+			return;
+		}
 	}
 }
 
@@ -115,6 +149,7 @@ bool TInputTextElement::OnCLickDown(const TPoint& point)
 {
 	if (DrawingBoard::IsContained(point, bounds))
 	{
+		isClickDown = true;
 		UINT mets = 0;
 		BOOL trailing = FALSE, inside = FALSE;
 		if (HitTestPoint(point, trailing, inside, mets))
@@ -123,7 +158,7 @@ bool TInputTextElement::OnCLickDown(const TPoint& point)
 			pos += mets;
 
 
-			isClickDown = true;
+			
 
 			// Check to see if we just grabbed onto highlighted text
 			UINT curStart = 0, curEnd = 0;
@@ -142,6 +177,7 @@ bool TInputTextElement::OnCLickDown(const TPoint& point)
 
 bool TInputTextElement::OnCLickUp(const TPoint& point)
 {
+	bool curIsClickDown = isClickDown;
 	isClickDown = false;
 	if (DrawingBoard::IsContained(point, bounds))
 	{
@@ -150,10 +186,12 @@ bool TInputTextElement::OnCLickUp(const TPoint& point)
 
 		bool isEmpty = text->GetSize() == 0;
 
-		if (isEmpty)
-			SetText(L"O");
+		if (isEmpty && curIsClickDown) {
+			if (this->editAllowed)
+				UpdateCarotPoisition(0);
+		}
 
-		if (HitTestPoint(point, trailing, inside, mets))
+		else if (HitTestPoint(point, trailing, inside, mets))
 		{
 			UINT pos = trailing ? 1 : 0;
 			pos += mets;
@@ -176,11 +214,8 @@ bool TInputTextElement::OnCLickUp(const TPoint& point)
 			
 			carotActive = this->highlightRange.GetCarotLocation(this->carotLoc);
 			
-
+			UpdateCarotPoisition(carotLoc);
 		}
-
-		if (isEmpty)
-			SetText(L"");
 		return true;
 	}
 	return false;
