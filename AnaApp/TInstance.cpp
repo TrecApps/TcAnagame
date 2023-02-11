@@ -170,6 +170,7 @@ TrecPointer<TVariable> TInstance::GetAvailableProjectTypes()
 
 			jObj->SetField(L"builderType", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(lib.GetBuilderName()));
 			jObj->SetField(L"projectType", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(envName));
+			aRet->Push(obj);
 		}
 	}
 

@@ -6,6 +6,7 @@
 #include <cassert>
 #include <TcRunner.h>
 #include <atltrace.h>
+#include <TContainerVariable.h>
 
 FT_Library  freeTypeLibrary;
 
@@ -659,6 +660,53 @@ void TTextElement::OnDraw(TrecPointer<TVariable> dataText)
 {
 	if (!drawingBoard.Get())
 		return;
+
+	TString curString;
+	bool changed = false;
+
+
+	TrecPointer<TJsonVariable> jsonText = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(dataText);
+	if (jsonText.Get()) {
+		curString.Set(text->GetString());
+		TString& adjText = text->GetString();
+
+	
+
+		for (int startPoint = adjText.Find(L'{'), endPoint = adjText.Find(L'}');
+			startPoint != -1 && startPoint < endPoint;
+			startPoint = adjText.Find(L'{', startPoint+1), endPoint = adjText.Find(L'}'))
+		{
+			TString field(adjText.SubString(startPoint + 1, endPoint));
+			TrecPointer<TVariable> var;
+			if (jsonText->RetrieveField(field, var) && var.Get() && var->ToString().Get())
+			{
+				TString rep(dynamic_cast<TStringVariable*>(var->ToString().Get())->GetString());
+				adjText.Replace(TString(L'{') + field + L'}', rep);
+				endPoint += (field.GetSize() - rep.GetSize());
+				changed = true;
+			}
+		}
+	}
+	
+	if (!changed && dataText.Get())
+	{
+		curString.Set(text->GetString());
+		TString& adjText = text->GetString();
+		int startPoint = adjText.Find(L'{'), endPoint = adjText.Find(L'}');
+		if(startPoint != -1 && startPoint < endPoint)
+		{
+			TString field(adjText.SubString(startPoint + 1, endPoint));
+			auto str = dataText->ToString(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(field));
+			if (!str.Get())
+				str = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"null");
+			
+			adjText.Replace(TString(L'{') + field + L'}', dynamic_cast<TStringVariable*>(str.Get())->GetString());
+			changed = true;
+		}
+	}
+
+	if (changed)
+		ReCreateLayout();
 	
 	
 	RECT_F proxy = { 0,0,0,0 };
@@ -772,6 +820,9 @@ void TTextElement::OnDraw(TrecPointer<TVariable> dataText)
 		glDisable(GL_BLEND);
 
 	glBlendFunc(blendSrc, blendDst);
+
+	if (changed)
+		SetText(curString);
 }
 
 bool TTextElement::GetMinHeight(float& height)

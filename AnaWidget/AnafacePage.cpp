@@ -293,6 +293,14 @@ void AnafacePage::HandleAttributes(TString& result, TrecPointer<TPage>& curPage,
 		if (!strVar.Get())
 			continue;
 
+		bool hold = true;
+
+		if (!attName.CompareNoCase(L"children"))
+			hold = false;
+
+		if (!attName.GetTrim().GetSize())
+			hold = false;
+
 		if (!attName.CompareNoCase(L"IsGallery") && (chVar->Get4Value() || strVar->GetString().GetTrim().CompareNoCase(L"true")))
 		{
 			if (dynamic_cast<TLayout*>(curPage.Get()))
@@ -302,10 +310,12 @@ void AnafacePage::HandleAttributes(TString& result, TrecPointer<TPage>& curPage,
 		if (!attName.CompareNoCase(L"RowHeights"))
 		{
 			HandleDimensionList(true, result, curPage, chVar);
+			hold = false;
 		}
 		else if (!attName.CompareNoCase(L"ColumnWidths"))
 		{
 			HandleDimensionList(false, result, curPage, chVar);
+			hold = false;
 		}
 		else if (!attName.CompareNoCase(L"RowHeight") || !attName.CompareNoCase(L"ColumnWidth"))
 		{
@@ -334,6 +344,7 @@ void AnafacePage::HandleAttributes(TString& result, TrecPointer<TPage>& curPage,
 			details->at(0).ConvertToInt(ld.row);
 			if (details->Size() > 1)
 				details->at(1).ConvertToInt(ld.endRow);
+			hold = false;
 		}
 		else if (!attName.CompareNoCase(L"ColPosition") || !attName.CompareNoCase(L"ColumnPosition"))
 		{
@@ -341,8 +352,9 @@ void AnafacePage::HandleAttributes(TString& result, TrecPointer<TPage>& curPage,
 			details->at(0).ConvertToInt(ld.col);
 			if (details->Size() > 1)
 				details->at(1).ConvertToInt(ld.endCol);
+			hold = false;
 		}
-		else
+		if(hold)
 		{
 			dynamic_cast<TControl*>(curPage.Get())->AddAttribute(attName, strVar->GetString());
 		}

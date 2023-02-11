@@ -172,6 +172,8 @@ public:
 	 */
 	virtual bool SupportsChildTemplateInjection();
 
+	virtual bool AddPage(TrecPointer<TPage> page, UINT row, UINT col, bool doOverride = false)override;
+
 protected:
 
 	bool GetIndex(const TPoint& point, int& row, int& col);

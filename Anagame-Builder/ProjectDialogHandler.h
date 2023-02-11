@@ -15,6 +15,8 @@ class ProjectDialogHandler :
 
 	TrecPointerSoft<TTextInput> inputDirectory;
 	TrecPointerSoft<TTextInput> inputName;
+	//TrecPointerSoft<TTextInput> inputBuilder;
+	//TrecPointerSoft<TTextInput> inputProject;
 	TrecPointerSoft<TControl> okayButton;
 
 	TProjectData projectData;

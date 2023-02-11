@@ -9,6 +9,12 @@ TDataLayout::TDataLayout(TrecPointer<DrawingBoard> drawingBoard, TDataMap<TDataM
 	stackFirst = true;
 	maxPrimaryCount = -1;
 	org = data_org::do_default;
+
+	LayoutSpace space;
+	space.space = 1;
+	space.isFlex = true;
+
+	primDem.push_back(space);
 }
 
 void TDataLayout::SetData(TrecPointer<TVariable> var)
@@ -22,7 +28,8 @@ void TDataLayout::Draw(TrecPointer<TVariable> object)
 
 	auto tempRec = area;
 	tempRec.bottom = tempRec.top + height;
-	tempRec.right = tempRec.left + width;
+	if(width)
+		tempRec.right = tempRec.left + width;
 
 	TrecPointer<TPage> tempPage = childControls.Size() ? childControls.at(0).control : TrecPointer<TPage>();
 	if (!tempPage.Get())return;
@@ -41,20 +48,20 @@ void TDataLayout::Draw(TrecPointer<TVariable> object)
 				for (UINT Rust = 0; dynamic_cast<TContainerVariable*>(var.Get())->GetValueAt(Rust, varValue); Rust++)
 				{
 
-					if (dynamic_cast<TContainerVariable*>(varValue.Get()))
-					{
-						TrecPointer<TVariable> varValue1;
-						for (UINT C = 0; dynamic_cast<TContainerVariable*>(varValue.Get())->GetValueAt(C, varValue1); C++)
-						{
-							tempPage->Draw(varValue1);
-							tempRec.left += width;
-							tempRec.right += width;
-							tempPage->OnResize(tempRec, 0, cred);
-						}
-						tempRec.left = area.left;
-						tempRec.right = tempRec.left + width;
-					}
-					else
+					//if (dynamic_cast<TContainerVariable*>(varValue.Get()))
+					//{
+					//	TrecPointer<TVariable> varValue1;
+					//	for (UINT C = 0; dynamic_cast<TContainerVariable*>(varValue.Get())->GetValueAt(C, varValue1); C++)
+					//	{
+					//		tempPage->Draw(varValue1);
+					//		tempRec.left += width;
+					//		tempRec.right += width;
+					//		tempPage->OnResize(tempRec, 0, cred);
+					//	}
+					//	tempRec.left = area.left;
+					//	tempRec.right = tempRec.left + width;
+					//}
+					//else
 						tempPage->Draw(varValue);
 					tempRec.bottom += height;
 					tempRec.top += height;
@@ -121,8 +128,8 @@ void TDataLayout::Draw(TrecPointer<TVariable> object)
 			break;
 		}
 	}
-	else
-		tempPage->Draw(var);
+	/*else
+		tempPage->Draw(var);*/
 }
 
 bool TDataLayout::onCreate(const RECT_F& loc, TrecPointer<TFileShell> d)
@@ -163,6 +170,8 @@ bool TDataLayout::onCreate(const RECT_F& loc, TrecPointer<TFileShell> d)
 			org = data_org::do_limit_by_space;
 		}
 	}
+
+
 
 
 	//if (attributes.retrieveEntry(L"MaxItemCountPrim", valpoint))
@@ -252,14 +261,18 @@ void TDataLayout::OnLButtonUp(UINT nFlags, const TPoint& point, message_output& 
 		{
 			iindex = ConvertCoordinates(r, c);
 
-			if (isCurClick && dynamic_cast<TContainerVariable*>(var.Get()))
+			if (isCurClick && 
+				dynamic_cast<TContainerVariable*>(var.Get()) &&
+				eventAr.Size() &&
+				eventAr[eventAr.Size() -1].eventType == R_Message_Type::On_Click &&
+				eventAr[eventAr.Size() -1].args.Get() &&
+				!eventAr[eventAr.Size() -1].args->methodID.Compare(index))
 			{
-				EventID_Cred cred(R_Message_Type::On_Click, TrecPointerKey::TrecFromSoft<>(self));
+				EventID_Cred& cred = eventAr[eventAr.Size() -1];
 				dynamic_cast<TContainerVariable*>(this->var.Get())->GetValueAt(iindex, cred.data);
-				eventAr.push_back(cred);
+				cred.args->arrayLabel = iindex;
 			}
 		}
-		eventAr.at(eventAr.Size() - 1).args->arrayLabel = iindex;
 	}
 
 	if (isCurClick)
@@ -396,15 +409,45 @@ bool TDataLayout::SupportsChildTemplateInjection()
 	return true;
 }
 
+bool TDataLayout::AddPage(TrecPointer<TPage> page, UINT row, UINT col, bool doOverride)
+{
+	if(!page.Get())
+		return false;
+	if (childControls.Size())
+		childControls[0].control = page;
+	else
+	{
+		ChildControl control;
+		control.col = control.row = 0;
+		control.control = page;
+		childControls.push_back(control);
+	}
+}
+
 bool TDataLayout::GetIndex(const TPoint& point, int& row, int& col)
 {
 	if (!DrawingBoard::IsContained(point, area))
 		return false;
 
+	if (childControls.Size() == 0 || !childControls[0].control.Get())
+		return false;
+
+	auto control = childControls[0].control;
+	RECT_F chArea = control->GetArea();
 	TPoint nPoint(point.x - area.left, point.y - area.top);
 
-	col = static_cast<int>(nPoint.x) / width;
-	row = static_cast<int>(nPoint.y) / height;
+	UINT tempWidth = width;
+	if (!width)
+		tempWidth = primaryStack ? (area.right - area.left) : (chArea.right - chArea.left);
+	UINT tempHeight = height;
+	if (!height)
+		tempHeight = primaryStack ? (chArea.bottom - chArea.top) : (area.bottom - area.top);
+
+	if (!tempHeight || !tempWidth)
+		return false;
+
+	col = static_cast<int>(nPoint.x) / tempWidth;
+	row = static_cast<int>(nPoint.y) / tempHeight;
 
 	return true;
 }

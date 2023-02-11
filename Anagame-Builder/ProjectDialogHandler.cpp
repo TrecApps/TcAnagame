@@ -1,5 +1,6 @@
 #include "ProjectDialogHandler.h"
 #include <TContainerVariable.h>
+#include <TDataLayout.h>
 
 TString onDirectorySelect(L"OnDirectorySelect");
 TString onOkay(L"OnOkay");
@@ -49,6 +50,12 @@ void ProjectDialogHandler::Initialize(TrecPointer<TPage> page)
 
     existingProjects = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(instance->GetExisitngProjects());
     availableProjects = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(instance->GetAvailableProjectTypes());
+
+    auto dataList = TrecPointerKey::ConvertPointer<TControl, TDataLayout>(aPage->GetControlById(L"NewProjectList"));
+    dataList->SetData(TrecPointerKey::ConvertPointer<TArrayVariable, TVariable>(availableProjects));
+
+    dataList = TrecPointerKey::ConvertPointer<TControl, TDataLayout>(aPage->GetControlById(L"RecentProjectList"));
+    dataList->SetData(TrecPointerKey::ConvertPointer<TArrayVariable, TVariable>(existingProjects));
 
     AssessOkay();
 }
@@ -175,6 +182,7 @@ void ProjectDialogHandler::OnSelectNew(TrecPointer<TPage> tc, EventArgs ea)
             auto strVar = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(proj);
             assert(strVar.Get());
             projectData.builderName.Set(strVar->GetString());
+
         }
 
         if (jProj->RetrieveField(L"projectType", proj))
@@ -237,4 +245,5 @@ void ProjectDialogHandler::OnSelectRecent(TrecPointer<TPage> tc, EventArgs ea)
 void ProjectDialogHandler::OnUpdateName(TrecPointer<TPage> tc, EventArgs ea)
 {
     projectData.projectName.Set(ea.text);
+    AssessOkay();
 }

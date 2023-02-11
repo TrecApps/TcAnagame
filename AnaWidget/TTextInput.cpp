@@ -2,6 +2,52 @@
 #include <TInputTextElement.h>
 #include "TScrollerPage.h"
 
+class TTextInputInterceptor : public TTextIntercepter
+{
+	TrecPointer<TTextIntercepter> interceptor;
+	TrecPointerSoft<TTextInput> parent;
+public:
+	TTextInputInterceptor(TrecPointer<TTextIntercepter> interceptor, TrecPointer<TTextInput> input) {
+		this->interceptor = interceptor;
+		parent = TrecPointerKey::SoftFromTrec<>(input);
+	}
+
+	virtual void OnChar(UINT ch, UINT count, UINT flags) override {
+		if (interceptor.Get())
+			interceptor->OnChar(ch, count, flags);
+
+	}
+
+	virtual void OnLoseFocus() override {
+		if (interceptor.Get())
+			interceptor->OnLoseFocus();
+
+	}
+
+	virtual void OnCopy() override {
+		if (interceptor.Get())
+			interceptor->OnCopy();
+
+	}
+	virtual void OnCut() override {
+		if (interceptor.Get())
+			interceptor->OnCut();
+
+	}
+
+	virtual void* GetTarget() override {
+		if (interceptor.Get())
+			interceptor->GetTarget();
+
+	}
+
+	virtual bool TakesInput() override {
+		if (interceptor.Get())
+			interceptor->TakesInput();
+
+	}
+};
+
 TextIncrementControl::TextIncrementControl()
 {
 	useFloat = true;
@@ -151,6 +197,14 @@ void TTextInput::OnLButtonUp(UINT nFlags, const TPoint& point, message_output& m
 		//eventAr.push_back(cred);
 
 		TControl::OnLButtonUp(nFlags, point, mOut, eventAr);
+
+		for (UINT Rust = 0; Rust < eventAr.Size(); Rust++)
+		{
+			EventID_Cred& curCred = eventAr[Rust];
+			if (curCred.control.Get() == this && curCred.eventType == R_Message_Type::On_Click && curCred.textIntercepter.Get()) {
+
+			}
+		}
 	}
 	showPassword = false;
 
@@ -376,3 +430,4 @@ void TTextInput::SetUpTextElement()
 	text->SetVerticalAllignment(vAlign);
 	text->SetText(actText);
 }
+
