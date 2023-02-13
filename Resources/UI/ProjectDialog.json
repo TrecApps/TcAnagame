@@ -36,11 +36,15 @@
 				{
 					"TDataLayout": {
 						"ColPosition": 0,
+						"ID": "NewProjectList",
+						"SelectedColor": "0.0,0.0,1.0,0.3",
+						"ColumnWidth": 0,
+						"RowHeight": 60,
 						"EventOnClick": "OnSelectNew",
 						"Children": [
 						{
 							"TLayout" : {
-								"RowHeights": [ 75, 75],
+								"RowHeights": [ 30, 30],
 								"BorderColor": "1.0,0.0,0.0,1.0",
 								"Children": [
 								{
@@ -63,10 +67,13 @@
 				{
 					"TDataLayout": {
 						"ColPosition": 1,
+						"ID": "RecentProjectList",
+						"ColumnWidth":0,
+						"RowHeight": 120,
 						"Children": [
 						{
 							"TLayout" : {
-								"RowHeights": [ 75, 75, 75, 75],
+								"RowHeights": [ 30, 30, 30, 30],
 								"BorderColor": "1.0,0.0,0.0,1.0",
 								"EventOnClick": "OnSelectRecent",
 								"Children": [
@@ -129,6 +136,7 @@
 					"TControl": {
 						"ColPosition": 2,
 						"FontColor": "Black",
+						"Caption": "Select Folder",
 						"EventOnClick": "OnDirectorySelect"
 					}
 				}

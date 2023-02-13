@@ -15,6 +15,8 @@ TDataLayout::TDataLayout(TrecPointer<DrawingBoard> drawingBoard, TDataMap<TDataM
 	space.isFlex = true;
 
 	primDem.push_back(space);
+
+	this->selected = -1;
 }
 
 void TDataLayout::SetData(TrecPointer<TVariable> var)
@@ -62,7 +64,14 @@ void TDataLayout::Draw(TrecPointer<TVariable> object)
 					//	tempRec.right = tempRec.left + width;
 					//}
 					//else
-						tempPage->Draw(varValue);
+
+					if (Rust == selected && selectedColor.Get())
+					{
+						RECT_F normalizedRect;
+						assert(TColorBrush::NormalizeRect(normalizedRect, tempRec, drawingBoard));
+						selectedColor->FillRectangle(normalizedRect);
+					}
+					tempPage->Draw(varValue);
 					tempRec.bottom += height;
 					tempRec.top += height;
 					tempPage->OnResize(tempRec, 0, cred);
@@ -73,7 +82,7 @@ void TDataLayout::Draw(TrecPointer<TVariable> object)
 				for (UINT Rust = 0; dynamic_cast<TContainerVariable*>(var.Get())->GetValueAt(Rust, varValue); Rust++)
 				{
 
-					if (dynamic_cast<TContainerVariable*>(varValue.Get()))
+					/*if (dynamic_cast<TContainerVariable*>(varValue.Get()))
 					{
 						TrecPointer<TVariable> varValue1;
 						for (UINT C = 0; dynamic_cast<TContainerVariable*>(varValue.Get())->GetValueAt(C, varValue1); C++)
@@ -86,8 +95,11 @@ void TDataLayout::Draw(TrecPointer<TVariable> object)
 						tempRec.top = area.top;
 						tempRec.bottom = tempRec.top + height;
 					}
-					else
-						tempPage->Draw(varValue);
+					else*/
+
+					if (Rust == selected && selectedColor.Get())
+						selectedColor->FillRectangle(tempRec);
+					tempPage->Draw(varValue);
 					tempRec.left += width;
 					tempRec.right += width;
 				}
@@ -96,6 +108,8 @@ void TDataLayout::Draw(TrecPointer<TVariable> object)
 		case data_org::do_limit_by_space:
 			for (UINT Rust = 0; dynamic_cast<TContainerVariable*>(var.Get())->GetValueAt(Rust, varValue); Rust++)
 			{
+				if (Rust == selected && selectedColor.Get())
+					selectedColor->FillRectangle(tempRec);
 				tempPage->Draw(varValue);
 
 				if (stackFirst)
@@ -171,7 +185,14 @@ bool TDataLayout::onCreate(const RECT_F& loc, TrecPointer<TFileShell> d)
 		}
 	}
 
+	if (attributes.retrieveEntry(L"SelectedColor", valpoint))
+	{
+		bool w = true;
+		TColor color(TColor::GetColorFromString(valpoint, w));
 
+		if (w)
+			selectedColor = TrecPointerKey::ConvertPointer<TBrush, TColorBrush>(drawingBoard->GetSolidColorBrush(color));
+	}
 
 
 	//if (attributes.retrieveEntry(L"MaxItemCountPrim", valpoint))
@@ -271,6 +292,7 @@ void TDataLayout::OnLButtonUp(UINT nFlags, const TPoint& point, message_output& 
 				EventID_Cred& cred = eventAr[eventAr.Size() -1];
 				dynamic_cast<TContainerVariable*>(this->var.Get())->GetValueAt(iindex, cred.data);
 				cred.args->arrayLabel = iindex;
+				selected = iindex;
 			}
 		}
 	}

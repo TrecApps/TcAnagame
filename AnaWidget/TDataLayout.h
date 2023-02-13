@@ -196,6 +196,16 @@ protected:
 	int maxPrimaryCount;
 
 	/**
+	 * Current Selection (negative means not selected)
+	 */
+	int selected;
+
+	/**
+	 * Selected Color
+	 */
+	TrecPointer<TColorBrush> selectedColor;
+
+	/**
 	 * How to handle overflow on the primary direction
 	 */
 	data_org org;

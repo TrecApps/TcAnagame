@@ -480,7 +480,7 @@ TColor TColor::GetColorFromString(const TString& color, bool& worked)
 		if (pieces->at(0).ConvertToFloat(fColors[0]) || pieces->at(1).ConvertToFloat(fColors[1]) || pieces->at(2).ConvertToFloat(fColors[2]))
 			return TColor();
 	}
-
+	worked = true;
 	if (pieces->Size() > 3)
 	{
 		if (!TString::ConvertStringToUint(pieces->at(3), uColors[3]))
