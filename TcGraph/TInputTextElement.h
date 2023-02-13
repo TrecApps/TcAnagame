@@ -22,7 +22,7 @@ public:
     virtual bool OnCLickUp(const TPoint& point);
     virtual bool OnMouseMove(const TPoint& point);
     virtual void OnCutCopyPaste(control_text_mode mode);
-    virtual bool OnInputChar(WCHAR ch, UINT count);
+    virtual bool OnInputChar(WCHAR ch, UINT count, UINT flags)override;
 
     virtual bool LockText(bool doLock);
     virtual bool TakesInput();

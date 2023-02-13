@@ -537,6 +537,15 @@ void TInstance::OnWindowClose(GLFWwindow* window)
 	}
 }
 
+void TInstance::OnKeyPress(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	if (!action)
+		return; // To Do, Do more with return once Window supports Key Release 
+	auto win = GetWindow(window);
+	if (win.Get())
+		win->OnChar(key, false);
+}
+
 bool TLibrary::ScanProjectFiles(TrecPointer<TFileShell> file)
 {
 	if(!file.Get())

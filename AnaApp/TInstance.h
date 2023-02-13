@@ -157,5 +157,6 @@ public:
     void OnLoseFocus(GLFWwindow* window);
     void OnWindowResize(GLFWwindow* window, int w, int h);
     void OnWindowClose(GLFWwindow* window);
+    void OnKeyPress(GLFWwindow* window, int key, int scancode, int action, int mods);
 };
 

@@ -118,7 +118,7 @@ public:
 
 	virtual void OnCutCopyPaste(control_text_mode mode) override;
 
-	virtual bool OnInputChar(WCHAR ch, UINT count) override;
+	virtual bool OnInputChar(WCHAR ch, UINT count, UINT flags) override;
 
 	virtual void OnTransferText(UINT newPos);
 };

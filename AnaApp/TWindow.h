@@ -38,7 +38,7 @@ public:
 
     virtual void SetMainPage(TrecPointer<TPage> mainPage);
 
-    void OnChar(UINT ch);
+    void OnChar(UINT ch, bool fromChar = true);
     void OnMouseMove(double x, double y);
     void OnLButtonDown(int mods);
     void OnLButtonUp(int mods);

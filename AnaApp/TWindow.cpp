@@ -53,12 +53,12 @@ void TWindow::SetMainPage(TrecPointer<TPage> mainPage)
     this->mainPage = mainPage;
 }
 
-void TWindow::OnChar(UINT ch)
+void TWindow::OnChar(UINT ch, bool fromChar)
 {
     if (locked) return;
     if (caret.intercepter.Get())
     {
-        caret.intercepter->OnChar(ch, 1, 0);
+        caret.intercepter->OnChar(ch, 1, fromChar ? 0 : 1);
         TrecPointer<TPage> page = TrecPointerKey::ConvertPointer<TObject, TPage>(caret.intercepter->GetTObject());
 
         TrecPointer<TPage::EventHandler> handler;

@@ -102,7 +102,7 @@ public:
 	 */
 	virtual void OnChar(UINT ch, UINT count, UINT flags)
 	{
-		element->OnInputChar(ch, count);
+		element->OnInputChar(ch, count, flags);
 	}
 
 
@@ -976,7 +976,7 @@ void TTextElement::OnCutCopyPaste(control_text_mode mode)
 		glfwSetClipboardString(nullptr, text->GetString().SubString(begin, end).GetRegString().c_str());
 }
 
-bool TTextElement::OnInputChar(WCHAR ch, UINT count)
+bool TTextElement::OnInputChar(WCHAR ch, UINT count, UINT flags)
 {
 	return false;
 }

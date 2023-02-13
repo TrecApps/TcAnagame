@@ -260,7 +260,7 @@ void TInputTextElement::OnCutCopyPaste(control_text_mode mode)
 	//if()
 }
 
-bool TInputTextElement::OnInputChar(WCHAR ch, UINT count)
+bool TInputTextElement::OnInputChar(WCHAR ch, UINT count, UINT flags)
 {
 	UINT start = 0, end = 0;
 	if (carotActive && editAllowed)
@@ -277,28 +277,43 @@ bool TInputTextElement::OnInputChar(WCHAR ch, UINT count)
 		}
 		for (int c = 0; c < count; c++)
 		{
-			switch (ch)
+			if (!flags)
 			{
-			case 0x08: // Back
+				strText.Insert(carotLoc++, ch);
+			}
+			else switch (ch)
+			{
+			case GLFW_KEY_BACKSPACE: // Back
 				if (carotLoc && !didDelete)
 					strText.Delete(--carotLoc);
 				break;
-			case 0xBE: // OEM-Period
+			case GLFW_KEY_PERIOD: // OEM-Period
 				strText.Insert(carotLoc++, L'.');
 				break;
 			case 0x6D: // Subtract
-				if (ch == L'm')
-					goto def;
 				strText.Insert(carotLoc++, L'-');
 				break;
 			case 0x6F: // Divide
-				if (ch == L'o')
-					goto def;
 				strText.Insert(carotLoc++, L'/');
 				break;
-			default:
-			def:
-				strText.Insert(carotLoc++, ch);
+			case GLFW_KEY_UP:
+				// To-Do: Handle up
+				break;
+			case GLFW_KEY_DOWN:
+				// To-Do: Handle Down
+				break;
+			case GLFW_KEY_LEFT:
+				if (carotLoc)
+					carotLoc--;
+				break;
+			case GLFW_KEY_RIGHT:
+				if (text.Get() && carotLoc < text->GetSize())
+					carotLoc++;
+				break;
+			case GLFW_KEY_DELETE:
+				if (!didDelete)
+					strText.Delete(carotLoc);
+			
 			}
 		}
 		ReCreateLayout();

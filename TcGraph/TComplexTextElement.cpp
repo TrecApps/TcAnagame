@@ -242,9 +242,9 @@ void TComplexTextElement::OnCutCopyPaste(control_text_mode mode)
 {
 }
 
-bool TComplexTextElement::OnInputChar(WCHAR ch, UINT count)
+bool TComplexTextElement::OnInputChar(WCHAR ch, UINT count, UINT flags)
 {
-	return editAllowed ? TInputTextElement::OnInputChar(ch, count) : TTextElement::OnInputChar(ch, count);
+	return editAllowed ? TInputTextElement::OnInputChar(ch, count, flags) : TTextElement::OnInputChar(ch, count, flags);
 }
 
 void TComplexTextElement::OnTransferText(UINT newPos)
