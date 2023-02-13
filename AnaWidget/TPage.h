@@ -210,6 +210,8 @@ public:
 
 		virtual bool HandlesEvents() = 0;
 
+		virtual TrecPointer<TPage::EventHandler> GetHandler();
+
 		virtual TString PrepPage(TrecPointer<TFileShell> file, TrecPointer<EventHandler> handler);
 
 		virtual void Draw(TrecPointer<TVariable> object) = 0;
@@ -223,6 +225,7 @@ public:
 		ag_msg virtual void OnResize(RECT_F& newLoc, UINT nFlags, TDataArray<EventID_Cred>& eventAr) = 0;
 		ag_msg virtual bool OnDestroy() = 0;
 		ag_msg virtual bool OnScroll(bool fromBars, const TPoint& point, const TPoint& direction, TDataArray<EventID_Cred>&) = 0;
+		ag_msg virtual void OnChar(UINT character, UINT count, TDataArray<EventID_Cred>& cred);
 
 		virtual void SetSelf(TrecPointer<TPage>);
 
@@ -236,7 +239,6 @@ public:
 		void RotateRadians(float radians);
 
 		virtual void InjectScrollerPage(const RECT_F& bounds, const RECT_F& needs, TrecPointer<TPage> page);
-		virtual TrecPointer<EventHandler> GetHandler();
 
 		virtual TString GetName();
 

@@ -20,6 +20,7 @@ public:
 
     virtual bool TakesInput() = 0;
 
+    virtual TrecPointer<TObject> GetTObject();
 
     // virtual void OnPaste() = 0;
 };

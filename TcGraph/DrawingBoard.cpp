@@ -200,7 +200,13 @@ void DrawingBoard::SetCaret(TrecPointer<TTextIntercepter> texter, const TPoint& 
 	NormalizePoint(bottom, caret.bottom);
 	if (!caret.brush.Get())
 		caret.brush = GetSolidColorBrush(TColor());
-	caret.intercepter = texter;
+
+	if (!caret.intercepter.Get())
+		caret.intercepter = texter;
+	else if (!texter.Get())
+		caret.intercepter.Nullify();
+	else if (caret.intercepter->GetTarget() != texter->GetTarget());
+
 	if(thickness)
 		caret.thickness = thickness;
 	UnlockDrawing();
@@ -214,7 +220,13 @@ void DrawingBoard::SetCaret(TrecPointer<TTextIntercepter> texter, const TPoint& 
 	NormalizePoint(top, caret.top);
 	NormalizePoint(bottom, caret.bottom);
 	caret.brush = GetSolidColorBrush(color);
-	caret.intercepter = texter;
+
+	if (!caret.intercepter.Get())
+		caret.intercepter = texter;
+	else if (!texter.Get())
+		caret.intercepter.Nullify();
+	else if (caret.intercepter->GetTarget() != texter->GetTarget());
+
 	if (thickness)
 		caret.thickness = thickness;
 	UnlockDrawing();

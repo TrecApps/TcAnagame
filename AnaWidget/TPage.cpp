@@ -302,6 +302,11 @@ TPage::EventID_Cred::EventID_Cred(R_Message_Type t, TrecPointer<TPage> c, TrecPo
 //	this->textIntercepter = i;
 //}
 
+void TPage::OnChar(UINT character, UINT count, TDataArray<EventID_Cred>& cred)
+{
+	
+}
+
 void TPage::SetSelf(TrecPointer<TPage> self)
 {
 	if (this != self.Get())
@@ -337,10 +342,6 @@ void TPage::InjectScrollerPage(const RECT_F& bounds, const RECT_F& needs, TrecPo
 	// If no children, do nothing
 }
 
-TrecPointer<TPage::EventHandler> TPage::GetHandler()
-{
-	return TrecPointer<TPage::EventHandler>();
-}
 
 TString TPage::GetName()
 {
@@ -375,6 +376,14 @@ TPage::TPage(TrecPointer<DrawingBoard> board)
 TrecPointer<DrawingBoard> TPage::GetDrawingBoard()
 {
 	return drawingBoard;
+}
+
+
+TrecPointer<TPage::EventHandler> TPage::GetHandler()
+{
+	auto actParent = TrecPointerKey::TrecFromSoft<>(parent);
+
+	return actParent.Get() ? actParent->GetHandler() : TrecPointer<TPage::EventHandler>();
 }
 
 TString TPage::PrepPage(TrecPointer<TFileShell> file, TrecPointer<EventHandler> handler)

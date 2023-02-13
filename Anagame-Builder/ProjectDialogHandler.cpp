@@ -91,6 +91,8 @@ void ProjectDialogHandler::HandleEvents(TDataArray<TPage::EventID_Cred>& eventAr
         // At this point, call the appropriate method
         if (e_id > -1 && e_id < calls.Size())
         {
+            
+            ea = *tc.Get();
             // call method
             if (calls[e_id])
                 (this->*calls[e_id])(eventAr[c].control, ea);
@@ -103,13 +105,11 @@ void ProjectDialogHandler::Close()
 {
     inputDirectory.Nullify();
     inputName.Nullify();
-    auto win = dialogWindow;
+    auto tempDialogWindow = dialogWindow;
     dialogWindow.Nullify();
-    if (win.Get())
-    {
-        win->Close();
-        
-    }
+
+    TInstance::GetInstance()->OnWindowClose(tempDialogWindow->GetGlfwWindow());
+    glfwDestroyWindow(tempDialogWindow->GetGlfwWindow());
 }
 
 void ProjectDialogHandler::AssessOkay()
@@ -145,8 +145,7 @@ void ProjectDialogHandler::OnDirectorySelect(TrecPointer<TPage> tc, EventArgs ea
 
 void ProjectDialogHandler::OnCancel(TrecPointer<TPage> tc, EventArgs ea)
 {
-    TInstance::GetInstance()->OnWindowClose(dialogWindow->GetGlfwWindow());
-    glfwDestroyWindow(dialogWindow->GetGlfwWindow());
+    Close();
 }
 
 void ProjectDialogHandler::OnOkay(TrecPointer<TPage> tc, EventArgs ea)

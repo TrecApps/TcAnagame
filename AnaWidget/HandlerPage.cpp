@@ -26,6 +26,11 @@ void HandlerPage::Draw(TrecPointer<TVariable> object)
 		rootPage->Draw(object);
 }
 
+TrecPointer<TPage::EventHandler> HandlerPage::GetHandler()
+{
+	return handler;
+}
+
 ag_msg void HandlerPage::OnRButtonUp(UINT nFlags, const TPoint& point, message_output& mOut, TDataArray<EventID_Cred>& c)
 {
 	if (rootPage.Get())

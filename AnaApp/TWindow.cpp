@@ -57,7 +57,21 @@ void TWindow::OnChar(UINT ch)
 {
     if (locked) return;
     if (caret.intercepter.Get())
+    {
         caret.intercepter->OnChar(ch, 1, 0);
+        TrecPointer<TPage> page = TrecPointerKey::ConvertPointer<TObject, TPage>(caret.intercepter->GetTObject());
+
+        TrecPointer<TPage::EventHandler> handler;
+        if (page.Get())
+            handler = page->GetHandler();
+
+        if (handler.Get())
+        {
+            TDataArray<TPage::EventID_Cred> cred;
+            page->OnChar(ch, 1, cred);
+            handler->HandleEvents(cred);
+        }
+    }
 }
 
 void TWindow::OnMouseMove(double x, double y)

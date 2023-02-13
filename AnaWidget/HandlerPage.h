@@ -17,6 +17,8 @@ public:
     bool HandlesEvents() override;
     void Draw(TrecPointer<TVariable> object) override;
 
+	virtual TrecPointer<TPage::EventHandler> GetHandler()override;
+
 	ag_msg void OnRButtonUp(UINT nFlags, const TPoint& point, message_output& mOut, TDataArray<EventID_Cred>&) override;
 	ag_msg void OnRButtonDown(UINT nFlags, const TPoint& point, message_output& mOut, TDataArray<EventID_Cred>&) override;
 	ag_msg void OnLButtonUp(UINT nFlags, const TPoint& point, message_output& mOut, TDataArray<EventID_Cred>&) override;

@@ -37,14 +37,24 @@ public:
 
 	virtual void* GetTarget() override {
 		if (interceptor.Get())
-			interceptor->GetTarget();
-
+			return interceptor->GetTarget();
+		return this;
 	}
 
 	virtual bool TakesInput() override {
+		bool ret = true;
 		if (interceptor.Get())
-			interceptor->TakesInput();
+			ret &= interceptor->TakesInput();
+		auto actParent = TrecPointerKey::TrecFromSoft<>(parent);
+		if (actParent.Get())
+			ret &= actParent->IsEnabled();
+		return ret;
+	}
 
+
+	virtual TrecPointer<TObject> GetTObject()override {
+		auto actParent = TrecPointerKey::TrecFromSoft<>(parent);
+		return TrecPointerKey::ConvertPointer<TTextInput, TObject>(actParent);
 	}
 };
 
@@ -202,7 +212,9 @@ void TTextInput::OnLButtonUp(UINT nFlags, const TPoint& point, message_output& m
 		{
 			EventID_Cred& curCred = eventAr[Rust];
 			if (curCred.control.Get() == this && curCred.eventType == R_Message_Type::On_Click && curCred.textIntercepter.Get()) {
-
+				auto actSelf = TrecPointerKey::TrecFromSoft<>(self);
+				curCred.textIntercepter = TrecPointerKey::GetNewTrecPointerAlt<TTextIntercepter, TTextInputInterceptor>(curCred.textIntercepter,
+					TrecPointerKey::ConvertPointer<TPage, TTextInput>(actSelf));
 			}
 		}
 	}
@@ -300,6 +312,22 @@ void TTextInput::OnResize(RECT_F& newLoc, UINT nFlags, TDataArray<EventID_Cred>&
 	}
 }
 
+void TTextInput::OnChar(UINT character, UINT count, TDataArray<EventID_Cred>& cred)
+{
+	TString methodId(HasEvent(R_Message_Type::On_Text_Change));
+	if (methodId.GetSize())
+	{
+		EventID_Cred id(R_Message_Type::On_Text_Change, TrecPointerKey::TrecFromSoft<>(this->self));
+		id.args = TrecPointerKey::GetNewTrecPointer<EventArgs>();
+		id.args->eventType = id.eventType;
+		id.args->methodID.Set(methodId);
+		auto t = text->GetText();
+		if (t.Get())
+			id.args->text.Set(t->GetString());
+		cred.push_back(id);
+	}
+}
+
 bool TTextInput::SetNumericText(float f)
 {
 	if (!useNumber)
@@ -342,6 +370,11 @@ void TTextInput::LockText(bool doLock)
 void TTextInput::SetPasswordMode(bool b)
 {
 	usePassword = b;
+}
+
+bool TTextInput::IsEnabled()
+{
+	return editEnabled;
 }
 
 void TTextInput::SetUpTextElement()
