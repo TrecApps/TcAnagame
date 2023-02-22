@@ -87,7 +87,26 @@ void TIdeWindow::SetMainPage(TrecPointer<TPage> mainPage)
 	assert(ideLayout->AppendSection(ideSection, TrecPointerKey::ConvertPointer<TPage, TSwitchControl>(page)));
 }
 
-void TIdeWindow::SetProject(TrecActivePointer<AGProjectEnvironment> project)
+bool TIdeWindow::PrepProject(const TProjectData& projectData)
+{
+	auto instance = TInstance::GetInstance();
+	TDataArray<TString> lib;
+	lib.push_back(projectData.builderName);
+	auto failed = instance->LoadLibraries(lib);
+	if (failed.Size() == 0)
+		return false;
+
+	auto env = instance->GetEnvironment(projectData);
+	TrecPointer<AGProjectEnvironment> projEnv = 
+		TrecPointerKey::ConvertPointer<TEnvironment, AGProjectEnvironment>(env);
+
+	if (!projEnv.Get())
+		return false;
+
+	return SetProject(TrecActivePointer<AGProjectEnvironment>(projEnv));
+}
+
+bool TIdeWindow::SetProject(TrecActivePointer<AGProjectEnvironment> project)
 {
 	this->environment->SetProject(project);
 	SetMainPage(TrecPointer<TPage>());
@@ -95,7 +114,7 @@ void TIdeWindow::SetProject(TrecActivePointer<AGProjectEnvironment> project)
 	auto actProject = project.GetTrecPointer();
 
 	TrecPointer<TFileShell> fileShell = actProject->GetDirectory();
-	if (!fileShell.Get())return;
+	if (!fileShell.Get())return false;
 
 	TString path(fileShell->GetPath() + L"/.tc_ide.json");
 	fileShell = TFileShell::GetFileInfo(path);
@@ -106,7 +125,7 @@ void TIdeWindow::SetProject(TrecActivePointer<AGProjectEnvironment> project)
 	TrecPointer<TFormatReader> formatReader = TFormatReader::GetReader(fileShell);
 
 	if (!formatReader.Get())
-		return;
+		return false;
 
 	formatReader->Read();
 	auto vars = formatReader->GetData();
@@ -125,6 +144,7 @@ void TIdeWindow::SetProject(TrecActivePointer<AGProjectEnvironment> project)
 		if(jsonLayout.Get())
 			ideLayout->SetUpLayout(jsonLayout);
 	}
+	return true;
 }
 
 void TIdeWindow::SetIdeProperty(ide_property ideProp, const TString& prop)

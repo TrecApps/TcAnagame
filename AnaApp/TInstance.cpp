@@ -231,6 +231,27 @@ TString TInstance::SaveProject(const TProjectData& project)
 	return writer->Write(TrecPointerKey::ConvertPointer<TArrayVariable, TVariable>(list));
 }
 
+TrecPointer<TEnvironment> TInstance::GetEnvironment(const TProjectData& project)
+{
+	if (!project.HasDirectory())
+		return TrecPointer<TEnvironment>();
+	TrecPointer<TEnvironmentBuilder> builder;
+	for (UINT Rust = 0; !builder.Get() && Rust < environmentBuilders.Size(); Rust++)
+	{
+		if (environmentBuilders[Rust]->GetName().Compare(project.builderName))
+			builder = environmentBuilders[Rust];
+	}
+	if(!builder.Get())
+		return TrecPointer<TEnvironment>();
+	TString envName(project.environmentName);
+	TString projName(project.projectName);
+
+	
+
+	return builder->BuildProjectEnvironment(envName, projName, TrecActivePointer<TFileShell>
+		(TrecPointerKey::ConvertPointer<TDirectory, TFileShell>(project.directory)));
+}
+
 bool TInstance::ScanForResource(const TString& resource, TrecPointer<TEnvironment> env)
 {
 	if(env.Get() && env->GetResource(resource).Get())
@@ -678,4 +699,42 @@ bool TLibrary::Load(TrecPointer<TFileShell> directory)
 bool TProjectData::HasDirectory() const
 {
 	return directory.Get() != nullptr;
+}
+
+bool TProjectData::Initialize(TrecPointer<TJsonVariable> var)
+{
+	if (!var.Get())return false;
+	UINT accountedFor = 0;
+
+	TrecPointer<TVariable> value;
+	if (var->RetrieveField(L"builderType", value) && value.Get()
+		&& value->GetVarType() == var_type::string)
+	{
+		accountedFor++;
+		TrecPointer<TStringVariable> strVar = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(value);
+		this->builderName.Set(strVar->GetString());
+	}
+	if (var->RetrieveField(L"projectType", value) && value.Get()
+		&& value->GetVarType() == var_type::string)
+	{
+		accountedFor++;
+		TrecPointer<TStringVariable> strVar = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(value);
+		this->environmentName.Set(strVar->GetString());
+	}
+	if (var->RetrieveField(L"name", value) && value.Get()
+		&& value->GetVarType() == var_type::string)
+	{
+		accountedFor++;
+		TrecPointer<TStringVariable> strVar = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(value);
+		this->projectName.Set(strVar->GetString());
+	}
+	if (var->RetrieveField(L"directory", value) && value.Get()
+		&& value->GetVarType() == var_type::string)
+	{
+		TrecPointer<TStringVariable> strVar = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(value);
+		this->directory = TrecPointerKey::ConvertPointer<TFileShell, TDirectory>(TFileShell::GetFileInfo(strVar->GetString()));
+		if(directory.Get())accountedFor++;
+	}
+
+	return accountedFor == 4;
 }

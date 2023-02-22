@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include "AnaApp.h"
 #include <TEnvironment.h>
+#include <TContainerVariable.h>
 
 using t_window_type = enum class t_window_type
 {
@@ -59,12 +60,15 @@ public:
 class _ANA_APP TProjectData
 {
 public:
+    TProjectData() = default;
+    TProjectData(const TProjectData&) = default;
     mutable TrecPointer<TDirectory> directory;
     TString projectName;
     TString builderName;
     TString environmentName;
 
     bool HasDirectory() const;
+    bool Initialize(TrecPointer<TJsonVariable> var);
 };
 
 class _ANA_APP TInstance :
@@ -113,6 +117,8 @@ public:
 
     TrecPointer<TVariable> GetExisitngProjects();
     TString SaveProject(const TProjectData& project);
+
+    TrecPointer<TEnvironment> GetEnvironment(const TProjectData& project);
 
     /**
      * Will Scan for a given resource. If 'env' is provided, then it will first check to see if the environment will provide it.

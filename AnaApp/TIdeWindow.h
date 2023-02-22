@@ -4,6 +4,7 @@
 #include "AnagameEnvironment.h"
 #include <TSwitchControl.h>
 #include "PageTypes.h"
+#include "TInstance.h"
 
 using ide_property = enum class ide_property
 {
@@ -29,7 +30,9 @@ public:
 
     void SetMainPage(TrecPointer<TPage> mainPage) override;
 
-    void SetProject(TrecActivePointer<AGProjectEnvironment> project);
+    bool PrepProject(const TProjectData& projectData);
+
+    bool SetProject(TrecActivePointer<AGProjectEnvironment> project);
 
     void SetIdeProperty(ide_property, const TString& prop);
 

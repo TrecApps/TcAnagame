@@ -36,6 +36,7 @@ public:
 class _TREC_LIB_DLL TEnvironmentBuilder : TCoreObject
 {
 public:
+    virtual TString GetName() = 0;
     /**
      * Reports the name of the Environment that can support the requested Resource type (empty string if the resource is not supported)
      */

@@ -106,6 +106,9 @@ void MainPageIdeHandler::OnLoadNewSolution(TrecPointer<TPage> tc, EventArgs ea)
 	if (data.Get())
 	{
 		// User Pressed Okay
+		TProjectData pData;
+		assert(pData.Initialize(data));
+
 	}
 }
 
