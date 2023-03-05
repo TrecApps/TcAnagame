@@ -33,7 +33,7 @@ public:
 };
 
 
-class _TREC_LIB_DLL TEnvironmentBuilder : TCoreObject
+class _TREC_LIB_DLL TEnvironmentBuilder : public TCoreObject
 {
 public:
     virtual TString GetName() = 0;

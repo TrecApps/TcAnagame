@@ -5,6 +5,7 @@
 #include <TIdeLayout.h>
 #include "PageTypes.h"
 #include <TFormatReader.h>
+#include "AnagameEnvironment.h"
 
 void TIdeWindow::SaveIde()
 {
@@ -85,16 +86,21 @@ void TIdeWindow::SetMainPage(TrecPointer<TPage> mainPage)
 	dynamic_cast<TSwitchControl*>(page.Get())->onCreate(area, TrecPointer<TFileShell>());
 
 	assert(ideLayout->AppendSection(ideSection, TrecPointerKey::ConvertPointer<TPage, TSwitchControl>(page)));
+
+	if (!environment.Get())
+	{
+		environment = TrecPointerKey::GetNewTrecPointer< BasicAnagameEnvironment>();
+	}
 }
 
 bool TIdeWindow::PrepProject(const TProjectData& projectData)
 {
 	auto instance = TInstance::GetInstance();
-	TDataArray<TString> lib;
-	lib.push_back(projectData.builderName);
-	auto failed = instance->LoadLibraries(lib);
-	if (failed.Size() == 0)
-		return false;
+	//TDataArray<TString> lib;
+	//lib.push_back(projectData.builderName);
+	//auto failed = instance->LoadLibraries(lib);
+	//if (failed.Size() == 0)
+	//	return false;
 
 	auto env = instance->GetEnvironment(projectData);
 	TrecPointer<AGProjectEnvironment> projEnv = 

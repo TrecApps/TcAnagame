@@ -88,6 +88,9 @@ void MainPageIdeHandler::OnLoadNewSolution(TrecPointer<TPage> tc, EventArgs ea)
 	auto pageBuilder = TrecPointerKey::GetNewTrecPointerAlt<TPageBuilder, AnafaceBuilder>();
 	pageBuilder->SetHandler(TrecPointerKey::GetNewSelfTrecPointerAlt<TPage::EventHandler, ProjectDialogHandler>());
 
+	TDataArray<TString> dat;
+	//instance->LoadLibraries(dat);
+
 	instance->GenerateDialog(baseDialog,										// the dialog we're expecting
 		actWindow,																// The IDE Window Serving as a parent
 		L"Load Project",														// The Title of the dialog
@@ -108,6 +111,9 @@ void MainPageIdeHandler::OnLoadNewSolution(TrecPointer<TPage> tc, EventArgs ea)
 		// User Pressed Okay
 		TProjectData pData;
 		assert(pData.Initialize(data));
+
+		auto ideWindow = TrecPointerKey::ConvertPointer<TWindow, TIdeWindow>(actWindow);
+		ideWindow->PrepProject(pData);
 
 	}
 }

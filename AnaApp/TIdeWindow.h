@@ -12,7 +12,7 @@ using ide_property = enum class ide_property
     main_page_space, 
 };
 
-class TIdeWindow :
+class _ANA_APP TIdeWindow :
     public TWindow
 {
 protected:

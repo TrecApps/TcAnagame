@@ -3,6 +3,12 @@
 #include "TObjectNode.h"
 #include "FileFunctions.hpp"
 
+#ifdef _WINDOWS
+#define TC_FILE_SEP L'\\'
+#elif defined(__linux__) || (defined (__APPLE__) && defined (__MACH__))
+#define TC_FILE_SEP L'/'
+#endif
+
 /*
 * Enum Class: CentralDirectories
 * Represents possible directory types AnaGame and its taps might be interested in

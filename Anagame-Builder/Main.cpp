@@ -3,6 +3,7 @@
 #include "../AnaWidget/TControl.h"
 #include <AnagameEnvironment.h>
 #include "MainPageIdeHandler.h"
+#include <TAnagameCodeExEnv.h>
 
 TrecPointer<TInstance> mainInstance;
 
@@ -19,10 +20,14 @@ int main()
 {
 
 	mainInstance = TInstance::GetInstance();
+
+	//mainInstance->LoadLibraries(TDataArray<TString>());
+
 	if (!mainInstance->GetGlfwInitResult())
 		return -1;
 
 	mainInstance->SetCallbacks(onChar, onMouseMove, onKeyPress, onMouseClick, onScroll, onFocus, onWindowResize, onWindowClose);
+	mainInstance->SubmitEnvironmentBuilder(TrecPointerKey::GetNewTrecPointerAlt<TEnvironmentBuilder, TAnagameCodeExBuilder>());
 	
 	TrecPointer<TWindow> mainWindow;
 
@@ -74,6 +79,7 @@ int main()
 	if (jsonFile.Get())
 		mainWindow->SetMainPage(mainRibbon);
 
+	
 
 
 	while (mainInstance->HasWindows())

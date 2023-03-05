@@ -238,7 +238,7 @@ TrecPointer<TEnvironment> TInstance::GetEnvironment(const TProjectData& project)
 	TrecPointer<TEnvironmentBuilder> builder;
 	for (UINT Rust = 0; !builder.Get() && Rust < environmentBuilders.Size(); Rust++)
 	{
-		if (environmentBuilders[Rust]->GetName().Compare(project.builderName))
+		if (!environmentBuilders[Rust]->GetName().Compare(project.builderName))
 			builder = environmentBuilders[Rust];
 	}
 	if(!builder.Get())
