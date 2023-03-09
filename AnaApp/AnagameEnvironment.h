@@ -82,4 +82,5 @@ public:
     void SetProject(TrecActivePointer<AGProjectEnvironment> projectEnvironment);
     void SetProperty(const TString& name, TrecPointer<TVariable> var, env_target target);
 
+    TrecPointer<AGProjectEnvironment> RetrieveProjectEnvironment();
 };

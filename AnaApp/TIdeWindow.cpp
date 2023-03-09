@@ -9,8 +9,16 @@
 
 void TIdeWindow::SaveIde()
 {
-	if (!dynamic_cast<AGProjectEnvironment*>(this->environment.Get()))return;
-	auto directory = dynamic_cast<AGProjectEnvironment*>(this->environment.Get())->GetDirectory();
+	if (!environment.Get())
+	{
+		TrecPointerKey::GetNewTrecPointer< BasicAnagameEnvironment>();
+		return;
+	}
+
+	auto projEnv = environment->RetrieveProjectEnvironment();
+
+	if (!projEnv.Get())return;
+	auto directory = projEnv->GetDirectory();
 
 	if (!directory.Get())
 		return;
@@ -25,7 +33,7 @@ void TIdeWindow::SaveIde()
 	if (!jsonWriter.Get())
 		return;
 	// To-Do: Collect Variables to write
-	jsonWriter->Write(TrecPointer<TVariable>());
+	jsonWriter->Write(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TJsonVariable>());
 
 }
 
@@ -115,7 +123,7 @@ bool TIdeWindow::PrepProject(const TProjectData& projectData)
 bool TIdeWindow::SetProject(TrecActivePointer<AGProjectEnvironment> project)
 {
 	this->environment->SetProject(project);
-	SetMainPage(TrecPointer<TPage>());
+	//SetMainPage(TrecPointer<TPage>());
 
 	auto actProject = project.GetTrecPointer();
 
@@ -126,8 +134,10 @@ bool TIdeWindow::SetProject(TrecActivePointer<AGProjectEnvironment> project)
 	fileShell = TFileShell::GetFileInfo(path);
 
 	if (!fileShell.Get())
+	{
 		SaveIde();
-
+		return true;
+	}
 	TrecPointer<TFormatReader> formatReader = TFormatReader::GetReader(fileShell);
 
 	if (!formatReader.Get())

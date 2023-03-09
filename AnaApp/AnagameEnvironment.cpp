@@ -72,6 +72,11 @@ void BasicAnagameEnvironment::SetProperty(const TString& name, TrecPointer<TVari
 	}
 }
 
+TrecPointer<AGProjectEnvironment> BasicAnagameEnvironment::RetrieveProjectEnvironment()
+{
+	return project;
+}
+
 TrecPointer<TPage> AnafaceBuilder::GetPage(const TString& details)
 {
 	return TrecPointer<TPage>();
@@ -134,7 +139,10 @@ UserProfileEnvironment::UserProfileEnvironment()
 	else
 	{
 		TrecPointer<TFormatReader> reader = TFormatReader::GetReader(targetFile);
-		assert(reader.Get() && !reader->Read().GetSize());
+		assert(reader.Get());
+		TString message(reader->Read());
+		if (message.GetSize())
+			return;
 		TrecPointer<TVariable> data = reader->GetData();
 
 		assert(data.Get() && data->GetVarType() == var_type::json);
@@ -197,7 +205,10 @@ AppDataEnvironment::AppDataEnvironment()
 	else
 	{
 		TrecPointer<TFormatReader> reader = TFormatReader::GetReader(targetFile);
-		assert(reader.Get() && !reader->Read().GetSize());
+		assert(reader.Get());
+		TString message(reader->Read());
+		if (message.GetSize())
+			return;
 		TrecPointer<TVariable> data = reader->GetData();
 
 		assert(data.Get() && data->GetVarType() == var_type::json);
