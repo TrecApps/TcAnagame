@@ -1,0 +1,106 @@
+{
+	"TLayout": {
+		"RowHeights" : [50, "1*", 50, 50],
+		"Children": [
+		{
+			"TControl": {
+				"RowPosition": 0,
+				"Caption": "New Project Resource",
+				"FontSize": 16
+			}
+		},
+		{
+			"TDataLayout": {
+				"RowPosition": 1,
+				"ID": "ResourceList",
+				"SelectedColor": "0.0,0.0,1.0,0.3",
+				"ColumnWidth": 0,
+				"RowHeight": 90,
+				"EventOnClick": "OnResourceSelect",
+				"Children": [
+				{
+					"TLayout" : {
+								"RowHeights": [ 30, 30, 30],
+								"BorderColor": "1.0,0.0,0.0,1.0",
+								"Children": [
+								{
+									"TControl" : {
+										"RowPosition": 0,
+										"Caption": "{0}"
+									}
+								},{
+									"TControl" : {
+										"RowPosition": 1,
+										"Caption": "{1}"
+									}
+								},
+								{
+									"TControl" : {
+										"RowPosition": 2,
+										"Caption": "{2}"
+									}
+								}
+								]
+							}
+				}
+				]
+			}
+		},
+		{
+			"TLayout": {
+				"RowPosition" : 2,
+				"IsGallery": true,
+				"ColumnWidths" : [ 250, "1*"],
+				"BorderColor": "0.0,0.0,0.0,1.0",
+				"Children": [
+				{
+					"TControl": {
+						"ColPosition": 0,
+						"FontColor": "Black",
+						"Caption": "Project Name"
+					}
+				},
+				{
+					"TTextInput": {
+						"ColPosition": 1,
+						"ID": "NameField",
+						"EventOnTextChange": "OnUpdateName",
+						"ColPosition": 1
+					}
+				}
+				]
+			}
+		},
+		{
+			"TLayout": {
+				"RowPosition" : 3,
+				"IsGallery": true,
+				"ColumnWidths" : [ "1*", "1*" ],
+				"BorderColor": "0.0,0.0,0.0,1.0",
+				"Children": [
+				{
+					"TControl": {
+						"ColPosition": 0,
+						"ID": "CancelButton",
+						"ContentColor": "Red",
+						"FontColor": "Black",
+						"Caption": "Cancel",
+						"EventOnClick": "OnCancel"
+					}
+				},
+				{
+					"TControl": {
+						"ColPosition": 1,
+						"ID": "OkButton",
+						"ContentColor": "Green",
+						"FontColor": "Black",
+						"Caption": "Okay",
+						"EventOnClick": "OnOkay"
+					}
+				}
+				]
+			}
+		}
+		]
+	}
+}

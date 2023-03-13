@@ -24,12 +24,18 @@
     <ClCompile Include="ProjectDialogHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="NewResourceHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainPageIdeHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ProjectDialogHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NewResourceHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

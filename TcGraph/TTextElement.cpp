@@ -689,6 +689,30 @@ void TTextElement::OnDraw(TrecPointer<TVariable> dataText)
 			}
 		}
 	}
+
+	TrecPointer<TArrayVariable> arrayText = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(dataText);
+	if (arrayText.Get())
+	{
+		curString.Set(text->GetString());
+		TString& adjText = text->GetString();
+		for (int startPoint = adjText.Find(L'{'), endPoint = adjText.Find(L'}');
+			startPoint != -1 && startPoint < endPoint;
+			startPoint = adjText.Find(L'{', startPoint + 1), endPoint = adjText.Find(L'}'))
+		{
+			TString field(adjText.SubString(startPoint + 1, endPoint));
+			TrecPointer<TVariable> var;
+			UINT index = 0;
+			//TString::ConvertStringToUint(field, )
+
+			if (TString::ConvertStringToUint(field, index) && arrayText->GetValueAt(index, var) && var.Get() && var->ToString().Get())
+			{
+				TString rep(dynamic_cast<TStringVariable*>(var->ToString().Get())->GetString());
+				adjText.Replace(TString(L'{') + field + L'}', rep);
+				endPoint += (field.GetSize() - rep.GetSize());
+				changed = true;
+			}
+		}
+	}
 	
 	if (!changed && dataText.Get())
 	{
