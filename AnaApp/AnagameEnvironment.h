@@ -26,7 +26,7 @@ class _ANA_APP UserProfileEnvironment : public TEnvironment
 {
 protected:
     TrecPointer<TObject> RetrieveResource(const TString& name) override;
-    void RetrieveResourceListSub(TDataArray<TString>& resources) override;
+    void RetrieveResourceListSub(TDataArray<TrecPointer<TVariable>>& resources) override;
 
 public:
     UserProfileEnvironment();
@@ -37,7 +37,7 @@ class _ANA_APP AppDataEnvironment : public TEnvironment
 {
 protected:
     TrecPointer<TObject> RetrieveResource(const TString& name) override;
-    void RetrieveResourceListSub(TDataArray<TString>& resources) override;
+    void RetrieveResourceListSub(TDataArray<TrecPointer<TVariable>>& resources) override;
 public:
     AppDataEnvironment();
     ~AppDataEnvironment();
@@ -48,6 +48,7 @@ class _ANA_APP AGProjectEnvironment : public TEnvironment
 protected:
     TString projectName;
     TrecPointer<TFileShell> directory;
+    //TDataMap<TrecPointer<TObjectNode>> nodes;
 public:
     virtual TString Save() = 0;
 
@@ -66,6 +67,9 @@ public:
     virtual TDataArray<TString> GetDependencies() = 0;
 
     TrecPointer<TFileShell> GetDirectory();
+
+    virtual TrecPointer<TObjectNode> GetProjectNodes(const TString& name);
+    virtual void GetProjectNodeTypes(TDataArray<TString>& nodeTypes);
 };
 
 class _ANA_APP BasicAnagameEnvironment :
@@ -75,7 +79,7 @@ class _ANA_APP BasicAnagameEnvironment :
     TrecPointer<AGProjectEnvironment> project;
 protected:
     TrecPointer<TObject> RetrieveResource(const TString& name) override;
-    void RetrieveResourceListSub(TDataArray<TString>& resources) override;
+    void RetrieveResourceListSub(TDataArray<TrecPointer<TVariable>>& resources) override;
 
 public:
     BasicAnagameEnvironment();

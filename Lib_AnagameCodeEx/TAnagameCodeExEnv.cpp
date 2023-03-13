@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "TAnagameCodeExEnv.h"
 #include <TInstance.h>
+#include "TCodeHandler.h"
 
 TString anagameCodeName(L"AnaCode");
 
@@ -10,11 +11,45 @@ TAnagameCodeExEnv::TAnagameCodeExEnv(const TString& name, TrecActivePointer<TFil
 
 TrecPointer<TObject> TAnagameCodeExEnv::RetrieveResource(const TString& name)
 {
+    auto pieces = name.split(L":");
+
+    if(pieces->Size() < 2 || pieces->at(0).Compare(L"AnagameCodeEx"))
+        return TrecPointer<TObject>();
+
+    if (!pieces->at(1).CompareNoCase(L"Code_Handler"))
+    {
+        TrecPointer<TFileShell> dataFile;
+        if (pieces->Size() >= 3)
+            dataFile = TFileShell::GetFileInfo(pieces->at(2));
+
+        TrecPointer<AnafaceBuilder> builder = TrecPointerKey::GetNewTrecPointer<AnafaceBuilder>();
+        builder->SetHandler(TrecPointerKey::GetNewSelfTrecPointerAlt<TPage::EventHandler, TCodeHandler>());
+
+
+        TString tmlFile(GetDirectoryWithSlash(CentralDirectories::cd_Executable));
+        tmlFile.Append(L"UI\\LineTextEditor.json");
+        TrecPointer<TFileShell> jsonFile = TFileShell::GetFileInfo(tmlFile);
+
+        builder->SetDataFile(dataFile);
+        builder->SetUIFile(jsonFile);
+        return TrecPointerKey::ConvertPointer<AnafaceBuilder, TObject>(builder);
+    }
     return TrecPointer<TObject>();
 }
 
-void TAnagameCodeExEnv::RetrieveResourceListSub(TDataArray<TString>& resources)
+void TAnagameCodeExEnv::RetrieveResourceListSub(TDataArray<TrecPointer<TVariable>>& resources)
 {
+    // First Resource, Java Script Files
+    TrecPointer<TVariable> baseSpecs = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TArrayVariable>();
+    TrecPointer<TArrayVariable> resourceSpecs = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(baseSpecs);
+
+    resourceSpecs->Push(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"JavaScript File"));
+    resourceSpecs->Push(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"File-Ext: js"));
+    resourceSpecs->Push(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"Env-Source: AnagameCodeEx"));
+    resourceSpecs->Push(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"Resource-Type: Page"));
+    resourceSpecs->Push(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"Resource: Code_Handler"));
+
+    resources.push_back(baseSpecs);
 }
 
 TString TAnagameCodeExEnv::Save()

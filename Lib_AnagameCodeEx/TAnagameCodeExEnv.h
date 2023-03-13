@@ -10,7 +10,7 @@ public:
     TAnagameCodeExEnv(const TString& name, TrecActivePointer<TFileShell> directory);
 
     virtual TrecPointer<TObject> RetrieveResource(const TString& name) override;
-    virtual void RetrieveResourceListSub(TDataArray<TString>& resources) override;
+    virtual void RetrieveResourceListSub(TDataArray<TrecPointer<TVariable>>& resources) override;
 
     virtual TString Save() override;
     virtual void Refresh() override;

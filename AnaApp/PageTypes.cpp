@@ -99,7 +99,7 @@ page_type TFilePage::GetPageType()
 void TFilePage::SetFile(TrecPointer<TFileShell> file)
 {
     if (fileEventHandler.Get())
-        fileEventHandler->SetFile(file);
+        fileEventHandler->SetDataFile(file);
 }
 
 TString TFilePage::SaveFile()
@@ -130,7 +130,7 @@ TString TFilePage::SubmitInfo(TrecPointer<TVariable> obj)
     return fileEventHandler->SubmitInfo(obj);
 }
 
-void TFileEventHandler::SetFile(TrecPointer<TFileShell> file)
+void TFileEventHandler::SetDataFile(TrecPointer<TFileShell> file)
 {
     this->file = file;
 }

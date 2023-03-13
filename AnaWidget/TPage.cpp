@@ -484,6 +484,11 @@ void TPageBuilder::SetUIFile(TrecPointer<TFileShell> file)
 	this->targetFile = file;
 }
 
+void TPageBuilder::SetDataFile(TrecPointer<TFileShell> file)
+{
+	this->dataFile = file;
+}
+
 
 void TPageBuilder::SetDrawingBoard(TrecPointer<DrawingBoard> board)
 {
@@ -497,4 +502,8 @@ void TPageBuilder::SetSpace(RECT_F space)
 void TPageBuilder::SetHandler(TrecPointer<TPage::EventHandler> handler) 
 {
 	this->handler = handler;
+}
+
+void TPage::EventHandler::SetDataFile(TrecPointer<TFileShell> file)
+{
 }

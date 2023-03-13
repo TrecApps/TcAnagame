@@ -191,6 +191,8 @@ public:
 
 		virtual void HandleEvents(TDataArray<TPage::EventID_Cred>& eventAr) = 0;
 
+		virtual void SetDataFile(TrecPointer<TFileShell> file);
+
 		//virtual TrecPointer<TTextIntercepter> GetTextIntercepter() = 0;
 	};
 
@@ -274,6 +276,7 @@ protected:
 	RECT_F space;
 	TrecPointer<TPage::EventHandler> handler;
 	TrecPointer<TFileShell> targetFile;
+	TrecPointer<TFileShell> dataFile;
 public:
 	ObjectType GetObjectType() override;
 	virtual bool UsesFile();
@@ -282,6 +285,7 @@ public:
 	virtual TrecPointer<TPage> GetPage();
 
 	void SetUIFile(TrecPointer<TFileShell> file);
+	void SetDataFile(TrecPointer<TFileShell> file);
 	void SetDrawingBoard(TrecPointer<DrawingBoard> board);
 	void SetSpace(RECT_F space);
 	void SetHandler(TrecPointer<TPage::EventHandler> handler);

@@ -1,0 +1,27 @@
+{
+	"TLayout" : {
+		"IsGallery": true,
+		"ColumnWidths" : [50, "1*"],
+		"Children" : [
+		{
+			"TInput" : {
+				"ColumnPosition": 0,
+				"CanEdit": false,
+				"BorderColor":"0.0,0.0,0.0,1.0",
+				"BorderThickness":2.0,
+				"VerticalAlignment" : "Top"
+			}
+		},
+		{
+			"TInput" : {
+				"ColumnPosition": 1,
+				"BorderColor":"0.0,0.0,0.0,0.5",
+				"BorderThickness":1.0,
+				"FontColor" : "white",
+				"HorizontalAlignment" : "left",
+				"VerticalAlignment" : "Top"
+			}
+		}
+		]
+	}
+}

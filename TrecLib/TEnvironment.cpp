@@ -6,7 +6,7 @@ TObject::ObjectType TEnvironment::GetObjectType()
     return ObjectType::ot_environment;
 }
 
-void TEnvironment::RetrieveResourceList(TDataArray<TString>& resources)
+void TEnvironment::RetrieveResourceList(TDataArray<TrecPointer<TVariable>>& resources)
 {
     RetrieveResourceListSub(resources);
     for (UINT Rust = 0; Rust < childEnvironments.Size(); Rust++)

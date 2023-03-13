@@ -53,7 +53,7 @@ protected:
 	TrecPointer<TFileShell> file;
 public:
 
-	void SetFile(TrecPointer<TFileShell> file);
+	void SetDataFile(TrecPointer<TFileShell> file)override;
 
 	virtual TString SaveFile() = 0;
 

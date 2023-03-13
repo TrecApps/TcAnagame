@@ -5,8 +5,6 @@
 #include <TContainerVariable.h>
 #include "FileHandler.h"
 
-TString resourceAnaface(L"anagame.anaface");
-TString filePageBuilder(L"anagame.pages.hierarchy");
 
 #ifdef _WINDOWS
 WCHAR w = L'\\';
@@ -16,16 +14,29 @@ WCHAR w = L'/';
 
 TrecPointer<TObject> BasicAnagameEnvironment::RetrieveResource(const TString& name)
 {
-	if (!name.CompareNoCase(resourceAnaface))
+	auto pieces = name.split(L":");
+
+	if (pieces->Size() < 2 || pieces->at(0).Compare(L"anagame"))
+		return TrecPointer<TObject>();
+
+
+
+	if (!pieces->at(1).CompareNoCase(L"anaface"))
 	{
 		return TrecPointerKey::GetNewTrecPointerAlt<TObject, AnafaceBuilder>();
 	}
-	if (!name.CompareNoCase(filePageBuilder))
+	if (!pieces->at(1).CompareNoCase(L"hierarchy") && project.Get() && pieces->Size() >= 3)
 	{
+
+		auto hierarchyType = project->GetProjectNodes(pieces->at(2));
+		if (hierarchyType.Get())
+			return TrecPointer<TObject>();
 		auto ret = TrecPointerKey::GetNewTrecPointerAlt<TObject, AnafaceBuilder>();
 		auto pRet = TrecPointerKey::ConvertPointer<TObject, AnafaceBuilder>(ret);
 
-		pRet->SetHandler(TrecPointerKey::GetNewSelfTrecPointerAlt<TPage::EventHandler, FileHandler>());
+		auto fileHandler = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage::EventHandler, FileHandler>();
+		dynamic_cast<FileHandler*>(fileHandler.Get())->SetNodes(hierarchyType);
+		pRet->SetHandler(fileHandler);
 		TrecPointer<TFileShell> fileShell = TFileShell::GetFileInfo(GetDirectoryWithSlash(CentralDirectories::cd_Executable) + L"UI/Hierarchy.json");
 		assert(fileShell.Get());
 		pRet->SetUIFile(fileShell);
@@ -34,9 +45,40 @@ TrecPointer<TObject> BasicAnagameEnvironment::RetrieveResource(const TString& na
 	}
 	return TrecPointer<TObject>();
 }
-void BasicAnagameEnvironment::RetrieveResourceListSub(TDataArray<TString>& resources) {
-	resources.push_back(resourceAnaface);
-	resources.push_back(filePageBuilder);
+void BasicAnagameEnvironment::RetrieveResourceListSub(TDataArray<TrecPointer<TVariable>>& resources) {
+	// First Resource, Java Script Files
+	TrecPointer<TVariable> baseSpecs = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TArrayVariable>();
+	TrecPointer<TArrayVariable> resourceSpecs = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(baseSpecs);
+
+	resourceSpecs->Push(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"Anaface Buider"));
+	resourceSpecs->Push(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"No Show"));
+	resourceSpecs->Push(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"Env-Source: anagame"));
+	resourceSpecs->Push(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"Resource-Type: Page"));
+	resourceSpecs->Push(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"Resource: anaface"));
+
+	resources.push_back(baseSpecs);
+
+	
+
+	if (project.Get())
+	{
+		TDataArray<TString> nodeTypes;
+		project->GetProjectNodeTypes(nodeTypes);
+
+		for (UINT Rust = 0; Rust < nodeTypes.Size(); Rust++)
+		{	
+			baseSpecs = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TArrayVariable>();
+			resourceSpecs = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(baseSpecs);
+
+			resourceSpecs->Push(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"Project Hierarchy"));
+			resourceSpecs->Push(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(TString(L"Details: ") + nodeTypes[Rust]));
+			resourceSpecs->Push(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"Env-Source: anagame"));
+			resourceSpecs->Push(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"Resource-Type: Page"));
+			resourceSpecs->Push(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"Resource: hierarchy"));
+
+			resources.push_back(baseSpecs);
+		}
+	}
 }
 
 BasicAnagameEnvironment::BasicAnagameEnvironment()
@@ -101,6 +143,8 @@ TrecPointer<TPage> AnafaceBuilder::GetPage(TrecPointer<TFileShell> file)
 	anaRet->Create(this->space);
 
 	auto pHandler = anaRet->GetHandler();
+	if (dataFile.Get())
+		pHandler->SetDataFile(dataFile);
 	pHandler->Initialize(ret);
 
 	return ret;
@@ -116,7 +160,7 @@ TrecPointer<TObject> UserProfileEnvironment::RetrieveResource(const TString& nam
 	return TrecPointer<TObject>();
 }
 
-void UserProfileEnvironment::RetrieveResourceListSub(TDataArray<TString>& resources)
+void UserProfileEnvironment::RetrieveResourceListSub(TDataArray<TrecPointer<TVariable>>& resources)
 {
 }
 
@@ -182,7 +226,7 @@ TrecPointer<TObject> AppDataEnvironment::RetrieveResource(const TString& name)
 	return TrecPointer<TObject>();
 }
 
-void AppDataEnvironment::RetrieveResourceListSub(TDataArray<TString>& resources)
+void AppDataEnvironment::RetrieveResourceListSub(TDataArray<TrecPointer<TVariable>>& resources)
 {
 }
 
@@ -251,4 +295,13 @@ AGProjectEnvironment::AGProjectEnvironment(const TString& name, TrecActivePointe
 TrecPointer<TFileShell> AGProjectEnvironment::GetDirectory()
 {
 	return directory;
+}
+
+TrecPointer<TObjectNode> AGProjectEnvironment::GetProjectNodes(const TString& name)
+{
+	return TrecPointer<TObjectNode>();
+}
+
+void AGProjectEnvironment::GetProjectNodeTypes(TDataArray<TString>& nodeTypes)
+{
 }
