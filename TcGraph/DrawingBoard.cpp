@@ -339,6 +339,8 @@ DrawingBoard::~DrawingBoard()
 	TcRemoveLock(&drawingThread);
 }
 
+TrecPointer<TColorBrush> gBrush;
+
 void DrawingBoard::BeginDraw() const
 {
 	glfwMakeContextCurrent(window);
@@ -354,9 +356,9 @@ void DrawingBoard::BeginDraw() const
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glLoadIdentity(); //Reset the drawing perspective
-
-	auto brush = TrecPointerKey::ConvertPointer<TBrush, TColorBrush>( this->GetSolidColorBrush(defaultClearColor));
-	brush->FillRectangle(this->area);
+	if(!gBrush.Get())
+		gBrush = TrecPointerKey::ConvertPointer<TBrush, TColorBrush>( this->GetSolidColorBrush(defaultClearColor));
+	gBrush->FillRectangle(this->area);
 }
 
 void DrawingBoard::ConfirmDraw()

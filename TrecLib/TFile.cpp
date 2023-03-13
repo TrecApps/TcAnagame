@@ -1505,6 +1505,7 @@ void TFile::WriteString(const TString& lpsz)
 		wBytes = TcWideCharToMultiByte(newParam.GetConstantBuffer().getBuffer(),
 			size, acsiiText);
 		Write(acsiiText, wBytes);
+		delete[] acsiiText;
 		break;
 	case FileEncodingType::fet_unicode:
 		for (UINT c = 0; lpsz[c] != L'\0'; c++)

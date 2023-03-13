@@ -658,6 +658,8 @@ void TTextElement::ReCreateLayout()
 
 void TTextElement::OnDraw(TrecPointer<TVariable> dataText)
 {
+	// To-Do: Find Massive Memory Leak tht is located somewhere in this method
+
 	if (!drawingBoard.Get())
 		return;
 
