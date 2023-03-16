@@ -47,5 +47,7 @@ public:
     UINT AddRibbon(TrecActivePointer<TPageEx> ribbon);
 
     void RemoveRibbon(const TString& ribbonName);
+
+    TrecPointer<BasicAnagameEnvironment> GetEnvironment();
 };
 

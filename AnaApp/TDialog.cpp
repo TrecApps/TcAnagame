@@ -72,6 +72,12 @@ bool TDialog::RunModal()
 	return true;
 }
 
+
+TrecPointer<TWindow> TDialog::GetParentWindow()
+{
+	return parent;
+}
+
 bool IsValidFileExtParam(const TString& param)
 {
 	bool noComma = true;

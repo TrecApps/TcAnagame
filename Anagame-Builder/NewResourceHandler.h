@@ -2,6 +2,8 @@
 #include <TPage.h>
 #include <TIdeWindow.h>
 #include <TDialog.h>
+#include <TDataLayout.h>
+#include <TTextInput.h>
 class NewResourceHandler :
     public TPage::EventHandler
 {
@@ -12,6 +14,16 @@ class NewResourceHandler :
 	typedef void (NewResourceHandler::* LayoutCall)(TrecPointer<TPage> tc, EventArgs ea);
 	TDataArray<LayoutCall> calls;
 	TDataMap<UINT> events;
+
+	TrecPointer<TArrayVariable> resourceList;
+	TrecPointer<TDataLayout> resourceLayout;
+	TrecPointerSoft<TControl> okayButton;
+	TrecPointerSoft<TTextInput> nameInput;
+
+	TString resourceSource;
+	TString resourceTitle;
+	TString resourceDetails;
+	bool nameRequired;
 public:
 	NewResourceHandler();
 
@@ -29,6 +41,7 @@ public:
 private:
 
 	void Close();
+	void AssessOkay();
 
 	void OnCancel(TrecPointer<TPage> tc, EventArgs ea);
 	void OnOkay(TrecPointer<TPage> tc, EventArgs ea);

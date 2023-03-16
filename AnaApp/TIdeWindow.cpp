@@ -259,3 +259,9 @@ void TIdeWindow::RemoveRibbon(const TString& ribbonName)
 		}
 	}
 }
+
+
+TrecPointer<BasicAnagameEnvironment> TIdeWindow::GetEnvironment()
+{
+	return environment;
+}

@@ -24,6 +24,8 @@ public:
     bool Close()override;
 
     bool RunModal();
+
+    TrecPointer<TWindow> GetParentWindow();
     
 };
 

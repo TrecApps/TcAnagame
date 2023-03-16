@@ -3,6 +3,7 @@
 #include <AnagameEnvironment.h>
 #include <TContainerVariable.h>
 #include "ProjectDialogHandler.h"
+#include "NewResourceHandler.h"
 
 // Found on the Home Tab
 TString on_LoadNewSolution(L"LoadNewSolution");
@@ -128,6 +129,28 @@ void MainPageIdeHandler::OnSaveAllFiles(TrecPointer<TPage> tc, EventArgs ea)
 
 void MainPageIdeHandler::OnNewResource(TrecPointer<TPage> tc, EventArgs ea)
 {
+	TrecPointer<TWindow> baseDialog;
+	TrecPointer<TInstance> instance = TInstance::GetInstance();
+	auto actWindow = TrecPointerKey::ConvertPointer<TIdeWindow, TWindow>(TrecPointerKey::TrecFromSoft<>(window));
+
+	auto pageBuilder = TrecPointerKey::GetNewTrecPointerAlt<TPageBuilder, AnafaceBuilder>();
+	pageBuilder->SetHandler(TrecPointerKey::GetNewSelfTrecPointerAlt<TPage::EventHandler, NewResourceHandler>());
+
+	instance->GenerateDialog(baseDialog,										// the dialog we're expecting
+		actWindow,																// The IDE Window Serving as a parent
+		L"Create Project Resource",														// The Title of the dialog
+		pageBuilder,	// Builder for the Page within
+		TFileShell::GetFileInfo(GetDirectoryWithSlash(							// File to load the UI from
+			CentralDirectories::cd_Executable) + L"UI/ResourceDialog.json"),
+		L"",																	// Not needed, alternative to previous param
+		t_dialog_modal_mode::soft_modal);										// Move parent window around but otherwise DNI
+
+	TrecPointer<TDialog> dialog = TrecPointerKey::ConvertPointer<TWindow, TDialog>(baseDialog);
+	assert(dialog.Get());
+
+	dialog->RunModal();
+
+	TrecPointer<TJsonVariable> data = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(dialog->GetResult());
 }
 
 void MainPageIdeHandler::OnImportFile(TrecPointer<TPage> tc, EventArgs ea)
