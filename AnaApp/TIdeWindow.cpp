@@ -37,6 +37,12 @@ void TIdeWindow::SaveIde()
 
 }
 
+void TIdeWindow::OnResize(int w, int h)
+{
+	// int curWidth = area.right - area.left;
+	TWindow::OnResize(w, h);
+}
+
 TIdeWindow::TIdeWindow(GLFWwindow* window): TWindow(window)
 {
 	mainPageSpace = 180;

@@ -87,6 +87,7 @@ class _ANA_APP TInstance :
     GLFWscrollfun scrollFunction;
     GLFWwindowfocusfun focusFunction;
     GLFWwindowsizefun resizeFunction;
+    GLFWframebuffersizefun frameResizeFunction;
 
     GLFWwindowclosefun closeFunction;
 
@@ -150,7 +151,7 @@ public:
         TrecPointer<TFileShell> uiInterface, const TString& details,
         t_dialog_modal_mode modalMode);
 
-    void SetCallbacks(GLFWcharfun, GLFWcursorposfun, GLFWkeyfun, GLFWmousebuttonfun, GLFWscrollfun, GLFWwindowfocusfun, GLFWwindowsizefun, GLFWwindowclosefun);
+    void SetCallbacks(GLFWcharfun, GLFWcursorposfun, GLFWkeyfun, GLFWmousebuttonfun, GLFWscrollfun, GLFWwindowfocusfun, GLFWwindowsizefun, GLFWwindowclosefun, GLFWframebuffersizefun);
 
     void OnChar(GLFWwindow* win, UINT ch);
     void OnMouseMove(GLFWwindow* window, double xpos, double ypos);
@@ -162,6 +163,7 @@ public:
     void OnFocus(GLFWwindow* window);
     void OnLoseFocus(GLFWwindow* window);
     void OnWindowResize(GLFWwindow* window, int w, int h);
+    void OnWindowBufferResize(GLFWwindow* window, int w, int h);
     void OnWindowClose(GLFWwindow* window);
     void OnKeyPress(GLFWwindow* window, int key, int scancode, int action, int mods);
 };

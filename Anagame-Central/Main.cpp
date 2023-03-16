@@ -13,6 +13,7 @@ void onScroll(GLFWwindow* window, double xoffset, double yoffset);
 void onFocus(GLFWwindow* window, int focused);
 void onWindowResize(GLFWwindow* window, int width, int height);
 void onWindowClose(GLFWwindow* window);
+void onFrameResize(GLFWwindow* window, int width, int height);
 
 int main()
 {
@@ -21,7 +22,7 @@ int main()
 	if (!mainInstance->GetGlfwInitResult())
 		return -1;
 
-	mainInstance->SetCallbacks(onChar, onMouseMove, nullptr, onMouseClick, onScroll, onFocus, onWindowResize, onWindowClose);
+	mainInstance->SetCallbacks(onChar, onMouseMove, nullptr, onMouseClick, onScroll, onFocus, onWindowResize, onWindowClose, onFrameResize);
 	
 	TrecPointer<TWindow> mainWindow;
 
@@ -122,4 +123,9 @@ void onWindowResize(GLFWwindow* window, int width, int height)
 void onWindowClose(GLFWwindow* window)
 {
 	mainInstance->OnWindowClose(window);
+}
+
+void onFrameResize(GLFWwindow* window, int width, int height)
+{
+	mainInstance->OnWindowBufferResize(window, width, height);
 }

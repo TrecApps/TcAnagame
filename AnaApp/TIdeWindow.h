@@ -26,6 +26,12 @@ protected:
     void SaveIde();
 
 public:
+    // Inherited From TWindow
+    void OnResize(int w, int h) override;
+
+
+    // IDE Specific Methods
+
     TIdeWindow(GLFWwindow* window);
 
     void SetMainPage(TrecPointer<TPage> mainPage) override;

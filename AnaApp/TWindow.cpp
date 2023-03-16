@@ -196,6 +196,12 @@ void TWindow::OnLoseFocus()
 {
 }
 
+void TWindow::OnBufferResize(int w, int h)
+{
+    glfwMakeContextCurrent(window);
+    glViewport(0, 0, w, h);
+}
+
 void TWindow::OnResize(int w, int h)
 {
     area.right = w;
@@ -207,6 +213,7 @@ void TWindow::OnResize(int w, int h)
         mainPage->OnResize(area, 0, cred);
         HandleWindowEvents(cred);
     }
+    this->needsRefresh = true;
 }
 
 bool TWindow::Close()

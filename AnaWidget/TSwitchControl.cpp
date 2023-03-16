@@ -343,7 +343,7 @@ void TSwitchControl::OnLButtonDown(UINT nFlags, const TPoint& point, message_out
 void TSwitchControl::OnResize(RECT_F& newLoc, UINT nFlags, TDataArray<EventID_Cred>& cred)
 {
     RECT_F tabsLoc = newLoc;
-
+    childSpace = newLoc;
 
     switch (tabShow)
     {

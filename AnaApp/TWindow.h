@@ -47,7 +47,8 @@ public:
     void OnScroll(double x, double y);
     void OnFocus();
     void OnLoseFocus();
-    void OnResize(int w, int h);
+    void OnBufferResize(int w, int h);
+    virtual void OnResize(int w, int h);
     virtual bool Close();
 
     void LockWindow();

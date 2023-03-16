@@ -36,6 +36,7 @@ TInstance::TInstance()
 	scrollFunction = nullptr;
 	focusFunction = nullptr;
 	resizeFunction = nullptr;
+	frameResizeFunction = nullptr;
 
 	windowCount = 0;
 
@@ -386,6 +387,8 @@ UINT TInstance::GenerateWindow(TrecPointer<TWindow>& window, TrecPointer<TFileSh
 		glfwSetWindowFocusCallback(glfwWindow, focusFunction);
 	if (resizeFunction)
 		glfwSetWindowSizeCallback(glfwWindow, resizeFunction);
+	if (frameResizeFunction)
+		glfwSetFramebufferSizeCallback(glfwWindow, frameResizeFunction);
 
 	if (closeFunction)
 		glfwSetWindowCloseCallback(glfwWindow, closeFunction);
@@ -460,7 +463,8 @@ UINT TInstance::GenerateDialog(TrecPointer<TWindow>& window, TrecPointer<TWindow
 void TInstance::SetCallbacks(GLFWcharfun charFun, GLFWcursorposfun cursorFun,
 	GLFWkeyfun keyFun, GLFWmousebuttonfun mouseFun,
 	GLFWscrollfun scrollFun, GLFWwindowfocusfun focusFun,
-	GLFWwindowsizefun resizeFun, GLFWwindowclosefun closeFun) {
+	GLFWwindowsizefun resizeFun, GLFWwindowclosefun closeFun,
+	GLFWframebuffersizefun frameFun) {
 
 	charFunction = charFun;
 	cursorFunction = cursorFun;
@@ -470,6 +474,7 @@ void TInstance::SetCallbacks(GLFWcharfun charFun, GLFWcursorposfun cursorFun,
 	focusFunction = focusFun;
 	resizeFunction = resizeFun;
 	closeFunction = closeFun;
+	frameResizeFunction = frameFun;
 }
 
 void TInstance::OnChar(GLFWwindow* window, UINT ch)
@@ -540,6 +545,13 @@ void TInstance::OnWindowResize(GLFWwindow* window, int w, int h)
 	auto win = GetWindow(window);
 	if (win.Get())
 		win->OnResize(w, h);
+}
+
+void TInstance::OnWindowBufferResize(GLFWwindow* window, int w, int h)
+{
+	auto win = GetWindow(window);
+	if (win.Get())
+		win->OnBufferResize(w, h);
 }
 
 void TInstance::OnWindowClose(GLFWwindow* window)

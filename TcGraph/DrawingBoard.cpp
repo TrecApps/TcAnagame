@@ -107,6 +107,8 @@ DrawingBoard::DrawingBoard(GLFWwindow* window)
 
 	area.bottom = h;
 	area.right = w;
+	origArea = area;
+	origArea = area;
 	orthoProjection = glm::ortho(0.0f, static_cast<float>(area.right), 0.0f, static_cast<float>(area.bottom));
 
 	shaderType = shader_type::shader_2d;
@@ -278,6 +280,11 @@ void DrawingBoard::SetSelf(TrecPointer<DrawingBoard> s)
 RECT_F DrawingBoard::GetArea()
 {
 	return area;
+}
+
+RECT_F DrawingBoard::GetOrigArea()
+{
+	return origArea;
 }
 
 GLFWwindow* DrawingBoard::GetGlfwWindow()

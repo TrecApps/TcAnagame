@@ -118,7 +118,7 @@ protected:
     explicit DrawingBoard(GLFWwindow* window);
 
 
-
+    RECT_F origArea;
     RECT_F area;
 
     TDataArray<RECT_F> layers;
@@ -153,6 +153,7 @@ public:
     void SetSelf(TrecPointer<DrawingBoard> s);
 
     RECT_F GetArea();
+    RECT_F GetOrigArea();
 
     GLFWwindow* GetGlfwWindow();
 

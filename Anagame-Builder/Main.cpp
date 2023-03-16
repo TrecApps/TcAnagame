@@ -15,6 +15,7 @@ void onFocus(GLFWwindow* window, int focused);
 void onWindowResize(GLFWwindow* window, int width, int height);
 void onWindowClose(GLFWwindow* window);
 void onKeyPress(GLFWwindow* window, int key, int scancode, int action, int mods);
+void onFrameResize(GLFWwindow* window, int width, int height);
 
 int main()
 {
@@ -26,7 +27,7 @@ int main()
 	if (!mainInstance->GetGlfwInitResult())
 		return -1;
 
-	mainInstance->SetCallbacks(onChar, onMouseMove, onKeyPress, onMouseClick, onScroll, onFocus, onWindowResize, onWindowClose);
+	mainInstance->SetCallbacks(onChar, onMouseMove, onKeyPress, onMouseClick, onScroll, onFocus, onWindowResize, onWindowClose, onFrameResize);
 	mainInstance->SubmitEnvironmentBuilder(TrecPointerKey::GetNewTrecPointerAlt<TEnvironmentBuilder, TAnagameCodeExBuilder>());
 	
 	TrecPointer<TWindow> mainWindow;
@@ -143,4 +144,9 @@ void onWindowClose(GLFWwindow* window)
 void onKeyPress(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	mainInstance->OnKeyPress(window, key, scancode, action, mods);
+}
+
+void onFrameResize(GLFWwindow* window, int width, int height)
+{
+	mainInstance->OnWindowBufferResize(window, width, height);
 }

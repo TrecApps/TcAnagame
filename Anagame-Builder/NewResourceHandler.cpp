@@ -1,24 +1,19 @@
 #include "NewResourceHandler.h"
 
-TString onOkay(L"OnOkay");
-TString onCancel(L"OnCancel");
-
-TString onUpdateName(L"OnUpdateName");
-TString onSelectRecent(L"OnResourceSelect");
 
 NewResourceHandler::NewResourceHandler()
 {
     calls.push_back(&NewResourceHandler::OnOkay);
-    events.addEntry(onOkay, 0);
+    events.addEntry(L"OnOkay", 0);
 
     calls.push_back(&NewResourceHandler::OnCancel);
-    events.addEntry(onCancel, 1);
+    events.addEntry(L"OnCancel", 1);
 
     calls.push_back(&NewResourceHandler::OnUpdateName);
-    events.addEntry(onUpdateName, 2);
+    events.addEntry(L"OnUpdateName", 2);
 
     calls.push_back(&NewResourceHandler::OnResourceSelect);
-    events.addEntry(onSelectRecent, 3);
+    events.addEntry(L"OnResourceSelect", 3);
 }
 
 void NewResourceHandler::Initialize(TrecPointer<TPage> page)

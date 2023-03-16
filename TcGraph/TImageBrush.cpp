@@ -65,7 +65,7 @@ bool TImageBrush::NormalizeRect(RECT_F& output, const RECT_F& input, TrecPointer
 	if(!board.Get())
 	return false;
 
-	float height = board->GetArea().bottom;
+	float height = board->GetOrigArea().bottom;
 
 	output = input;
 
