@@ -12,6 +12,9 @@ public:
     virtual TrecPointer<TObject> RetrieveResource(const TString& name) override;
     virtual void RetrieveResourceListSub(TDataArray<TrecPointer<TVariable>>& resources) override;
 
+    virtual TrecPointer<TObjectNode> GetProjectNodes(const TString& name)override;
+    virtual void GetProjectNodeTypes(TDataArray<TString>& nodeTypes)override;
+
     virtual TString Save() override;
     virtual void Refresh() override;
 

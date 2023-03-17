@@ -52,6 +52,22 @@ void TAnagameCodeExEnv::RetrieveResourceListSub(TDataArray<TrecPointer<TVariable
     resources.push_back(baseSpecs);
 }
 
+TrecPointer<TObjectNode> TAnagameCodeExEnv::GetProjectNodes(const TString& name)
+{
+    if (!name.Compare(L"Files"))
+    {
+        TrecPointer<TObjectNode> ret = TrecPointerKey::GetNewSelfTrecPointerAlt<TObjectNode, TFileNode>(0);
+        dynamic_cast<TFileNode*>(ret.Get())->SetFile(this->directory);
+        return ret;
+    }
+    return TrecPointer<TObjectNode>();
+}
+
+void TAnagameCodeExEnv::GetProjectNodeTypes(TDataArray<TString>& nodeTypes)
+{
+    nodeTypes.push_back(L"Files");
+}
+
 TString TAnagameCodeExEnv::Save()
 {
     return TString();

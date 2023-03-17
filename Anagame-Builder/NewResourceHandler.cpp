@@ -37,6 +37,20 @@ void NewResourceHandler::Initialize(TrecPointer<TPage> page)
     resourceList = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(actList);
     for (UINT Rust = 0; Rust < resourceDataList.Size(); Rust++)
     {
+        bool noShowFound = false;
+
+        TContainerVariable* container = dynamic_cast<TContainerVariable*>(resourceDataList[Rust].Get());
+        TrecPointer<TVariable> strVar;
+
+        for (UINT C = 0; container && !noShowFound && container->GetValueAt(C, strVar); C++)
+        {
+            TString strVal(TStringVariable::Extract(strVar, L""));
+            if (strVal.GetLower().Find(L"no show") != -1)
+                noShowFound = true;
+        }
+        if (noShowFound)
+            continue;
+
         resourceList->Push(resourceDataList[Rust]);
     }
     auto anaPage = TrecPointerKey::ConvertPointer<TPage, AnafacePage>(page);
@@ -46,7 +60,7 @@ void NewResourceHandler::Initialize(TrecPointer<TPage> page)
     auto control = anaPage->GetControlById(L"OkButton");
     okayButton = TrecPointerKey::SoftFromTrec<>(control);
 
-    auto textControl = TrecPointerKey::ConvertPointer<TControl, TTextInput>(anaPage->GetControlById(L"OnUpdateName"));
+    auto textControl = TrecPointerKey::ConvertPointer<TControl, TTextInput>(anaPage->GetControlById(L"NameField"));
     nameInput = TrecPointerKey::SoftFromTrec<>(textControl);
 
     AssessOkay();
@@ -85,7 +99,7 @@ void NewResourceHandler::AssessOkay()
 
     if (!resourceSource.GetSize())
         works = false;
-    if (works && resourceTitle.GetSize())
+    if (works && !resourceTitle.GetSize())
         works = false;
     if (works && (!nameRequired || !actNameInput.Get() || !actNameInput->GetTextElement()->GetText()->GetSize()))
         works = false;
@@ -152,6 +166,7 @@ void NewResourceHandler::OnOkay(TrecPointer<TPage> tc, EventArgs ea)
 
 void NewResourceHandler::OnUpdateName(TrecPointer<TPage> tc, EventArgs ea)
 {
+    AssessOkay();
 }
 
 void NewResourceHandler::OnResourceSelect(TrecPointer<TPage> tc, EventArgs ea)
@@ -197,5 +212,5 @@ void NewResourceHandler::OnResourceSelect(TrecPointer<TPage> tc, EventArgs ea)
         auto actNameInput = TrecPointerKey::TrecFromSoft<>(nameInput);
         actNameInput->setActive(nameRequired);
     }
-
+    AssessOkay();
 }

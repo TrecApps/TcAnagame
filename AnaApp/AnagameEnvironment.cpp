@@ -78,6 +78,18 @@ void BasicAnagameEnvironment::RetrieveResourceListSub(TDataArray<TrecPointer<TVa
 
 			resources.push_back(baseSpecs);
 		}
+		// Check if Project environment is in child environments. If not, then get resources
+		bool projectIsChild = false;
+		for (UINT Rust = 0; Rust < this->ChildEnvironmentCount(); Rust++)
+		{
+			if (this->GetChildEnvironmentAt(Rust).Get() == project.Get())
+			{
+				projectIsChild = true;
+				break;
+			}
+		}
+		if (!projectIsChild)
+			project->RetrieveResourceList(resources);
 	}
 }
 
