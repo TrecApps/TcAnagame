@@ -1,603 +1,442 @@
 #include "TcLanguage.h"
+#include <cassert>
 
-using LineBreaker = struct LineBreaker
-{
-	TString str;
-	int foundAt;
-	bool isSlash;
-};
 
-void TcLanguage::ProcessComment(UINT& index, const TString& text, TDataArray<TcLex>& lexList, lex_mode mode, UINT size)
+// Json fields to help determine String types
+TDataMap<str_recognition> jsonStringRecognition;
+
+void PrepJsonStringRecognition()
 {
-	
-	if (mode == lex_mode::single_comment)
+	if (jsonStringRecognition.count())
+		return;
+
+	jsonStringRecognition.addEntry(L"StringLexSingleFinalPrim", str_recognition::str_single_final_prim);
+	jsonStringRecognition.addEntry(L"StringLexSingleFinalSec", str_recognition::str_single_final_second);
+	jsonStringRecognition.addEntry(L"StringLexSingleTemplatePrim", str_recognition::str_single_template_prim);
+	jsonStringRecognition.addEntry(L"StringLexSingleTemplateSec", str_recognition::str_single_template_second);
+	jsonStringRecognition.addEntry(L"StringLexMultiFinalPrim", str_recognition::str_multi_final_prim);
+	jsonStringRecognition.addEntry(L"StringLexMultiFinalSec", str_recognition::str_multi_final_second);
+	jsonStringRecognition.addEntry(L"StringLexMultiTemplatePrim", str_recognition::str_multi_template_prim);
+	jsonStringRecognition.addEntry(L"StringLexMultiTemplateSec", str_recognition::str_multi_template_second);
+}
+
+TString TcLanguage::InitLexing()
+{
+	assert(languageDetails.Get());
+
+	TString ret(L"Failed to Parse");
+	UINT failures = 0;
+
+	void PrepJsonStringRecognition();
+
+	TDataEntry<str_recognition> strEntry;
+	for (UINT Rust = 0; Rust < jsonStringRecognition.count() &&
+		jsonStringRecognition.GetEntryAt(Rust, strEntry); Rust++)
 	{
-		TcLex lex{ tc_lex_type::single_line_comment, index, size };
-		int slash = -1;
-		int newline = -1;
+		TString baseCase(strEntry.key);
+		TString startCase(baseCase + L"Start");
+		TString endCase(baseCase + L"End");
 
-		LineBreaker breakers[] = {
-			{L"\\\n", 0, true},
-			{L"\\\r\n", 0, true},
-			{L"\\\r", 0, true},
-			{L"\n", 0, false},
-			{L"\r\n", 0, false},
-			{L"\r", 0, false},
-		};
+		TrecPointer<TVariable> field;
 
-		bool commentContinues = false;
-
-		do
+		if (languageDetails->RetrieveField(baseCase, field) 
+			&& field.Get())
 		{
-			for (UINT Rust = 0; Rust < ARRAYSIZE(breakers); Rust++)
+			if (field->GetVarType() == var_type::list)
 			{
-				breakers[Rust].foundAt = text.Find(breakers[Rust].str, index);
-			}
-
-			int targetBreakers = -1;
-
-			for (int Rust = 0; Rust < ARRAYSIZE(breakers); Rust++)
-			{
-				if (breakers[Rust].foundAt != -1)
+				auto listField = dynamic_cast<TArrayVariable*>(field.Get());
+				TrecPointer<TVariable> field1;
+				for (UINT C = 0; listField->GetValueAt(C, field1) && field1.Get(); C++)
 				{
-					if (targetBreakers == -1 || (breakers[Rust].foundAt < breakers[targetBreakers].foundAt))
-						targetBreakers = Rust;
+					TString strMark(dynamic_cast<TStringVariable*>(field1->ToString().Get())->GetString());
+					stringRecognizers.push_back(StringRecognition(strEntry.object, strMark, strMark));
 				}
 			}
-
-			if (targetBreakers == -1)
+			else if(field->GetVarType() == var_type::string)
 			{
-				lex.length = text.GetSize() - lex.start - 1;
-				lexList.push_back(lex);
-				index = text.GetSize();
-				return;
+				TString strMark(dynamic_cast<TStringVariable*>(field->ToString().Get())->GetString());
+				stringRecognizers.push_back(StringRecognition(strEntry.object, strMark, strMark));
 			}
-
-			commentContinues = false;
-
-			// Now make sure that if we have a slash, then ensure it is an odd Number
-			if (breakers[targetBreakers].isSlash)
+			else
 			{
-				UINT count = 1;
-				for (UINT Rust = breakers[targetBreakers].foundAt - 1; Rust > index && Rust < text.GetSize(); Rust--)
-				{
-					WCHAR ch = text.GetAt(Rust);
-					if (ch == L'\\')
-						count++;
-					else
-						break;
-				}
-
-				if (count % 2)
-					commentContinues = true;
-			}
-
-			lex.length = breakers[targetBreakers].foundAt - lex.start;
-			lexList.push_back(lex);
-
-			index = breakers[targetBreakers].foundAt + breakers[targetBreakers].str.GetSize() - 1;
-
-			lexList.push_back({ 
-				tc_lex_type::new_line,
-				static_cast<UINT>(breakers[targetBreakers].foundAt),
-				static_cast<USHORT>(breakers[targetBreakers].str.GetSize()) 
-			});
-
-			lex.start = index + 1;
-
-		} while (commentContinues);
-	}
-	else if (mode == lex_mode::multi_comment)
-	{
-		TcLex lex{ tc_lex_type::multi_line_comment_start, index, size };
-		lexList.push_back(lex);
-
-		index += size;
-
-		UINT end = text.GetSize();
-		UINT endIndex = 0;
-		for (UINT Rust = 0; Rust < multiLineCommentEnd.Size(); Rust++)
-		{
-			int potentilEnd = text.Find(multiLineCommentEnd[Rust], index);
-			if (potentilEnd != -1 && potentilEnd < end)
-			{
-				end = potentilEnd;
-				endIndex = multiLineCommentEnd[Rust].GetSize();
+				if (failures++) ret.AppendChar(L',');
+				ret.AppendChar(L' ');
+				ret.Append(baseCase);
+				continue;
 			}
 		}
-
-		bool commentContinue = true;
-
-		LineBreaker breakers[] = {
-			{L"\n", 0, false},
-			{L"\r\n", 0, false},
-			{L"\r", 0, false},
-		};
-
-		do
+		else if (languageDetails->RetrieveField(startCase, field)
+			&& field.Get())
 		{
-			for (UINT Rust = 0; Rust < ARRAYSIZE(breakers); Rust++)
+			TrecPointer<TVariable> field1;
+			if (!languageDetails->RetrieveField(endCase, field1) || !field1.Get())
 			{
-				breakers[Rust].foundAt = text.Find(breakers[Rust].str, index);
+				if(failures++) ret.AppendChar(L',');
+				ret.AppendChar(L' ');
+				ret.Append(endCase);
+				continue;
 			}
 
-			int targetBreakers = -1;
-
-			for (int Rust = 0; Rust < ARRAYSIZE(breakers); Rust++)
+			if (field->GetVarType() == var_type::list && field1->GetVarType() == var_type::list &&
+				dynamic_cast<TArrayVariable*>(field.Get())->GetSize() == dynamic_cast<TArrayVariable*>(field1.Get())->GetSize())
 			{
-				if (breakers[Rust].foundAt != -1)
+				auto listField = dynamic_cast<TArrayVariable*>(field.Get());
+				auto listField1 = dynamic_cast<TArrayVariable*>(field1.Get());
+				TrecPointer<TVariable> field_, field1_;
+				for (UINT C = 0; listField->GetValueAt(C, field_) && field_.Get() &&
+					listField1->GetValueAt(C, field1_) && field1_.Get(); C++)
 				{
-					if (targetBreakers == -1 || (breakers[Rust].foundAt < breakers[targetBreakers].foundAt))
-						targetBreakers = Rust;
+					TString strMark(dynamic_cast<TStringVariable*>(field_->ToString().Get())->GetString());
+					TString strMark1(dynamic_cast<TStringVariable*>(field1_->ToString().Get())->GetString());
+					stringRecognizers.push_back(StringRecognition(strEntry.object, strMark, strMark1));
 				}
 			}
-			commentContinue = false;
-
-			if (targetBreakers != -1)
+			else if (field->GetVarType() == var_type::string && field1->GetVarType() == var_type::string)
 			{
-				lexList.push_back({ tc_lex_type::multi_line_comment, index, static_cast<USHORT>(breakers[targetBreakers].foundAt - index) });
-
-				lexList.push_back({
-				tc_lex_type::new_line,
-				static_cast<UINT>(breakers[targetBreakers].foundAt),
-				static_cast<USHORT>(breakers[targetBreakers].str.GetSize())
-					});
-
-				index = breakers[targetBreakers].foundAt + breakers[targetBreakers].str.GetSize();
-				commentContinue = true;
+				TString strMark(dynamic_cast<TStringVariable*>(field->ToString().Get())->GetString());
+				TString strMark1(dynamic_cast<TStringVariable*>(field1->ToString().Get())->GetString());
+				stringRecognizers.push_back(StringRecognition(strEntry.object, strMark, strMark1));
 			}
-		} while (commentContinue);
+			else
+			{
+				if (failures++) ret.AppendChar(L',');
+				ret.AppendChar(L' ');
+				ret.Append(startCase + L':' + endCase);
+				continue;
+			}
+		}
 
-		lexList.push_back({ tc_lex_type::multi_line_comment, index, static_cast<USHORT>(end - index) });
-
-		index = end;
-		lexList.push_back({ tc_lex_type::multi_line_comment_end, index, static_cast<USHORT>(endIndex)});
-
-		index += endIndex;
 	}
+
+	TrecPointer<TVariable> field;
+
+	if (languageDetails->RetrieveField(L"StringTemplateStart", field) && field.Get())
+	{
+		templateStart.Set(dynamic_cast<TStringVariable*>(field->ToString().Get())->GetString());
+	}
+
+	if (languageDetails->RetrieveField(L"StringTemplateEnd", field) && field.Get())
+	{
+		templateEnd.Set(dynamic_cast<TStringVariable*>(field->ToString().Get())->GetString());
+	}
+
+	if (languageDetails->RetrieveField(L"SingleCommentStart", field) && field.Get())
+	{
+		singlelineCommentStart.Set(dynamic_cast<TStringVariable*>(field->ToString().Get())->GetString());
+	}
+
+	if (languageDetails->RetrieveField(L"MultiCommentStart", field) && field.Get())
+	{
+		multiLineCommentStart.Set(dynamic_cast<TStringVariable*>(field->ToString().Get())->GetString());
+	}
+
+	if (languageDetails->RetrieveField(L"MultiCommentEnd", field) && field.Get())
+	{
+		multiLineCommentEnd.Set(dynamic_cast<TStringVariable*>(field->ToString().Get())->GetString());
+	}
+
+	if (languageDetails->RetrieveField(L"IdentifierStart", field) && field.Get())
+	{
+		identifierStart.Set(dynamic_cast<TStringVariable*>(field->ToString().Get())->GetString());
+	}
+
+	if (languageDetails->RetrieveField(L"IdentifierCharacter", field) && field.Get())
+	{
+		identifierCharacter.Set(dynamic_cast<TStringVariable*>(field->ToString().Get())->GetString());
+	}
+
+	if (languageDetails->RetrieveField(L"LexOperators", field) && field.Get() && field->GetVarType() == var_type::list)
+	{
+		auto listField = dynamic_cast<TArrayVariable*>(field.Get());
+		for (UINT Rust = 0; listField->GetValueAt(Rust, field) && field.Get(); Rust++)
+		{
+			operators.push_back(dynamic_cast<TStringVariable*>(field->ToString().Get())->GetString());
+	}
+
+	if (languageDetails->RetrieveField(L"NumberExpressions", field) && field.Get())
+	{
+		if (field->GetVarType() == var_type::list)
+		{
+			auto listField = dynamic_cast<TArrayVariable*>(field.Get());
+			for (UINT Rust = 0; listField->GetValueAt(Rust, field) && field.Get(); Rust++)
+			{
+				auto pieces = dynamic_cast<TStringVariable*>(field->ToString().Get())->GetString().splitn(L":", 2);
+				if (pieces->Size() != 2)
+				{
+					if (failures++) ret.AppendChar(L',');
+					ret.AppendChar(L' ');
+					ret.Append(L"NumberExpressions");
+				}
+				else
+					numberRegExpression.addEntry(pieces->at(0).GetTrim(), pieces->at(1).GetTrim());
+			}
+		}
+		else if (field->GetVarType() == var_type::string)
+		{
+			auto pieces = dynamic_cast<TStringVariable*>(field->ToString().Get())->GetString().splitn(L":", 2);
+			if (pieces->Size() != 2)
+			{
+				if (failures++) ret.AppendChar(L',');
+				ret.AppendChar(L' ');
+				ret.Append(L"NumberExpressions");
+			}
+			else
+				numberRegExpression.addEntry(pieces->at(0).GetTrim(), pieces->at(1).GetTrim());
+		}
+	}
+
+
 }
 
-void TcLanguage::ProcessString(UINT& index, const TString& text, const TString& end, TDataArray<TcLex>& lexList, lex_mode mode)
+bool TcLanguage::LexWasComment(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages)
 {
-	// Check to see if we are dealing with a flex String
-	bool isFlex = false;
-	for (UINT Rust = 0; !isFlex && Rust < flexString.Size(); Rust++)
+	// Check for single line comment first
+	TString& localCode = code->GetString();
+	UINT curLine = line;
+	UINT curLoc = loc;
+	if (localCode.StartsAt(singlelineCommentStart, loc))
 	{
-		if (!end.Compare(flexString[Rust]))
-			isFlex = true;
+		// We have found a single line comment
+		UINT backslashCount = 0;
+		UINT rCount = 0;
+		bool leaveLoop = false;
+		for (; !leaveLoop && loc < localCode.GetSize(); loc++, lineLoc++)
+		{
+			WCHAR ch = localCode[loc];
+			switch (ch)
+			{
+			case L'\\':
+				backslashCount++;
+				rCount = 0;
+				break;
+			case L'\r':
+				if (rCount) backslashCount = 0;
+				rCount++;
+				break;
+			case L'\n':
+				if (!(backslashCount % 2))
+					leaveLoop = true;
+				line++;
+				lineLoc = 0;
+			}
+		}
+		Token tok;
+		tok.SubmitTokenType(token_type::tt_comment);
+		tok.lineStart = curLine;
+		tok.stringStart = curLoc;
+		tok.tokenlength = loc - curLoc;
+		tokens.push_back(tok);
+		return true;
 	}
 
-	TrecPointer<TDataArray<TString>> flexMarkers = this->flexStringBlock.Size() ? flexStringBlock[0].splitn(L'*', 2) : TrecPointer<TDataArray<TString>>();
+	if (localCode.StartsAt(multiLineCommentStart, loc))
+	{
+		int endCommentLoc = localCode.Find(multiLineCommentEnd, loc + multiLineCommentStart.GetSize());
 
-	// If We don't have flex markers, then we are not doing flex
-	if (!flexMarkers.Get() || flexMarkers->Size() != 2)
-		isFlex = false;
-
-	TDataArray<TString> seek;
-	seek.push_back(text);
-	seek.push_back(L"\r\n");
-	seek.push_back(L"\n");
-	seek.push_back(L"\r");
-
-	UINT seekIndex = 0;
-	int strEnd = -1;
-
-		seekSingleEnd:
-		strEnd = text.FindOneOf(seek, seekIndex, index, false);
-		if (strEnd == -1)
-			return;
-
-		if (isFlex)
+		if (endCommentLoc == -1)
 		{
-			// To-Do: Handle Flex Case
+			TcCompMessage message;
+			message.code.Set(L"Lex 1");
+			message.start = loc;
+			message.level = 1;
+			message.message.Set(L"Unending Multi-line Comment!");
+			loc = localCode.GetSize() + 1;
+			messages.push_back(message);
+			endCommentLoc = loc;
 		}
-		else if (seekIndex > 0)
-		{
-			if (mode == lex_mode::single_string) return;
+		else loc = endCommentLoc + multiLineCommentEnd.GetSize();
+		Token tok;
+		tok.SubmitTokenType(token_type::tt_comment);
+		tok.lineStart = line;
+		tok.stringStart = curLoc;
+		tok.tokenlength = loc - curLoc;
+		tokens.push_back(tok);
 
-			lexList.push_back({ tc_lex_type::string_reg, index, static_cast<USHORT>(strEnd - index) });
-			lexList.push_back({ tc_lex_type::new_line, static_cast<UINT>(strEnd), static_cast<USHORT>(seek[seekIndex].GetSize())});
-			index = strEnd + seek[seekIndex].GetSize();
-			goto seekSingleEnd;
-		}
+		TString comment(localCode.SubString(curLoc, loc));
+		line += comment.CountFinds(L'\n');
 
-
-		lexList.push_back({ tc_lex_type::string_reg, index, static_cast<USHORT>(strEnd - index) });
-		lexList.push_back({
-			mode == lex_mode::single_string ? tc_lex_type::single_line_string_bounds : tc_lex_type::multi_line_string_bounds,
-			static_cast<UINT>(strEnd),
-			static_cast<USHORT>(text.GetSize())
-			});
+		endCommentLoc = localCode.FindLast(L'\n', loc);
+		if (endCommentLoc == -1)
+			endCommentLoc = 0;
+		lineLoc = loc - endCommentLoc;
+		return true;
+	}
+	return false;
 }
 
-void TcLanguage::ProcessNumber(UINT& index, const TString& text, TDataArray<TcLex>& lexList)
+bool TcLanguage::LexWasString(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages)
 {
-	for (UINT Rust = index; Rust < text.GetSize(); Rust++)
+	for (UINT Rust = 0; Rust < stringRecognizers.Size(); Rust++)
 	{
-		if (numSection.Find(text.GetAt(Rust)) == -1)
+		if (code->GetString().StartsAt(stringRecognizers[Rust].startString, loc))
 		{
-			lexList.push_back({ tc_lex_type::number, index, static_cast<USHORT>(Rust - index) });
-			index = Rust - 1;
-			return;
+			// To-Do: Process String
+
+			return true;
 		}
 	}
-	lexList.push_back({ tc_lex_type::number, index, static_cast<USHORT>(text.GetSize() - index) });
-	index = text.GetSize() -1;
+	return false;
 }
 
-void TcLanguage::ProcessVariable(UINT& index, const TString& text, TDataArray<TcLex>& lexList)
+bool TcLanguage::LexWasIdentifier(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages)
 {
-	UINT Rust = index;
-	for (; Rust < text.GetSize(); Rust++)
+	WCHAR ch = code->GetString()[loc];
+	if (identifierStart.Find(ch) != -1)
 	{
-		if (varSection.Find(text.GetAt(Rust)) == -1)
+		UINT curLoc = loc;
+		for (; loc < code->GetString().GetSize(); loc++, lineLoc++)
 		{
-			lexList.push_back({ tc_lex_type::number, index, static_cast<USHORT>(Rust - index) });
-			break;
+			if(identifierCharacter.Find(code->GetString()[loc] == -1))
+				break;
 		}
-	}
+		Token tok;
+		tok.SubmitTokenType(token_type::tt_identifier);
+		tok.lineStart = line;
+		tok.stringStart = curLoc;
+		tok.tokenlength = loc - curLoc;
+		tokens.push_back(tok);
 
-	TString varSlice(text.SubString(index, Rust));
-	
-	bool found = false;
-	for (UINT C = 0; !found && C < keyWords.Size(); C++)
-	{
-		if (keyWords[C].Compare(varSlice))
-		{
-			lexList.push_back({ tc_lex_type::key_word, index, static_cast<USHORT>(Rust - index) });
-			found = true;
-		}
+		// Will be bumped back up in Calling function
+		loc--;
+		lineLoc--;
+
+		return true;
 	}
-	if(!found)
-		lexList.push_back({ tc_lex_type::identifier, index, static_cast<USHORT>(Rust - index) });
-	
-	index = Rust - 1;
+	return false;
 }
 
-void TcLanguage::ProcessOperator(UINT& index, const TString& text, TDataArray<TcLex>& lexList)
+bool TcLanguage::LexWasOperator(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages)
 {
-	for (UINT Rust = index; Rust < text.GetSize(); Rust++)
+	for (UINT Rust = 0; Rust < operators.Size(); Rust++)
 	{
-		if (operatorChars.Find(text.GetAt(Rust)) == -1)
+		if (code->GetString().StartsAt(operators[Rust], Rust))
 		{
-			lexList.push_back({ tc_lex_type::op, index, static_cast<USHORT>(Rust - index) });
-			index = Rust - 1;
-			return;
+			Token tok;
+			tok.SubmitTokenType(token_type::tt_operator);
+			tok.lineStart = line;
+			tok.stringStart = loc;
+			tok.tokenlength = operators[Rust].GetSize();
+			tokens.push_back(tok);
+
+			loc += tok.tokenlength - 1; // Will be bumped up in calling function
+			lineLoc += tok.tokenlength - 1;
+			return true;
 		}
 	}
-	lexList.push_back({ tc_lex_type::op, index, static_cast<USHORT>(text.GetSize() - index) });
-	index = text.GetSize() - 1;
+	return false;
 }
 
-TcLanguage::lex_mode TcLanguage::GetNextMode(UINT index, const TString& text, UINT& begins, UINT& lexSize)
+bool TcLanguage::LexWasNumber(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages)
 {
-	using LexModeIndex = struct LexModeIndex {
-		lex_mode mode;
-		UINT index;
-		UINT size;
-	};
-
-	TDataArray<LexModeIndex> retCollection;
-
-	UINT size = text.GetSize();
-
-	// Single Comment
-	UINT searchIndex = size;
-	UINT searchSize = 0;
-	for (UINT Rust = 0; Rust < singleLineComment.Size(); Rust++)
-	{
-		int found = text.Find(singleLineComment[Rust], index);
-		if (found != -1 && found < searchIndex)
-		{
-			searchIndex = found;
-			searchSize = singleLineComment[Rust].GetSize();
-		}
-	}
-	retCollection.push_back({ lex_mode::single_comment, searchIndex, searchSize });
-
-	// Multi-Comment
-	searchIndex = size;
-	searchSize = 0;
-	for (UINT Rust = 0; Rust < multiLineCommentStart.Size(); Rust++)
-	{
-		int found = text.Find(multiLineCommentStart[Rust], index);
-		if (found != -1 && found < searchIndex)
-		{
-			searchIndex = found;
-			searchSize = singleLineComment[Rust].GetSize();
-		}
-	}
-	retCollection.push_back({ lex_mode::multi_comment, searchIndex, searchSize });
-
-	// Single String
-	searchIndex = size;
-	searchSize = 0;
-	for (UINT Rust = 0; Rust < singleString.Size(); Rust++)
-	{
-		int found = text.Find(singleString[Rust], index);
-		if (found != -1 && found < searchIndex)
-		{
-			searchIndex = found;
-			searchSize = singleLineComment[Rust].GetSize();
-		}
-	}
-	retCollection.push_back({ lex_mode::single_string, searchIndex, searchSize });
-
-	// Multi-String
-	searchIndex = size;
-	searchSize = 0;
-	for (UINT Rust = 0; Rust < multiString.Size(); Rust++)
-	{
-		int found = text.Find(multiString[Rust], index);
-		if (found != -1 && found < searchIndex)
-		{
-			searchIndex = found;
-			searchSize = singleLineComment[Rust].GetSize();
-		}
-	}
-	retCollection.push_back({ lex_mode::multi_string, searchIndex, searchSize });
-
-
-	int retIndex = -1;
-
-	for (UINT Rust = 0; Rust < retCollection.Size(); Rust++)
-	{
-		if (retCollection[Rust].index < size)
-		{
-			retIndex = Rust;
-			size = retCollection[Rust].index;
-		}
-	}
-
-	if (retIndex == -1)
-		return lex_mode::normal;
-
-	begins = retCollection[retIndex].index;
-	lexSize = retCollection[retIndex].size;
-
-	return retCollection[retIndex].mode;
+	return false;
 }
 
 TcLanguage::TcLanguage(TrecPointer<TJsonVariable> languageDetails)
 {
 	this->languageDetails = languageDetails;
-	this->stage = 0;
+	prepStage = 0;
 }
 
 TString TcLanguage::Init()
 {
-	if(stage)
-		return TString();
-	TrecPointer<TVariable> prop;
-	TrecPointer<TJsonVariable> jProp;
-	// To-Do: Flesh out Language Details
-	languageDetails->RetrieveField(L"LexProps", prop);
-	jProp = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(prop);
+	if (prepStage)
+		return;
 
-	if (!jProp.Get())
-		return L"Failed to Deduce Lex Properties!";
-
-	TString ret(L"Failed to Parse");
-	UINT failures = 0;
-
-	if (!PrepParsing(statementseperator, "StatementSeparator", jProp))
-	{
-		if (failures++)
-			ret.AppendChar(L',');
-		ret.Append(" StatementSeparator");
-	}
-	if (!PrepParsing(singleLineComment, "CommentSingleLine", jProp))
-	{
-		if (failures++)
-			ret.AppendChar(L',');
-		ret.Append(" Comments (Single-Line)");
-	}
-	if (!PrepParsing(multiLineCommentStart, "MultilineCommentStart", jProp))
-	{
-		if (failures++)
-			ret.AppendChar(L',');
-		ret.Append(" Comments (Milti-line start)");
-	}
-	if (!PrepParsing(multiLineCommentEnd, "MultilineCommentEnd", jProp))
-	{
-		if (failures++)
-			ret.AppendChar(L',');
-		ret.Append(" Comments (Multi-Line End)");
-	}
-	if (!PrepParsing(singleString, "SingleLineString", jProp))
-	{
-		if (failures++)
-			ret.AppendChar(L',');
-		ret.Append(" String (Single-Line)");
-	}
-	if (!PrepParsing(multiString, "MultiLineString", jProp))
-	{
-		if (failures++)
-			ret.AppendChar(L',');
-		ret.Append(" String (Multi-Line)");
-	}
-	if (!PrepParsing(blockStart, "BlockStart", jProp))
-	{
-		if (failures++)
-			ret.AppendChar(L',');
-		ret.Append(" Block Start");
-	}
-	if (!PrepParsing(blockEnd, "BlockEnd", jProp))
-	{
-		if (failures++)
-			ret.AppendChar(L',');
-		ret.Append(" Block End");
-	}
-	if (!PrepParsing(flexString, "FlexString", jProp))
-	{
-		if (failures++)
-			ret.AppendChar(L',');
-		ret.Append(" FlexString");
-	}
-	if (!PrepParsing(flexStringBlock, "FlexStringBlock", jProp))
-	{
-		if (failures++)
-			ret.AppendChar(L',');
-		ret.Append(" Flex-String block");
-	}
-	if (!PrepParsing(keyWords, "KeyWords", jProp))
-	{
-		if (failures++)
-			ret.AppendChar(L',');
-		ret.Append(" Key Words");
-	}
-
-	if (!jProp->RetrieveField(L"VarStart", prop) || !PrepParsing(prop, varStart))
-	{
-		if (failures++)
-			ret.AppendChar(L',');
-		ret.Append(" Start of Variables");
-	}
-	if (!jProp->RetrieveField(L"NumStart", prop) || !PrepParsing(prop, numStart))
-	{
-		if (failures++)
-			ret.AppendChar(L',');
-		ret.Append(" Start of Number");
-	}
-	if (!jProp->RetrieveField(L"VarSection", prop) || !PrepParsing(prop, varSection))
-	{
-		if (failures++)
-			ret.AppendChar(L',');
-		ret.Append(" Characters in Variable");
-	}
-	if (!jProp->RetrieveField(L"NumSection", prop) || !PrepParsing(prop, numSection))
-	{
-		if (failures++)
-			ret.AppendChar(L',');
-		ret.Append(" Characters in Numbers");
-	}
-	if (!jProp->RetrieveField(L"OperatorChars", prop) || !PrepParsing(prop, operatorChars))
-	{
-		if (failures++)
-			ret.AppendChar(L',');
-		ret.Append(" Operator Characters");
-	}
-
-
-	if (failures)
+	TString ret(InitLexing());
+	if (ret.GetSize())
 		return ret;
-	stage = 1;
+	prepStage++;
 }
 
-bool TcLanguage::PrepParsing(TDataArray<TString>& parsList, const TString& propKey, TrecPointer<TJsonVariable> propSource)
+UCHAR TcLanguage::PerformLexScanning(TDataArray<Token>& tokens, TrecPointer<TStringVariable>& code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages)
 {
-	parsList.RemoveAll();
-
-	TrecPointer<TVariable> property;
-	if (!propSource->RetrieveField(propKey, property))
-		return false;
-
-	TrecPointer<TArrayVariable> arrayProp = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(property);
-	if (!arrayProp.Get())
-		return false;
-
-	for (UINT Rust = 0; Rust < arrayProp->GetValueAt(Rust, property); Rust++)
+	for (; loc < code->GetSize(); loc++, lineLoc)
 	{
-		TrecPointer<TStringVariable> strProp = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(property);
-		if (strProp.Get())
-			parsList.push_back(strProp->GetString());
-	}
+		if (LexWasComment(tokens, code, loc, line, lineLoc, messages) ||
+			LexWasString(tokens, code, loc, line, lineLoc, messages) ||
+			LexWasIdentifier(tokens, code, loc, line, lineLoc, messages) ||
+			LexWasOperator(tokens, code, loc, line, lineLoc, messages) ||
+			LexWasNumber(tokens, code, loc, line, lineLoc, messages))
+			continue;
 
-	return true;
-}
+		WCHAR ch = code->GetString()[loc];
 
-bool TcLanguage::PrepParsing(TrecPointer<TVariable> prop, TString& result)
-{
-	TrecPointer<TStringVariable> strProp = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(prop);
-	if(!strProp.Get())
-		return false;
-	result.Set(strProp->GetString());
-	return true;
-}
-
-TString TcLanguage::PerformLex(TrecPointer<TStringVariable> var, TDataArray<TcLex>& lexList)
-{
-	TString& actString(var->GetString());
-
-	lexList.RemoveAll();
-	UINT beginMode = 0;
-	UINT sizeMode = 0;
-	lex_mode lexMode = GetNextMode(0, actString, beginMode, sizeMode);
-
-
-	for (UINT Rust = 0; Rust < actString.GetSize(); Rust++)
-	{
-		TString quote;
-		// First Handle Strings and Comments
-		if (lexMode != lex_mode::normal && Rust == beginMode)
-		{
-			switch (lexMode)
-			{
-			case lex_mode::multi_comment:
-			case lex_mode::single_comment:
-				ProcessComment(Rust, actString, lexList, lexMode, sizeMode);
-				break;
-			case lex_mode::single_string:
-				for (UINT C = 0; !quote.GetSize() && C < singleString.Size(); C++)
-				{
-					if (actString.Find(singleString[C], Rust) == Rust)
-					{
-						quote.Set(singleString[C]);
-					}
-				}
-			case lex_mode::multi_string:
-				for (UINT C = 0; !quote.GetSize() && C < multiString.Size(); C++)
-				{
-					if (actString.Find(multiString[C], Rust) == Rust)
-					{
-						quote.Set(multiString[C]);
-					}
-				}
-
-				ProcessString(Rust, actString, quote, lexList, lexMode);
-			}
-
-			lexMode = GetNextMode(Rust, actString, beginMode, sizeMode);
-		}
-
-		WCHAR ch = actString.GetAt(Rust);
+		Token tok;
+		tok.lineStart = line;
+		tok.stringStart = loc;
+		tok.tokenlength = 1;
 
 		switch (ch)
 		{
-		case L'\\':
-			lexList.push_back({ tc_lex_type::line_break, Rust, 1 });
+		case L'\n':
+			tok.SubmitTokenType(token_type::tt_new_line);
+			line++;
+			lineLoc = 0;
+			tokens.push_back(tok);
+			break;
+		case L'\t':
+			tok.SubmitTokenType(token_type::tt_tab_space);
+			tokens.push_back(tok);
+			break;
+		case L':':
+			tok.SubmitTokenType(token_type::tt_colon);
+			tokens.push_back(tok);
+			break;
+		case L';':
+			tok.SubmitTokenType(token_type::tt_semicolon);
+			tokens.push_back(tok);
 			break;
 		case L'(':
-			lexList.push_back({ tc_lex_type::open_parenth, Rust, 1 });
-			break;
-		case L'[':
-			lexList.push_back({ tc_lex_type::open_square, Rust, 1 });
+			tok.SubmitTokenType(token_type::tt_open_parenth);
+			tokens.push_back(tok);
 			break;
 		case L')':
-			lexList.push_back({ tc_lex_type::close_parenth, Rust, 1 });
+			tok.SubmitTokenType(token_type::tt_close_parenth);
+			tokens.push_back(tok);
+			break;
+		case L'[':
+			tok.SubmitTokenType(token_type::tt_open_square);
+			tokens.push_back(tok);
 			break;
 		case L']':
-			lexList.push_back({ tc_lex_type::close_square, Rust, 1 });
+			tok.SubmitTokenType(token_type::tt_close_square);
+			tokens.push_back(tok);
 			break;
-		case L'\r':
-			if (Rust + 1 < actString.GetSize() && actString.GetAt(Rust + 1) == L'\n')
-			{
-				lexList.push_back({ tc_lex_type::new_line, Rust++, 2});
-				continue;
-			}
-		case L'\n':
-			lexList.push_back({ tc_lex_type::new_line, Rust++, 1 });
+		case L'{':
+			tok.SubmitTokenType(token_type::tt_open_curly);
+			tokens.push_back(tok);
 			break;
-		default:
+		case L'}':
+			tok.SubmitTokenType(token_type::tt_close_curly);
+			tokens.push_back(tok);
+			break;
 
-			if (operatorChars.Find(ch) != -1)
-				ProcessOperator(Rust, actString, lexList);
-			if (numStart.Find(ch) != -1)
-				ProcessNumber(Rust, actString, lexList);
-			if (varStart.Find(ch) != -1)
-				ProcessVariable(Rust, actString, lexList);
 		}
+
 	}
-	return L"";
 }
 
+StringRecognition::StringRecognition(str_recognition strRec, const TString& start, const TString& end)
+{
+	this->recognition = strRec;
+	this->startString.Set(start);
+	this->endString.Set(end);
+}
+
+
+token_type Token::GetTokenType()
+{
+	return static_cast<token_type>(tokenType);
+}
+
+void Token::SubmitTokenType(token_type type)
+{
+	this->tokenType = static_cast<UCHAR>(type);
+}
+
+TString Token::ToString(TrecPointer<TStringVariable> code)
+{
+	if (!code.Get())
+		return TString();
+	return code->GetString().SubString(stringStart, stringStart + tokenlength);
+}

@@ -236,6 +236,8 @@ public:
 
 	bool StartsWith(const TString& seq, bool ignoreCase = false, bool whitespace = false) const;
 
+	bool StartsAt(const TString& seq, UINT index, bool ignoreCase = false, bool whitespace = false) const;
+
 	bool EndsWith(const TString& seq, bool ignoreCase = false) const;
 
 	int Find(const TString& sub, int start = 0, bool ignoreEscape = true, bool notAlphaNum = false) const;

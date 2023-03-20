@@ -48,6 +48,9 @@
     <ClInclude Include="TcLanguage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TLexer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -78,6 +81,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TcLanguage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TLexer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -55,13 +55,6 @@ TString TcCompiler::Init()
 	return TString();
 }
 
-TString TcCompiler::PerformLex()
-{
-	if (stage < 1)
-		return L"Compiler Text not Set! Try Calling Init()!";
-	return language->PerformLex(text, this->lexList);
-}
-
 void TcCompiler::OnSourceChange(TrecPointer<TStringVariable> updatedSource)
 {
 	if (updatedSource.Get())

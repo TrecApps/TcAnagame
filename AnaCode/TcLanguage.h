@@ -2,100 +2,126 @@
 #include <TString.h>
 #include <TContainerVariable.h>
 
-using tc_lex_type = enum class tc_lex_type
-{
-    // String management
-    single_line_string_bounds,  // Boundaries of a single line string
-    multi_line_string_bounds,   // Boundaries of a multi-line string
-    string_reg,                 // Regular String (runners treat this as the final draft
-    string_flex,                // Flexible String (runners will copy and update the copy based off of expressions found)
-    string_exp_start,           // Marker in a flexbile string signaling the start of an expression
-    string_exp_end,             // Marker in a Flexible string signaling the end
-
-    // Comment management
-    single_line_comment,        // Start of a Single Line Comment
-    multi_line_comment_start,   // Start of a Multiline comment
-    multi_line_comment_end,     // End of a multiline Comment
-    multi_line_comment,         // Body of a multiline comment
-
-    // organization
-    line_break,                 // Signal that the next line should be treated as part of "this" line
-    new_line,                   // New Line Token
-    block_start,                // A new Block of code began
-    block_end,                  // The current Block of Code has come to an end
-    statement_break,            // Signals the end of a statement
-
-    // Regular Lex
-    op,                         // Represents an Operator
-    number,                     // Represents a number
-    identifier,                 // Identifies some data to reference
-    key_word,                   // Key Word
-    open_parenth,               // Open Parenthesis
-    close_parenth,              // Close Parenthesis
-    open_square,                // Open Square Brackets
-    close_square               // Close Square Brackets 
+using str_recognition = enum class str_recognition {
+    str_single_final_prim,
+    str_single_final_second,
+    str_single_template_prim,
+    str_single_template_second,
+    str_multi_final_prim,
+    str_multi_final_second,
+    str_multi_template_prim,
+    str_multi_template_second,
 };
 
-using TcLex = struct TcLex {
-    tc_lex_type type;
+class StringRecognition
+{
+public:
+    StringRecognition() = default;
+    StringRecognition(const StringRecognition& copy) = default;
+    StringRecognition(str_recognition strRec, const TString& start, const TString& end);
+
+    str_recognition recognition;
+    TString startString, endString;
+};
+
+using TcCompMessage = struct TcCompMessage {
+    UCHAR level;
+    TString code;
+    TString message;
     UINT start;
     USHORT length;
 };
+
+using token_type = enum class token_type
+{
+    tt_comment,     // comments, which compilers/interpretors ignore
+    tt_new_line,    // signifies a new line, not always used
+    tt_tab_space,   // Useful for languages like python
+
+    // Common Charaters in languages
+    tt_semicolon,
+    tt_colon,
+    tt_open_curly,
+    tt_close_curly,
+    tt_open_parenth,
+    tt_close_parenth,
+    tt_open_square,
+    tt_close_square,
+
+    // common features
+    tt_operator,
+    tt_identifier,
+    tt_number,
+    tt_single_string,           // Basic String type for
+    tt_multi_string,
+    tt_single_string_second,    // Secondary String type (like C++'s L"" for wide-strings)
+    tt_multi_string_second,
+    tt_template_mark_start,     // used to mark the boundaries of code within strings (like JavaScript's `${ ... }` )
+    tt_template_mark_end,
+    tt_keywords,                // If we encountered a keyword
+};
+
+
+
+class Token
+{
+public:
+    USHORT lineStart;   // the line in the String where the token starts
+    USHORT stringStart; // the character in the string where the token starts
+    UCHAR tokenType;    // The type of token
+    UCHAR extraInfo;    // Extra information about this token (value meaning varies by token type)
+    USHORT tokenlength; // the length of the token
+
+    Token() = default;
+    Token(const Token& copy) = default;
+
+    token_type GetTokenType();
+    void SubmitTokenType(token_type type);
+
+    TString ToString(TrecPointer<TStringVariable>);
+};
+
 
 class TcLanguage :
     public TObject
 {
 protected:
-
-    
+    // Raw Information
+    UCHAR prepStage;
     TrecPointer<TJsonVariable> languageDetails;
 
-    TDataArray<TString> statementseperator, // How to recognize when a Statement ends
-        singleLineComment,                  // Token for recognizing the start of a single line comment
-        multiLineCommentStart,              // Tokens for recognizing start of  multiline comment
-        multiLineCommentEnd,                // Tokens for recognizing End of a multiline comment
-        singleString,                       // Tokens for recognizing a single line String
-        multiString,                        // Tokens for recognizing a multiline String
-        blockStart,                         // Tokens for recognizing the start of a block (if this is blank, indentation is assumed)
-        blockEnd,                           // Tokens for recognizing the end of a block
-        flexString,                   // Strings that, if they start the statement, signal that the statement should be one line
-        flexStringBlock,                    // Signal that an expression in a flex string has been encountered
-        keyWords;
-    TString varStart;
-    TString numStart;
-    TString varSection;
-    TString numSection;
-    TString operatorChars;
-    
-    UCHAR stage;
+    // Lexing Data
 
-    using lex_mode = enum class lex_mode
-    {
-        normal,
-        single_comment,
-        multi_comment,
-        single_string,
-        multi_string
-    };
+    TString InitLexing();
 
-    void ProcessComment(UINT& index, const TString& text, TDataArray<TcLex>& lexList, lex_mode mode, UINT size);
-    void ProcessString(UINT& index, const TString& text, const TString& end, TDataArray<TcLex>& lexList, lex_mode mode);
+    TDataArray<StringRecognition> stringRecognizers;
+    TString templateStart;
+    TString templateEnd;
 
-    void ProcessNumber(UINT& index, const TString&, TDataArray<TcLex>& lexList);
-    void ProcessVariable(UINT& index, const TString&, TDataArray<TcLex>& lexList);
-    void ProcessOperator(UINT& index, const TString&, TDataArray<TcLex>& lexList);
+    TString singlelineCommentStart;
+    TString multiLineCommentStart;
+    TString multiLineCommentEnd;
 
-    lex_mode GetNextMode(UINT index, const TString& text, UINT& begins, UINT& size);
+    TString identifierStart;
+    TString identifierCharacter;
+
+    TDataMap<TString> numberRegExpression;
+    TDataArray<TString> operators;
+
+    // Lexing Helpers
+    bool LexWasComment(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages);
+    bool LexWasString(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages);
+    bool LexWasIdentifier(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages);
+    bool LexWasOperator(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages);
+    bool LexWasNumber(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages);
+    //bool LexWasString(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages);
 
 
 public: 
     TcLanguage(TrecPointer<TJsonVariable> languageDetails);
     TString Init();
-    bool PrepParsing(TDataArray<TString>& parsList, const TString& propKey, TrecPointer<TJsonVariable> propSource);
 
-    bool PrepParsing(TrecPointer<TVariable> prop, TString& result);
+    UCHAR PerformLexScanning(TDataArray<Token>& tokens, TrecPointer<TStringVariable>& code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages);
 
-
-    TString PerformLex(TrecPointer<TStringVariable> var, TDataArray<TcLex>& lexList);   // Run Lex Parsing on the Source String
 };
 

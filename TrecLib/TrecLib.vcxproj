@@ -144,6 +144,7 @@
     <ClInclude Include="FileFunctions.hpp" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="RegularExpression.h" />
     <ClInclude Include="TContainerVariable.h" />
     <ClInclude Include="TcRunner.h" />
     <ClInclude Include="TDataArray.h" />
@@ -179,6 +180,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="RegularExpression.cpp" />
     <ClCompile Include="TContainerVariable.cpp" />
     <ClCompile Include="TcRunner.cpp" />
     <ClCompile Include="TEnvironment.cpp" />

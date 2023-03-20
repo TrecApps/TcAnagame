@@ -6,13 +6,7 @@
 #include "TcLanguage.h"
 
 
-using TcCompMessage = struct TcCompMessage {
-    UCHAR level;
-    TString code;
-    TString message;
-    UINT start;
-    USHORT length;
-};
+
 
 class TcCompiler :
     public TVObject
@@ -20,7 +14,6 @@ class TcCompiler :
 protected:
     TrecPointerSoft<TEnvironment> environment;
 
-    TDataArray<TcLex> lexList;
     TrecPointer<TFileShell> file;
     TrecPointer<TStringVariable> text;
 

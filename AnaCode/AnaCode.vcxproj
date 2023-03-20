@@ -155,6 +155,7 @@
     <ClInclude Include="TcOperator.h" />
     <ClInclude Include="TcProcedureRunner.h" />
     <ClInclude Include="TcStatement.h" />
+    <ClInclude Include="TLexer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -172,6 +173,7 @@
     <ClCompile Include="TcOperator.cpp" />
     <ClCompile Include="TcProcedureRunner.cpp" />
     <ClCompile Include="TcStatement.cpp" />
+    <ClCompile Include="TLexer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

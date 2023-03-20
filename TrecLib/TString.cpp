@@ -1457,8 +1457,13 @@ TString TString::GetDelete(int& ret, int index, int count)
 
 bool TString::StartsWith(const TString& seq, bool ignoreCase, bool whitespace) const
 {
+	return StartsAt(seq, 0, ignoreCase, whitespace);
+}
+
+bool TString::StartsAt(const TString& seq, UINT index, bool ignoreCase = false, bool whitespace = false) const
+{
 	TObjectLocker threadLock(&thread);
-	if (seq.GetSize() > size)
+	if (seq.GetSize() + index > size)
 	{
 		return false;
 	}
@@ -1469,14 +1474,14 @@ bool TString::StartsWith(const TString& seq, bool ignoreCase, bool whitespace) c
 
 		for (UINT Rust = 0; Rust < lSeq.GetSize(); Rust++)
 		{
-			if (lThis[Rust] != lSeq[Rust]) { return false; }
+			if (lThis[Rust + index] != lSeq[Rust]) { return false; }
 		}
 	}
 	else
 	{
 		for (UINT Rust = 0; Rust < seq.GetSize(); Rust++)
 		{
-			if (string[Rust] != seq[Rust]) { return false; }
+			if (string[Rust + index] != seq[Rust]) { return false; }
 		}
 	}
 
