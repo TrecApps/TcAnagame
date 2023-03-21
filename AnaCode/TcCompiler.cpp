@@ -55,6 +55,11 @@ TString TcCompiler::Init()
 	return TString();
 }
 
+TString TcCompiler::PerformLex()
+{
+	return TString();
+}
+
 void TcCompiler::OnSourceChange(TrecPointer<TStringVariable> updatedSource)
 {
 	if (updatedSource.Get())

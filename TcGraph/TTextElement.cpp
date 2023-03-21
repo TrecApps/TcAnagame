@@ -837,8 +837,14 @@ void TTextElement::OnDraw(TrecPointer<TVariable> dataText)
 		}
 	}
 
+	glDeleteBuffers(1, &VBO);
+	VBO = 0;
+
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glDeleteVertexArrays(1, &VAO);
+	VAO = 0;
 
 	if (cullDisabled)
 		glDisable(GL_CULL_FACE);

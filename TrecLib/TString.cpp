@@ -1460,7 +1460,7 @@ bool TString::StartsWith(const TString& seq, bool ignoreCase, bool whitespace) c
 	return StartsAt(seq, 0, ignoreCase, whitespace);
 }
 
-bool TString::StartsAt(const TString& seq, UINT index, bool ignoreCase = false, bool whitespace = false) const
+bool TString::StartsAt(const TString& seq, UINT index, bool ignoreCase, bool whitespace) const
 {
 	TObjectLocker threadLock(&thread);
 	if (seq.GetSize() + index > size)

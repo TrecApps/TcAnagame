@@ -184,7 +184,7 @@ TString TcLanguage::InitLexing()
 		}
 	}
 
-
+	return L"";
 }
 
 bool TcLanguage::LexWasComment(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages)
@@ -413,7 +413,7 @@ TcLanguage::TcLanguage(TrecPointer<TJsonVariable> languageDetails)
 TString TcLanguage::Init()
 {
 	if (prepStage)
-		return;
+		return L"";
 
 	TString ret(InitLexing());
 	if (ret.GetSize())
@@ -487,6 +487,7 @@ UCHAR TcLanguage::PerformLexScanning(TDataArray<Token>& tokens, TrecPointer<TStr
 		}
 
 	}
+	return 0;
 }
 
 StringRecognition::StringRecognition(str_recognition strRec, const TString& start, const TString& end)
