@@ -116,6 +116,8 @@ protected:
     bool LexWasNumber(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages);
     //bool LexWasString(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages);
 
+    // String Lexing helpers
+    bool LexSingleLineFinalString(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages, StringRecognition& recog);
 
 public: 
     TcLanguage(TrecPointer<TJsonVariable> languageDetails);

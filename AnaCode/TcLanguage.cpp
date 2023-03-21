@@ -149,7 +149,6 @@ TString TcLanguage::InitLexing()
 	{
 		auto listField = dynamic_cast<TArrayVariable*>(field.Get());
 		for (UINT Rust = 0; listField->GetValueAt(Rust, field) && field.Get(); Rust++)
-		{
 			operators.push_back(dynamic_cast<TStringVariable*>(field->ToString().Get())->GetString());
 	}
 
@@ -236,7 +235,7 @@ bool TcLanguage::LexWasComment(TDataArray<Token>& tokens, TrecPointer<TStringVar
 		if (endCommentLoc == -1)
 		{
 			TcCompMessage message;
-			message.code.Set(L"Lex 1");
+			message.code.Set(L"Lex 01");
 			message.start = loc;
 			message.level = 1;
 			message.message.Set(L"Unending Multi-line Comment!");
@@ -270,7 +269,17 @@ bool TcLanguage::LexWasString(TDataArray<Token>& tokens, TrecPointer<TStringVari
 	{
 		if (code->GetString().StartsAt(stringRecognizers[Rust].startString, loc))
 		{
-			// To-Do: Process String
+			loc += stringRecognizers[Rust].startString.GetSize();
+			lineLoc += stringRecognizers[Rust].startString.GetSize();
+
+			switch (stringRecognizers[Rust].recognition)
+			{
+			case str_recognition::str_single_final_prim:
+			case str_recognition::str_single_final_second:
+				LexSingleLineFinalString(tokens, code, loc, line, lineLoc, messages, stringRecognizers[Rust]);
+				break;
+
+			}
 
 			return true;
 		}
@@ -329,6 +338,70 @@ bool TcLanguage::LexWasOperator(TDataArray<Token>& tokens, TrecPointer<TStringVa
 bool TcLanguage::LexWasNumber(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages)
 {
 	return false;
+}
+
+bool TcLanguage::LexSingleLineFinalString(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages, StringRecognition& recog)
+{
+	TString& localCode = code->GetString();
+
+	UINT backslashCount = 0;
+	UINT rCount = 0;
+	bool leaveLoop = false;
+	UINT curLoc = loc;
+	UINT curLine = line;
+	for (; !leaveLoop && loc < localCode.GetSize(); loc++, lineLoc++)
+	{
+		if (localCode.StartsAt(recog.endString, loc))
+		{
+			Token tok;
+			tok.SubmitTokenType(recog.recognition == str_recognition::str_single_final_prim ? token_type::tt_single_string : token_type::tt_single_string_second);
+			tok.stringStart = curLoc;
+			tok.tokenlength = loc - curLoc;
+			tok.lineStart = curLine;
+			loc += recog.endString.GetSize() - 1;
+			lineLoc += recog.endString.GetSize() - 1;
+			tokens.push_back(tok);
+			return true;
+		}
+
+		WCHAR ch = localCode[loc];
+		switch (ch)
+		{
+		case L'\\':
+			backslashCount++;
+			rCount = 0;
+			break;
+		case L'\r':
+			if (rCount) backslashCount = 0;
+			rCount++;
+			break;
+		case L'\n':
+			if (!(backslashCount % 2))
+			{
+				TcCompMessage message;
+				message.code.Set(L"Lex 02");
+				message.level = 3;
+				message.message.Set("Unescaped newline detected in Single Line String!");
+				message.start = curLoc;
+				message.length = loc - curLoc;
+				leaveLoop = true;
+			}
+			line++;
+			lineLoc = 0;
+		}
+	}
+
+	Token tok;
+	tok.SubmitTokenType(recog.recognition == str_recognition::str_single_final_prim ? token_type::tt_single_string : token_type::tt_single_string_second);
+	tok.stringStart = curLoc;
+	tok.tokenlength = loc - curLoc - 1;
+	tok.lineStart = curLine;
+
+	loc--;
+	lineLoc--;
+	tokens.push_back(tok);
+
+	return true;
 }
 
 TcLanguage::TcLanguage(TrecPointer<TJsonVariable> languageDetails)
