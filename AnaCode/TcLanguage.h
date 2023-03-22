@@ -69,7 +69,7 @@ public:
     USHORT lineStart;   // the line in the String where the token starts
     USHORT stringStart; // the character in the string where the token starts
     UCHAR tokenType;    // The type of token
-    UCHAR extraInfo;    // Extra information about this token (value meaning varies by token type)
+    USHORT extraInfo;    // Extra information about this token (value meaning varies by token type)
     USHORT tokenlength; // the length of the token
 
     Token() = default;
@@ -118,7 +118,11 @@ protected:
 
     // String Lexing helpers
     bool LexSingleLineFinalString(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages, StringRecognition& recog);
+    bool LexMultiLineFinalString(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages, StringRecognition& recog);
+    bool LexSingleLineTemplateString(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages, StringRecognition& recog);
+    bool LexMultiLineTemplateString(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages, StringRecognition& recog);
 
+    bool SeekStringTemplates(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, TDataArray<TcCompMessage>& messages);
 public: 
     TcLanguage(TrecPointer<TJsonVariable> languageDetails);
     TString Init();

@@ -278,7 +278,16 @@ bool TcLanguage::LexWasString(TDataArray<Token>& tokens, TrecPointer<TStringVari
 			case str_recognition::str_single_final_second:
 				LexSingleLineFinalString(tokens, code, loc, line, lineLoc, messages, stringRecognizers[Rust]);
 				break;
-
+			case str_recognition::str_multi_final_prim:
+			case str_recognition::str_multi_final_second:
+				LexMultiLineFinalString(tokens, code, loc, line, lineLoc, messages, stringRecognizers[Rust]);
+				break;
+			case str_recognition::str_single_template_prim:
+			case str_recognition::str_single_template_second:
+				LexSingleLineTemplateString(tokens, code, loc, line, lineLoc, messages, stringRecognizers[Rust]);
+				break;
+			default:
+				LexMultiLineTemplateString(tokens, code, loc, line, lineLoc, messages, stringRecognizers[Rust]);
 			}
 
 			return true;
@@ -351,10 +360,12 @@ bool TcLanguage::LexSingleLineFinalString(TDataArray<Token>& tokens, TrecPointer
 	UINT curLine = line;
 	for (; !leaveLoop && loc < localCode.GetSize(); loc++, lineLoc++)
 	{
-		if (localCode.StartsAt(recog.endString, loc))
+		if (!(backslashCount % 2) &&localCode.StartsAt(recog.endString, loc))
 		{
 			Token tok;
-			tok.SubmitTokenType(recog.recognition == str_recognition::str_single_final_prim ? token_type::tt_single_string : token_type::tt_single_string_second);
+			tok.SubmitTokenType(recog.recognition == str_recognition::str_single_final_prim || 
+				recog.recognition == str_recognition::str_single_template_prim ?
+				token_type::tt_single_string : token_type::tt_single_string_second);
 			tok.stringStart = curLoc;
 			tok.tokenlength = loc - curLoc;
 			tok.lineStart = curLine;
@@ -402,6 +413,129 @@ bool TcLanguage::LexSingleLineFinalString(TDataArray<Token>& tokens, TrecPointer
 	tokens.push_back(tok);
 
 	return true;
+}
+
+bool TcLanguage::LexMultiLineFinalString(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages, StringRecognition& recog)
+{
+	TString& localCode = code->GetString();
+
+	UINT backslashCount = 0;
+	UINT rCount = 0;
+	bool leaveLoop = false;
+	UINT curLoc = loc;
+	UINT curLine = line;
+	for (; !leaveLoop && loc < localCode.GetSize(); loc++, lineLoc++)
+	{
+		if (!(backslashCount % 2) && localCode.StartsAt(recog.endString, loc))
+		{
+			Token tok;
+			tok.SubmitTokenType(recog.recognition == str_recognition::str_multi_final_prim  ||
+				recog.recognition == str_recognition::str_multi_template_prim ?
+				token_type::tt_multi_string : token_type::tt_multi_string_second);
+			tok.stringStart = curLoc;
+			tok.tokenlength = loc - curLoc;
+			tok.lineStart = curLine;
+			loc += recog.endString.GetSize() - 1;
+			lineLoc += recog.endString.GetSize() - 1;
+			tokens.push_back(tok);
+			return true;
+		}
+
+		WCHAR ch = localCode[loc];
+		switch (ch)
+		{
+		case L'\\':
+			backslashCount++;
+			rCount = 0;
+			break;
+		case L'\r':
+			if (rCount) backslashCount = 0;
+			rCount++;
+			break;
+		case L'\n':
+			line++;
+			lineLoc = 0;
+		}
+
+	}
+	return false;
+}
+
+bool TcLanguage::LexSingleLineTemplateString(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages, StringRecognition& recog)
+{
+	if(!LexSingleLineFinalString(tokens, code, loc, line, lineLoc, messages, recog))
+		return false;
+
+	Token& stringTok = tokens[tokens.Size() - 1];
+
+	TrecPointer<TStringVariable> string = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(
+		TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(code->GetString().SubString(stringTok.stringStart, stringTok.stringStart + stringTok.tokenlength)));
+	TDataArray<Token> subTokens;
+	TDataArray<TcCompMessage> subMessages;
+	bool ret = this->SeekStringTemplates(subTokens, string, subMessages);
+
+	if (ret) {
+		stringTok.extraInfo = subTokens.Size();
+		for (UINT Rust = 0; Rust < subTokens.Size(); Rust++)
+		{
+			Token tempTok(subTokens[Rust]);
+
+			tempTok.stringStart += stringTok.stringStart;
+			tempTok.lineStart += stringTok.lineStart - 1;
+			tokens.push_back(tempTok);
+		}
+	}
+
+	for (UINT Rust = 0; Rust < subMessages.Size(); Rust++)
+	{
+		TcCompMessage tempMessage(subMessages[Rust]);
+
+		tempMessage.start += stringTok.stringStart;
+		messages.push_back(tempMessage);
+	}
+
+	return ret;
+}
+
+bool TcLanguage::LexMultiLineTemplateString(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages, StringRecognition& recog)
+{
+	if (!LexMultiLineFinalString(tokens, code, loc, line, lineLoc, messages, recog))
+		return false;
+
+	Token& stringTok = tokens[tokens.Size() - 1];
+
+	TrecPointer<TStringVariable> string = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(
+		TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(code->GetString().SubString(stringTok.stringStart, stringTok.stringStart + stringTok.tokenlength)));
+	TDataArray<Token> subTokens;
+	TDataArray<TcCompMessage> subMessages;
+	bool ret = this->SeekStringTemplates(subTokens, string, subMessages);
+
+	if (ret) {
+		stringTok.extraInfo = subTokens.Size();
+		for (UINT Rust = 0; Rust < subTokens.Size(); Rust++)
+		{
+			Token tempTok(subTokens[Rust]);
+
+			tempTok.stringStart += stringTok.stringStart;
+			tempTok.lineStart += stringTok.lineStart - 1;
+			tokens.push_back(tempTok);
+		}
+	}
+
+	for (UINT Rust = 0; Rust < subMessages.Size(); Rust++)
+	{
+		TcCompMessage tempMessage(subMessages[Rust]);
+
+		tempMessage.start += stringTok.stringStart;
+		messages.push_back(tempMessage);
+	}
+
+	return ret;
+}
+
+bool TcLanguage::SeekStringTemplates(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, TDataArray<TcCompMessage>& messages)
+{
+	return false;
 }
 
 TcLanguage::TcLanguage(TrecPointer<TJsonVariable> languageDetails)
