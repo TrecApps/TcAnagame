@@ -74,6 +74,9 @@ public:
 	void Draw(TrecPointer<TVariable> obj, TrecPointer<TColorBrush> col, float thickness) override;
 
 	TrecPointer<TVariable> SaveToVariable() override;
+
+	void SetTabColor(const TColor& color);
+	void Prep();
 };
 
 class IdePageSection : public IdeSection

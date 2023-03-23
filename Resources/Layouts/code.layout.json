@@ -15,20 +15,24 @@
 			"DivideField": 0.33,
 			"First": {
 				"SectionType": "Tab",
-				"Name": "Hierarchy"
+				"Name": "Hierarchy",
+				"TabColor": "0.5,0.5,1.0"
 			},
 			"Second": {
 				"SectionType": "Tab",
-				"Name": "Code"
+				"Name": "Code",
+				"TabColor": "0.5,1.0,0.5"
 			}
 		},
 		"Second": {
 			"SectionType": "Tab",
-			"Name": "Console"
+			"Name": "Console",
+		"TabColor": "0.5,0.5,0.5"
 		}
 	},
 	"Second": {
 		"SectionType": "Tab",
-		"Name": "Properties"
+		"Name": "Properties",
+		"TabColor": "1.0,0.5,0.5"
 	}
 }

@@ -39,7 +39,7 @@ void TIdeWindow::SaveIde()
 
 void TIdeWindow::LoadLayout(const TString& layoutFile)
 {
-	auto anaMainPage = TrecPointerKey::ConvertPointer<TPage, AnafacePage>(mainPage);
+	auto anaMainPage = TrecPointerKey::ConvertPointer<TPage, TControl>(mainPage);
 	if (!anaMainPage.Get())
 		return;
 

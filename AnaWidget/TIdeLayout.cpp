@@ -527,6 +527,18 @@ void TIdeLayout::HandleTabVariable(TrecPointer<IdeSection>& section, TrecPointer
 
     if (!strField.Get())
         tabSection->name.Set(strField->GetString());
+
+    tabSection->Prep();
+   
+    if (variable->RetrieveField(L"TabColor", field))
+    {
+        TrecPointer<TVariable> var;
+        TString color(TStringVariable::Extract(field, L""));
+        bool worked;
+        TColor color_(TColor::GetColorFromString(color, worked));
+        if (worked)
+            tabSection->SetTabColor(color_);
+    }
 }
 
 void TIdeLayout::HandlePageVariable(TrecPointer<IdeSection>& section, TrecPointer<TJsonVariable>& variable, const RECT_F& bounds)
@@ -721,6 +733,18 @@ TrecPointer<TVariable> IdeTabSection::SaveToVariable()
     jRet->SetField(L"Name", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(name));
 
     return ret;
+}
+
+void IdeTabSection::SetTabColor(const TColor& color)
+{
+    if (this->tab.Get() && tab->GetTabBar().Get())
+        tab->GetTabBar()->SetBackgroundColor(color);
+}
+
+void IdeTabSection::Prep()
+{
+    if (tab.Get())
+        tab->onCreate(bounds, TrecPointer<TFileShell>());
 }
 
 ide_section_type IdePageSection::GetSectionType()

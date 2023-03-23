@@ -324,7 +324,11 @@ TrecPointer<TPage> TabBar::GetTabAt(UINT index, bool content)
 void TabBar::Draw(TrecPointer<TVariable> object)
 {
     if (dynamic_cast<TColorBrush*>(backgroundColor.Get()))
-        dynamic_cast<TColorBrush*>(backgroundColor.Get())->FillRectangle(this->area);
+    {
+        RECT_F tempRect;
+        TColorBrush::NormalizeRect(tempRect, this->area, this->drawingBoard);
+        dynamic_cast<TColorBrush*>(backgroundColor.Get())->FillRectangle(tempRect);
+    }
     if (tabOverflow)
     {
         leftTab.Draw(object);
