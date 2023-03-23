@@ -25,6 +25,8 @@ protected:
 
     void SaveIde();
 
+    void LoadLayout(const TString& layoutFile);
+
 public:
     // Inherited From TWindow
     void OnResize(int w, int h) override;
