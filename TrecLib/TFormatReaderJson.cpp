@@ -104,6 +104,7 @@ void WriteJsonObject(TFile& file, TrecPointer<TJsonVariable> var, UINT level, TF
 
     if (doNewLine)
         file.WriteString(TString(L"\n") + tabSpace + L'}');
+    else file.WriteString(TString(L"}"));
 }
 
 void WriteArrayObject(TFile& file, TrecPointer<TArrayVariable> var, UINT level, TFormatReader::write_mode mode)

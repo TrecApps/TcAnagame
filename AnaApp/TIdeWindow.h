@@ -27,9 +27,14 @@ protected:
 
     void LoadLayout(const TString& layoutFile);
 
+    RECT_F setTo;
+    bool doResize;
+
 public:
     // Inherited From TWindow
     void OnResize(int w, int h) override;
+
+    void PrepResize();
 
 
     // IDE Specific Methods

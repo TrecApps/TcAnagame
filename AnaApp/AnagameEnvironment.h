@@ -31,6 +31,8 @@ protected:
 public:
     UserProfileEnvironment();
     ~UserProfileEnvironment();
+
+    void SaveProperties() override;
 };
 
 class _ANA_APP AppDataEnvironment : public TEnvironment
@@ -85,6 +87,9 @@ public:
     BasicAnagameEnvironment();
     void SetProject(TrecActivePointer<AGProjectEnvironment> projectEnvironment);
     void SetProperty(const TString& name, TrecPointer<TVariable> var, env_target target);
+
+    TrecPointer<TVariable> GetProperty(const TString& name, env_target target);
+    TrecPointer<TVariable> GetProperty(const TString& name, const TDataArray<env_target>& targets);
 
     TrecPointer<AGProjectEnvironment> RetrieveProjectEnvironment();
 };

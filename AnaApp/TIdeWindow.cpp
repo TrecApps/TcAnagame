@@ -6,6 +6,8 @@
 #include "PageTypes.h"
 #include <TFormatReader.h>
 #include "AnagameEnvironment.h"
+#include <TPrimitiveVariable.h>
+#include <TcOperator.h>
 
 void TIdeWindow::SaveIde()
 {
@@ -65,12 +67,76 @@ void TIdeWindow::LoadLayout(const TString& layoutFile)
 void TIdeWindow::OnResize(int w, int h)
 {
 	// int curWidth = area.right - area.left;
+
+	environment->SetProperty(L"window.ide.width", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TPrimitiveVariable>(w), env_target::user);
+	environment->SetProperty(L"window.ide.height", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TPrimitiveVariable>(h), env_target::user);
+
+
 	TWindow::OnResize(w, h);
+}
+
+void TIdeWindow::PrepResize()
+{
+	if (doResize)
+	{
+		glfwSetWindowSize(window, setTo.right, setTo.bottom);
+		doResize = false;
+		//OnResize(setTo.right, setTo.bottom);
+	}
 }
 
 TIdeWindow::TIdeWindow(GLFWwindow* window): TWindow(window)
 {
 	mainPageSpace = 180;
+	environment = TrecPointerKey::GetNewTrecPointer< BasicAnagameEnvironment>();
+
+
+	auto height = environment->GetProperty(L"window.ide.height", env_target::user);
+	auto width = environment->GetProperty(L"window.ide.width", env_target::user);
+
+	doResize = false;
+
+	setTo = { 0,0,0,0 };
+
+	if (height.Get())
+	{
+		DoubleLong dl = DoubleLong::GetValueFromPrimitive(height);
+		if (dl.type != double_long::dl_invalid)
+		{
+			doResize = true;
+			switch (dl.type)
+			{
+			case double_long::dl_sign:
+				setTo.bottom = dl.value.s;
+				break;
+			case double_long::dl_unsign:
+				setTo.bottom = dl.value.u;
+				break;
+			case double_long::dl_double:
+				setTo.bottom = dl.value.d;
+			}
+		}
+	}
+
+	if (width.Get())
+	{
+		DoubleLong dl = DoubleLong::GetValueFromPrimitive(width);
+		if (dl.type != double_long::dl_invalid)
+		{
+			doResize = true;
+			switch (dl.type)
+			{
+			case double_long::dl_sign:
+				setTo.right = dl.value.s;
+				break;
+			case double_long::dl_unsign:
+				setTo.right = dl.value.u;
+				break;
+			case double_long::dl_double:
+				setTo.right = dl.value.d;
+			}
+		}
+	}
 }
 
 void TIdeWindow::SetMainPage(TrecPointer<TPage> mainPage)
@@ -108,7 +174,7 @@ void TIdeWindow::SetMainPage(TrecPointer<TPage> mainPage)
 	TDataArray<TPage::EventID_Cred> cred;
 	mainLayout->OnResize(this->area, 0, cred);
 
-	TString layout(TStringVariable::Extract(environment->GetProperty(L"anagame.ide.layout"), L"code"));
+	TString layout(TStringVariable::Extract(environment->TEnvironment::GetProperty(L"anagame.ide.layout"), L"code"));
 	LoadLayout(layout);
 
 	//TrecPointer<IdeSection> ideSection;

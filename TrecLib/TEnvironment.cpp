@@ -6,6 +6,11 @@ TObject::ObjectType TEnvironment::GetObjectType()
     return ObjectType::ot_environment;
 }
 
+void TEnvironment::SaveProperties()
+{
+
+}
+
 void TEnvironment::RetrieveResourceList(TDataArray<TrecPointer<TVariable>>& resources)
 {
     RetrieveResourceListSub(resources);

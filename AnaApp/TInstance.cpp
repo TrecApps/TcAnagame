@@ -393,6 +393,9 @@ UINT TInstance::GenerateWindow(TrecPointer<TWindow>& window, TrecPointer<TFileSh
 	if (closeFunction)
 		glfwSetWindowCloseCallback(glfwWindow, closeFunction);
 
+	if(type == t_window_type::t_window_type_ide)
+		dynamic_cast<TIdeWindow*>(board.Get())->PrepResize();
+
 	return Rust;
 }
 

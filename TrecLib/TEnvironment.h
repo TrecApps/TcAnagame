@@ -15,6 +15,8 @@ protected:
 public:
     TEnvironment() = default;
 
+    virtual void SaveProperties();
+
     ObjectType GetObjectType()final;
 
     void RetrieveResourceList(TDataArray<TrecPointer<TVariable>>& resources);

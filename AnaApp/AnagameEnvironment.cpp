@@ -116,6 +116,7 @@ void BasicAnagameEnvironment::SetProperty(const TString& name, TrecPointer<TVari
 		break;
 	case env_target::user:
 		user->SetProperty(name, var, true);
+		user->SaveProperties();
 		break;
 	case env_target::project:
 		if (project.Get())
@@ -124,6 +125,34 @@ void BasicAnagameEnvironment::SetProperty(const TString& name, TrecPointer<TVari
 	default:
 		TEnvironment::SetProperty(name, var, true);
 	}
+}
+
+TrecPointer<TVariable> BasicAnagameEnvironment::GetProperty(const TString& name, env_target target)
+{
+	switch (target)
+	{
+	case env_target::user:
+		return user.Get()->GetProperty(name);
+	case env_target::anagame:
+		return anagame->GetProperty(name);
+	case env_target::project:
+		if (project.Get())
+			return project->GetProperty(name);
+		return TrecPointer<TVariable>();
+	default:
+		return TEnvironment::GetProperty(name);
+	}
+}
+
+TrecPointer<TVariable> BasicAnagameEnvironment::GetProperty(const TString& name, const TDataArray<env_target>& targets)
+{
+	TrecPointer<TVariable> ret;
+
+	for (UINT Rust = 0; !ret.Get() && Rust < targets.Size(); Rust++)
+	{
+		ret = GetProperty(name, targets[Rust]);
+	}
+	return ret;
 }
 
 TrecPointer<AGProjectEnvironment> BasicAnagameEnvironment::RetrieveProjectEnvironment()
@@ -231,6 +260,30 @@ UserProfileEnvironment::~UserProfileEnvironment()
 
 	reader->Write(vProps);
 	
+}
+
+void UserProfileEnvironment::SaveProperties()
+{
+	TString file(GetDirectoryWithSlash(CentralDirectories::cd_User) + L".Anagame");
+
+	ForgeDirectory(file);
+
+	TrecPointer<TFileShell> targetFile = TFileShell::GetFileInfo(file + w + L"settings.json");
+
+	TrecPointer<TFormatReader> writer = TFormatReader::GetReader(targetFile);
+
+	if (!writer.Get())
+		return;
+	TrecPointer<TVariable> propsVar = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TJsonVariable>();
+	TrecPointer<TJsonVariable> jsonProps = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(propsVar);
+
+	TDataEntry<TrecPointer<TVariable>> varEntry;
+	for (UINT Rust = 0; properties.GetEntryAt(Rust, varEntry); Rust++)
+	{
+		jsonProps->SetField(varEntry.key, varEntry.object);
+	}
+
+	writer->Write(propsVar);
 }
 
 TrecPointer<TObject> AppDataEnvironment::RetrieveResource(const TString& name)

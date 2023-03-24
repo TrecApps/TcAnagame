@@ -1501,10 +1501,14 @@ void TFile::WriteString(const TString& lpsz)
 	case FileEncodingType::fet_acsii:
 	case FileEncodingType::fet_unicode8:
 		size = lpsz.GetSize();
-		acsiiText = new CHAR[size * 2 + 1];
+		
 		wBytes = TcWideCharToMultiByte(newParam.GetConstantBuffer().getBuffer(),
-			size, acsiiText);
-		Write(acsiiText, wBytes);
+			0, acsiiText);
+		acsiiText = new CHAR[wBytes];
+		wBytes = TcWideCharToMultiByte(newParam.GetConstantBuffer().getBuffer(),
+			wBytes, acsiiText);
+		if(wBytes)
+			Write(acsiiText, wBytes - 1);
 		delete[] acsiiText;
 		break;
 	case FileEncodingType::fet_unicode:
