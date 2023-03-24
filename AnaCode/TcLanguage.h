@@ -105,8 +105,9 @@ protected:
     TString identifierStart;
     TString identifierCharacter;
 
-    TDataMap<TString> numberRegExpression;
+    //TDataMap<TString> numberRegExpression;
     TDataArray<TString> operators;
+    TDataArray<TString> numberSuffixes;
 
     // Lexing Helpers
     bool LexWasComment(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages);

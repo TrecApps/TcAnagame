@@ -152,37 +152,46 @@ TString TcLanguage::InitLexing()
 			operators.push_back(dynamic_cast<TStringVariable*>(field->ToString().Get())->GetString());
 	}
 
-	if (languageDetails->RetrieveField(L"NumberExpressions", field) && field.Get())
+	if (languageDetails->RetrieveField(L"NumberSuffixes", field) && field.Get() && field->GetVarType() == var_type::list)
 	{
-		if (field->GetVarType() == var_type::list)
-		{
-			auto listField = dynamic_cast<TArrayVariable*>(field.Get());
-			for (UINT Rust = 0; listField->GetValueAt(Rust, field) && field.Get(); Rust++)
-			{
-				auto pieces = dynamic_cast<TStringVariable*>(field->ToString().Get())->GetString().splitn(L":", 2);
-				if (pieces->Size() != 2)
-				{
-					if (failures++) ret.AppendChar(L',');
-					ret.AppendChar(L' ');
-					ret.Append(L"NumberExpressions");
-				}
-				else
-					numberRegExpression.addEntry(pieces->at(0).GetTrim(), pieces->at(1).GetTrim());
-			}
-		}
-		else if (field->GetVarType() == var_type::string)
-		{
-			auto pieces = dynamic_cast<TStringVariable*>(field->ToString().Get())->GetString().splitn(L":", 2);
-			if (pieces->Size() != 2)
-			{
-				if (failures++) ret.AppendChar(L',');
-				ret.AppendChar(L' ');
-				ret.Append(L"NumberExpressions");
-			}
-			else
-				numberRegExpression.addEntry(pieces->at(0).GetTrim(), pieces->at(1).GetTrim());
-		}
+		auto listField = dynamic_cast<TArrayVariable*>(field.Get());
+		for (UINT Rust = 0; listField->GetValueAt(Rust, field) && field.Get(); Rust++)
+			numberSuffixes.push_back(dynamic_cast<TStringVariable*>(field->ToString().Get())->GetString());
 	}
+
+	//if (languageDetails->RetrieveField(L"NumberExpressions", field) && field.Get())
+	//{
+	//	if (field->GetVarType() == var_type::list)
+	//	{
+	//		auto listField = dynamic_cast<TArrayVariable*>(field.Get());
+	//		for (UINT Rust = 0; listField->GetValueAt(Rust, field) && field.Get(); Rust++)
+	//		{
+	//			auto pieces = dynamic_cast<TStringVariable*>(field->ToString().Get())->GetString().splitn(L":", 2);
+	//			if (pieces->Size() != 2)
+	//			{
+	//				if (failures++) ret.AppendChar(L',');
+	//				ret.AppendChar(L' ');
+	//				ret.Append(L"NumberExpressions");
+	//			}
+	//			else
+	//				numberRegExpression.addEntry(pieces->at(0).GetTrim(), pieces->at(1).GetTrim());
+	//		}
+	//	}
+	//	else if (field->GetVarType() == var_type::string)
+	//	{
+	//		auto pieces = dynamic_cast<TStringVariable*>(field->ToString().Get())->GetString().splitn(L":", 2);
+	//		if (pieces->Size() != 2)
+	//		{
+	//			if (failures++) ret.AppendChar(L',');
+	//			ret.AppendChar(L' ');
+	//			ret.Append(L"NumberExpressions");
+	//		}
+	//		else
+	//			numberRegExpression.addEntry(pieces->at(0).GetTrim(), pieces->at(1).GetTrim());
+	//	}
+	//}
+
+
 
 	return L"";
 }
@@ -346,7 +355,129 @@ bool TcLanguage::LexWasOperator(TDataArray<Token>& tokens, TrecPointer<TStringVa
 
 bool TcLanguage::LexWasNumber(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages)
 {
-	return false;
+	// To-Do: Replace with use of Regular Expressions once Implemented
+
+
+	// End To-Do
+
+	bool numberFound = false;
+
+	TString& localCode = code->GetString();
+
+	UINT curLoc = loc;
+	UINT curLineLoc = lineLoc;
+
+	if (localCode.StartsAt(L"0b", loc) || localCode.StartsAt(L"0B", loc))
+	{
+		loc += 2;
+		numberFound = true;
+		for (; loc < localCode.GetSize(); loc++, lineLoc++)
+		{
+			if (localCode[loc] != L'0' && localCode[loc] != L'1' && localCode[loc] != L'_')
+				break;
+		}
+		Token tok;
+		tok.SubmitTokenType(token_type::tt_number);
+		tok.extraInfo = static_cast<UCHAR>(number_base::nb_binary);
+		tok.lineStart = line;
+		tok.stringStart = curLoc;
+		tok.tokenlength = loc - curLoc;
+		tokens.push_back(tok);
+		loc--;
+		lineLoc--;
+	}
+
+	if (!numberFound && (localCode.StartsAt(L"0x", loc) || localCode.StartsAt(L"0X", loc)))
+	{
+		loc += 2;
+		numberFound = true;
+		for (; loc < localCode.GetSize(); loc++, lineLoc++)
+		{
+			WCHAR ch = localCode[loc];
+			if ((ch >= L'0' && ch <= L'9') ||
+				(ch >= L'a' && ch <= L'f') ||
+				(ch >= L'A' && ch <= L'F'))
+				continue;
+			break;
+		}
+		Token tok;
+		tok.SubmitTokenType(token_type::tt_number);
+		tok.extraInfo = static_cast<UCHAR>(number_base::nb_hexadecimal);
+		tok.lineStart = line;
+		tok.stringStart = curLoc;
+		tok.tokenlength = loc - curLoc;
+		tokens.push_back(tok);
+		loc--;
+		lineLoc--;
+	}
+	if (!numberFound)
+	{
+		bool dotFound = false;
+		bool stayInLoop = true;
+
+		for (; stayInLoop && loc < localCode.GetSize(); loc++, lineLoc++)
+		{
+			switch (localCode[loc])
+			{
+			case L'.':
+				if (dotFound)
+				{
+					TcCompMessage message;
+					message.code.Set(L"Lex 03");
+					message.start = curLoc;
+					message.level = 2;
+					message.length = loc - curLoc;
+					message.message.Set(L"Unexpected second '.' detected in number.");
+					messages.push_back(message);
+					stayInLoop = false;
+				}
+				dotFound = true;
+				break;
+			case L'_':
+				continue;
+			case L'0':
+			case L'1':
+			case L'2':
+			case L'3':
+			case L'4':
+			case L'5':
+			case L'6':
+			case L'7':
+			case L'8':
+			case L'9':
+				numberFound = true;
+				continue;
+			default:
+				stayInLoop = false;
+				break;;
+			}
+		}
+		if (numberFound)
+		{
+			for (UINT Rust = 0; Rust < this->numberSuffixes.Size(); Rust++)
+			{
+				if (localCode.StartsAt(numberSuffixes[Rust], loc, true, true))
+				{
+					loc += numberSuffixes.Size();
+					break;
+				}
+			}
+			Token tok;
+			tok.SubmitTokenType(token_type::tt_number);
+			tok.lineStart = line;
+			tok.stringStart = curLoc;
+			tok.tokenlength = loc - curLoc;
+			tokens.push_back(tok);
+			loc--;
+			lineLoc--;
+		}
+		else {
+			// Reset to the status quo
+			loc = curLoc;
+			lineLoc = curLineLoc;
+		}
+	}
+	return numberFound;
 }
 
 bool TcLanguage::LexSingleLineFinalString(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, UINT& loc, UINT& line, UINT& lineLoc, TDataArray<TcCompMessage>& messages, StringRecognition& recog)
@@ -535,7 +666,31 @@ bool TcLanguage::LexMultiLineTemplateString(TDataArray<Token>& tokens, TrecPoint
 
 bool TcLanguage::SeekStringTemplates(TDataArray<Token>& tokens, TrecPointer<TStringVariable> code, TDataArray<TcCompMessage>& messages)
 {
-	return false;
+
+	int startIndex = 0, endIndex = 0;
+	while ((startIndex = code->GetString().Find(this->templateStart, endIndex, false) != -1) &&
+		(endIndex = code->GetString().Find(this->templateStart, startIndex + 1, false) != -1))
+	{
+		UINT line = code->GetString().SubString(0, startIndex).CountFinds(L'\n');
+		int repCount = 0;
+		TrecPointer<TStringVariable> templateCode = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>
+			(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(code->GetString().SubString(startIndex + templateStart.GetSize(), endIndex)));
+
+		TDataArray<Token> subTokens;
+		TDataArray<TcCompMessage> subMessages;
+		UINT subLoc = 0, subLine = 0, subLineLoc = 0;
+
+		PerformLexScanning(subTokens, templateCode, subLoc, subLine, subLineLoc, subMessages);
+
+		for (UINT Rust = 0; Rust < subTokens.Size(); Rust++)
+		{
+			Token tok(subTokens[Rust]);
+			tok.lineStart += line;
+			tok.stringStart += startIndex + templateStart.GetSize();
+			tokens.push_back(tok);
+		}
+	}
+	return true;
 }
 
 TcLanguage::TcLanguage(TrecPointer<TJsonVariable> languageDetails)
