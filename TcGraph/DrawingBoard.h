@@ -127,6 +127,8 @@ protected:
     
     bool needsRefresh, needsConstantRefresh;
 
+    void ResetProjection();
+
 public:
     bool RetrieveFontEntry(const TString& name, std::map<CharWithSize, GLuint>& map);
     void SetFontEntry(const TString& name, const std::map<CharWithSize, GLuint>& map);

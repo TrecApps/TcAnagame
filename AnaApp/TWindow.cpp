@@ -206,6 +206,7 @@ void TWindow::OnResize(int w, int h)
 {
     area.right = w;
     area.bottom = h;
+    ResetProjection();
 
     if (mainPage.Get())
     {

@@ -109,7 +109,7 @@ DrawingBoard::DrawingBoard(GLFWwindow* window)
 	area.right = w;
 	origArea = area;
 	origArea = area;
-	orthoProjection = glm::ortho(0.0f, static_cast<float>(area.right), 0.0f, static_cast<float>(area.bottom));
+	ResetProjection();
 
 	shaderType = shader_type::shader_2d;
 	glfwMakeContextCurrent(window);
@@ -124,6 +124,11 @@ DrawingBoard::DrawingBoard(GLFWwindow* window)
 	needsConstantRefresh = false;
 
 	TcInitLock(&drawingThread);
+}
+
+void DrawingBoard::ResetProjection()
+{
+	orthoProjection = glm::ortho(0.0f, static_cast<float>(area.right), 0.0f, static_cast<float>(area.bottom));
 }
 
 bool DrawingBoard::RetrieveFontEntry(const TString& name, std::map<CharWithSize, GLuint>& map)
