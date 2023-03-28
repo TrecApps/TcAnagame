@@ -151,6 +151,8 @@ void MainPageIdeHandler::OnNewResource(TrecPointer<TPage> tc, EventArgs ea)
 	dialog->RunModal();
 
 	TrecPointer<TJsonVariable> data = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(dialog->GetResult());
+	if (data.Get())
+		TrecPointerKey::TrecFromSoft<>(window)->PrepResource(data);
 }
 
 void MainPageIdeHandler::OnImportFile(TrecPointer<TPage> tc, EventArgs ea)

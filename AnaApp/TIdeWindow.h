@@ -39,6 +39,8 @@ public:
 
     // IDE Specific Methods
 
+    void PrepResource(TrecPointer<TJsonVariable> resourceData);
+
     TIdeWindow(GLFWwindow* window);
 
     void SetMainPage(TrecPointer<TPage> mainPage) override;

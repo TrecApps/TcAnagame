@@ -48,6 +48,7 @@ void TAnagameCodeExEnv::RetrieveResourceListSub(TDataArray<TrecPointer<TVariable
     resourceSpecs->Push(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"Env-Source: AnagameCodeEx"));
     resourceSpecs->Push(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"Resource-Type: Page"));
     resourceSpecs->Push(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"Resource: Code_Handler"));
+    resourceSpecs->Push(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"IDE_Loc: Code"));
 
     resources.push_back(baseSpecs);
 }

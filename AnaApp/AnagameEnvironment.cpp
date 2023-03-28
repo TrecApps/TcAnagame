@@ -75,6 +75,7 @@ void BasicAnagameEnvironment::RetrieveResourceListSub(TDataArray<TrecPointer<TVa
 			resourceSpecs->Push(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"Env-Source: anagame"));
 			resourceSpecs->Push(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"Resource-Type: Page"));
 			resourceSpecs->Push(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"Resource: hierarchy"));
+			resourceSpecs->Push(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(L"IDE_Loc: Hierarchy"));
 
 			resources.push_back(baseSpecs);
 		}
@@ -91,6 +92,27 @@ void BasicAnagameEnvironment::RetrieveResourceListSub(TDataArray<TrecPointer<TVa
 		if (!projectIsChild)
 			project->RetrieveResourceList(resources);
 	}
+}
+
+TrecPointer<TObject> BasicAnagameEnvironment::GetResource(const TString& name)
+{
+	TrecPointer<TObject> ret;
+	
+	if (this->anagame.Get())
+	{
+		ret = anagame->GetResource(name);
+	}
+	if (!ret.Get() && this->user.Get())
+	{
+		ret = user->GetResource(name);
+	}
+	if (!ret.Get() && project.Get())
+		project->GetResource(name);
+
+	if (!ret.Get())
+		ret = TEnvironment::GetResource(name);
+	
+	return ret;
 }
 
 BasicAnagameEnvironment::BasicAnagameEnvironment()

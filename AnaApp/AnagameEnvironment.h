@@ -84,6 +84,7 @@ protected:
     void RetrieveResourceListSub(TDataArray<TrecPointer<TVariable>>& resources) override;
 
 public:
+    TrecPointer<TObject> GetResource(const TString& name) override;
     BasicAnagameEnvironment();
     void SetProject(TrecActivePointer<AGProjectEnvironment> projectEnvironment);
     void SetProperty(const TString& name, TrecPointer<TVariable> var, env_target target);

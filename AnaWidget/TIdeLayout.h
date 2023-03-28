@@ -160,7 +160,13 @@ public:
 	bool GetBounds(const TPoint& point, RECT_F& bounds, TrecPointer<IdeSection>& section);
 	bool GetBounds(TrecPointer<IdeSection> section, RECT_F& bounds);
 
+	void GetTabList(TDataArray<TString>& list);
+	void SubmitToTab(const TString& name, const TString& pageName, TrecPointer<TPage> page);
+
 protected:
+	void GetTabList(TDataArray<TString>& list, TrecPointer<IdeSection>& section);
+	bool SubmitToTab(const TString& name, const TString& pageName, TrecPointer<TPage> page, TrecPointer<IdeSection>& section);
+
 	void HandleVariable(TrecPointer<IdeSection>& section, TrecPointer<TJsonVariable>& variable, const RECT_F& bounds);
 	void HandleDividerVariable(TrecPointer<IdeSection>& section, TrecPointer<TJsonVariable>& variable, const RECT_F& bounds);
 	void HandleTabVariable(TrecPointer<IdeSection>& section, TrecPointer<TJsonVariable>& variable, const RECT_F& bounds);

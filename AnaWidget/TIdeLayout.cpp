@@ -438,6 +438,59 @@ bool TIdeLayout::GetBounds(TrecPointer<IdeSection> section, RECT_F& bounds)
     return true;
 }
 
+void TIdeLayout::GetTabList(TDataArray<TString>& list)
+{
+    list.RemoveAll();
+    GetTabList(list, this->rootSection);
+}
+
+void TIdeLayout::SubmitToTab(const TString& name, const TString& pageName, TrecPointer<TPage> page)
+{
+    if (!page.Get())
+        return;
+    SubmitToTab(name,pageName, page, this->rootSection);
+}
+
+void TIdeLayout::GetTabList(TDataArray<TString>& list, TrecPointer<IdeSection>& section)
+{
+    if (!section.Get())
+        return;
+
+    if (section->GetSectionType() == ide_section_type::tab)
+    {
+        TString name(dynamic_cast<IdeTabSection*>(section.Get())->name);
+        if (name.GetSize())
+            list.push_back(name);
+    }
+    if (section->GetSectionType() == ide_section_type::divider)
+    {
+        auto dividerSection = TrecPointerKey::ConvertPointer<IdeSection, IdeDividerSection>(section);
+        GetTabList(list, dividerSection->first);
+        GetTabList(list, dividerSection->second);
+    }
+}
+
+bool TIdeLayout::SubmitToTab(const TString& sectionName, const TString& pageName, TrecPointer<TPage> page, TrecPointer<IdeSection>& section)
+{
+    if(!section.Get())
+        return false;
+    if (section->GetSectionType() == ide_section_type::tab)
+    {
+        auto tabSection = TrecPointerKey::ConvertPointer<IdeSection, IdeTabSection>(section);
+        if (!tabSection->name.Compare(sectionName) && tabSection->tab.Get())
+        {
+            tabSection->tab->GetTabBar()->AddNewTab(pageName, page, true);
+            return true;
+        }
+    }
+    if (section->GetSectionType() == ide_section_type::divider)
+    {
+        auto dividerSection = TrecPointerKey::ConvertPointer<IdeSection, IdeDividerSection>(section);
+        return SubmitToTab(sectionName, pageName,page, dividerSection->first) || SubmitToTab(sectionName, pageName, page, dividerSection->second);
+    }
+    return false;
+}
+
 void TIdeLayout::HandleVariable(TrecPointer<IdeSection>& section, TrecPointer<TJsonVariable>& variable, const RECT_F& bounds)
 {
     TrecPointer<TVariable> field;

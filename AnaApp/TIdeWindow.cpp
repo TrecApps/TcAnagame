@@ -139,6 +139,60 @@ TIdeWindow::TIdeWindow(GLFWwindow* window): TWindow(window)
 	}
 }
 
+void TIdeWindow::PrepResource(TrecPointer<TJsonVariable> resourceData)
+{
+	TString idePage, source, title, name;
+
+	TrecPointer<TVariable> field;
+	bool useResourceTitle = false;
+	if (resourceData->RetrieveField(L"ResourceSource", field))
+	{
+		source.Set(TStringVariable::Extract(field, L""));
+	}
+	if (resourceData->RetrieveField(L"ResourceTitle", field))
+	{
+		title.Set(TStringVariable::Extract(field, L""));
+	}	
+	if (resourceData->RetrieveField(L"Name", field))
+	{
+		name.Set(TStringVariable::Extract(field, L""));
+	}
+	else if (resourceData->RetrieveField(L"ResourceDetail", field))
+	{
+		useResourceTitle = true;
+		name.Set(TStringVariable::Extract(field, L""));
+	}
+	if (resourceData->RetrieveField(L"IdeTab", field))
+	{
+		idePage.Set(TStringVariable::Extract(field, L""));
+	}
+
+
+	TrecPointer<TObject> resource = environment->GetResource(source + L":" + title + L":" + name);
+
+	TrecPointer<AnafaceBuilder> builder = TrecPointerKey::ConvertPointer<TObject, AnafaceBuilder>(resource);
+
+	if (builder.Get())
+	{
+		builder->SetSpace(area);
+		builder->SetDrawingBoard(TrecPointerKey::TrecFromSoft<>(this->self));
+		TrecPointer<TPage> page = builder->GetPage();
+
+		if (!page.Get())
+			return;
+
+		auto anaMainPage = TrecPointerKey::ConvertPointer<TPage, TControl>(mainPage);
+		if (!anaMainPage.Get())
+			return;
+
+		TrecPointer<TIdeLayout> ideLayout = TrecPointerKey::ConvertPointer<TControl, TIdeLayout>(anaMainPage->GetControlById(L"TC_IDE_LAYOUT"));
+		if (!ideLayout.Get())
+			return;
+
+		ideLayout->SubmitToTab(idePage, useResourceTitle ? title : name, page);
+	}
+}
+
 void TIdeWindow::SetMainPage(TrecPointer<TPage> mainPage)
 {
 	if (!environment.Get())

@@ -101,7 +101,7 @@ void NewResourceHandler::AssessOkay()
         works = false;
     if (works && !resourceTitle.GetSize())
         works = false;
-    if (works && (!nameRequired || !actNameInput.Get() || !actNameInput->GetTextElement()->GetText()->GetSize()))
+    if (works && (nameRequired && (!actNameInput.Get() || !actNameInput->GetTextElement()->GetText()->GetSize())))
         works = false;
 
     auto oButton = TrecPointerKey::TrecFromSoft<>(okayButton);
@@ -158,6 +158,8 @@ void NewResourceHandler::OnOkay(TrecPointer<TPage> tc, EventArgs ea)
         else
             jProj->SetField(L"ResourceDetail", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(this->resourceDetails));
 
+        if (ideTab.GetSize())
+            jProj->SetField(L"IdeTab", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(this->ideTab));
 
         dialogWindow->SetResult(proj);
     }
@@ -206,6 +208,10 @@ void NewResourceHandler::OnResourceSelect(TrecPointer<TPage> tc, EventArgs ea)
             else if (!pieces->at(0).CompareNoCase(L"File-Ext"))
             {
                 nameRequired = true;
+            }
+            else if (!pieces->at(0).CompareNoCase(L""))
+            {
+                ideTab.Set(pieces->at(1).GetTrim());
             }
         }
 

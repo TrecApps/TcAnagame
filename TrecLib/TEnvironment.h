@@ -23,7 +23,7 @@ public:
 
     void AddEnvironment(TrecPointer<TEnvironment> childEnvironment);
 
-    TrecPointer<TObject> GetResource(const TString& name);
+    virtual TrecPointer<TObject> GetResource(const TString& name);
 
     TrecPointer<TVariable> GetProperty(const TString& name)const ;
 
