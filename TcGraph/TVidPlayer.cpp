@@ -28,6 +28,13 @@ TcAVFrame::~TcAVFrame()
     av_frame_free(&frame);
 }
 
+TcAVFrame& TcAVFrame::operator=(const TcAVFrame& copy)
+{
+    av_frame_copy(this->frame, copy.frame);
+    this->brush = copy.brush;
+    return *this;
+}
+
 void TcAVFrame::SetFrame(AVFrame* frame)
 {
     av_frame_copy(this->frame, frame);
@@ -313,6 +320,12 @@ TrecPointer<TVidPlayer> TVidPlayer::GetPlayer(TrecPointer<DrawingBoard> board, T
         }
 
         if (avcodec_parameters_to_context(codecContext, av_codec_params) < 0) {
+            avcodec_free_context(&codecContext);
+            codecContext = nullptr;
+            continue;
+        }
+
+        if (avcodec_open2(codecContext, av_codec, nullptr) < 0) {
             avcodec_free_context(&codecContext);
             codecContext = nullptr;
             continue;

@@ -38,6 +38,8 @@ public:
     TcAVFrame(const TcAVFrame& copy);
     ~TcAVFrame();
 
+    TcAVFrame& operator=(const TcAVFrame& copy);
+
     void SetFrame(AVFrame* frame);
 };
 
