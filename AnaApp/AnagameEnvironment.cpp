@@ -107,7 +107,7 @@ TrecPointer<TObject> BasicAnagameEnvironment::GetResource(const TString& name)
 		ret = user->GetResource(name);
 	}
 	if (!ret.Get() && project.Get())
-		project->GetResource(name);
+		ret = project->GetResource(name);
 
 	if (!ret.Get())
 		ret = TEnvironment::GetResource(name);

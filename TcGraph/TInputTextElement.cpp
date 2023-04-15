@@ -58,7 +58,7 @@ void TInputTextElement::UpdateCarotPoisition(UINT loc)
 			carotActive = true;
 			carotLoc = loc;
 		}
-		if (loc == (line.strIndex + line.characters.Size()))
+		if (!carotActive && loc == (line.strIndex + line.characters.Size()))
 		{
 			auto& ch = line.characters[line.characters.Size() -1];
 			drawingBoard->SetCaret(
@@ -69,7 +69,34 @@ void TInputTextElement::UpdateCarotPoisition(UINT loc)
 			carotLoc = loc;
 		}
 
-		if (Rust + 1 == lines.Size() && loc > (line.strIndex + line.characters.Size()))
+		if (!carotActive &&
+			((loc == line.strIndex && !line.characters.Size()) ||
+			(loc == text->GetSize() && Rust == lines.Size() -1)))
+		{
+			TPoint p1, p2;
+			p1.y = line.top;
+			p2.y = p1.y + line.height;
+
+			switch (line.GetLineSpacing())
+			{
+			case tc_line_spacing::right:
+				p1.x = p2.x = bounds.right - 1;
+				break;
+			case tc_line_spacing::center:
+				p1.x = p2.x = bounds.left / 2 + bounds.right / 2;
+				break;
+			default:
+				p1.x = p2.x = bounds.left + 1;
+			}
+
+			drawingBoard->SetCaret(
+				GetTextInterceptor(),
+				p1,	p2);
+			carotActive = true;
+			carotLoc = loc;
+		}
+
+		if (!carotActive && Rust + 1 == lines.Size() && loc > (line.strIndex + line.characters.Size()) && line.characters.Size())
 		{
 			auto& ch = line.characters[line.characters.Size() - 1];
 			drawingBoard->SetCaret(
@@ -287,9 +314,18 @@ bool TInputTextElement::OnInputChar(WCHAR ch, UINT count, UINT flags)
 				if (carotLoc && !didDelete)
 					strText.Delete(--carotLoc);
 				break;
-			case GLFW_KEY_PERIOD: // OEM-Period
-				strText.Insert(carotLoc++, L'.');
+			case GLFW_KEY_ENTER:
+				strText.Insert(carotLoc++, L'\n');
 				break;
+			case GLFW_KEY_TAB:
+				strText.Insert(carotLoc++, L'\t');
+				break;
+			case GLFW_KEY_KP_ADD:
+				strText.Insert(carotLoc++, L'+');
+				break;
+			//case GLFW_KEY_PERIOD: // OEM-Period
+			//	strText.Insert(carotLoc++, L'.');
+			//	break;
 			case 0x6D: // Subtract
 				strText.Insert(carotLoc++, L'-');
 				break;

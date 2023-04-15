@@ -360,7 +360,11 @@ void TSwitchControl::OnResize(RECT_F& newLoc, UINT nFlags, TDataArray<EventID_Cr
     }
 
     TRandomLayout::OnResize(childSpace, nFlags, cred);
-
+    for (UINT Rust = 0; Rust < pageStack.Size(); Rust++) {
+        auto page = pageStack[Rust].Get();
+        if (page)
+            page->OnResize(childSpace, nFlags, cred);
+    }
     area = newLoc;
 }
 
@@ -401,8 +405,12 @@ void TSwitchControl::SetView(TrecPointer<TPage> page)
         }
 
     }
-
-    pageStack.push_back(dynamic_cast<TabBar::Tab*>(page.Get()) ? dynamic_cast<TabBar::Tab*>(page.Get())->GetContent() : page);
+    TrecPointer<TPage> pagePointer = dynamic_cast<TabBar::Tab*>(page.Get()) ? dynamic_cast<TabBar::Tab*>(page.Get())->GetContent() : page;
+    if (pagePointer.Get()) {
+        pageStack.push_back(pagePointer);
+        TDataArray<EventID_Cred> cred;
+        pagePointer->OnResize(this->childSpace, 0, cred);
+    }
 }
 
 void TSwitchControl::RemovePage(TrecPointer<TPage> page)

@@ -190,6 +190,7 @@ void TIdeWindow::PrepResource(TrecPointer<TJsonVariable> resourceData)
 			return;
 
 		ideLayout->SubmitToTab(idePage, useResourceTitle ? title : name, page);
+		needsRefresh = true;
 	}
 }
 

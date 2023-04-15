@@ -220,6 +220,23 @@ bool TTextElement::GetTextFormattingDetails(TextFormattingDetails& details, UINT
 void TTextElement::AppendLine(BasicCharLine& curLine, float& y)
 {
 	curLine.totalWidth = 0.0f;
+	if (curLine.characters.Size() == 0) {
+		TextFormattingDetails chFormatting;
+		FT_Face curFace = nullptr;
+		assert(this->GetTextFormattingDetails(chFormatting, curLine.strIndex));
+		if (!RetrieveFont(chFormatting.font, curFace))
+			return;
+
+		FT_Set_Pixel_Sizes(curFace, 0, chFormatting.fontSize);
+
+		FT_UInt glyphIndex = FT_Get_Char_Index(curFace, L'0');
+		if (glyphIndex &&
+			!FT_Load_Glyph(curFace, glyphIndex, FT_LOAD_COLOR) &&
+			!FT_Render_Glyph(curFace->glyph, FT_RENDER_MODE_NORMAL))
+		{
+			curLine.height = curFace->glyph->bitmap.rows;
+		}
+	}
 	for (UINT C = 0; C < curLine.characters.Size(); C++)
 	{
 		BasicCharacter tempChar(curLine.characters[C]);
@@ -319,7 +336,7 @@ bool TTextElement::HitTestPoint(const TPoint& point, BOOL& isTrailingHit, BOOL& 
 	for (UINT Rust = 0; Rust < this->lines.Size(); Rust++)
 	{
 		auto& line = lines[Rust];
-		if (point.y >= line.top && point.y <= (line.top + line.height))
+		if (point.y >= line.top && (point.y <= (line.top + line.height) || Rust == lines.Size() -1))
 		{
 			if (!line.characters.Size())
 			{
@@ -474,7 +491,7 @@ void TTextElement::ReCreateLayout()
 		if (ch.character == L'\r')
 		{
 			curLine.strIndex = startIndex;
-			startIndex = Rust;
+			startIndex = Rust + 1;
 			AppendLine(curLine, y);
 			x = bounds.left;
 		}
@@ -483,7 +500,7 @@ void TTextElement::ReCreateLayout()
 			if (prevChar != L'\r')
 			{
 				curLine.strIndex = startIndex;
-				startIndex = Rust;
+				startIndex = Rust + 1;
 				AppendLine(curLine, y);
 				x = bounds.left;
 			}
@@ -498,7 +515,10 @@ void TTextElement::ReCreateLayout()
 
 		FT_Set_Pixel_Sizes(curFace, 0, chFormatting.fontSize);
 
-		FT_UInt glyphIndex = FT_Get_Char_Index(curFace, ch.character);
+		bool isTab = ch.character == L'\t';
+		UINT widthMultiplier = isTab ? drawingBoard->GetTabSpace() : 1;
+
+		FT_UInt glyphIndex = FT_Get_Char_Index(curFace, isTab ? L' ' : ch.character);
 		if(!glyphIndex)continue;
 
 		if (FT_Load_Glyph(curFace, glyphIndex, FT_LOAD_COLOR))
@@ -512,7 +532,7 @@ void TTextElement::ReCreateLayout()
 
 		ch.advanceY = curFace->glyph->advance.y;
 
-		float under = curFace->glyph->bitmap.rows - curFace->glyph->bitmap_top;
+		float under = static_cast<float>(curFace->glyph->bitmap.rows) - static_cast<float>(curFace->glyph->bitmap_top);
 		ch.location.top += under;
 		ch.location.bottom += under;
 
@@ -526,7 +546,7 @@ void TTextElement::ReCreateLayout()
 		float advanceX = static_cast<float>(curFace->glyph->metrics.horiAdvance) / static_cast<float>(curFace->glyph->metrics.width);
 
 		ch.location.left = x;
-		ch.location.right = x + curFace->glyph->bitmap.width;
+		ch.location.right = x + curFace->glyph->bitmap.width * widthMultiplier;
 
 		// Since a space yields 0 space, use 'o' as a dummy face to aritficially shift the x
 		if (!curFace->glyph->bitmap.width)
@@ -542,7 +562,7 @@ void TTextElement::ReCreateLayout()
 			//continue;
 		}
 		else
-			x += (curFace->glyph->bitmap.width * advanceX);
+			x += (curFace->glyph->bitmap.width * advanceX * widthMultiplier);
 
 		ch.backgroundColor = chFormatting.defaultBackgroundColor;
 

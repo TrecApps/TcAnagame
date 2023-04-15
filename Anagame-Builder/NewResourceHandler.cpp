@@ -209,7 +209,7 @@ void NewResourceHandler::OnResourceSelect(TrecPointer<TPage> tc, EventArgs ea)
             {
                 nameRequired = true;
             }
-            else if (!pieces->at(0).CompareNoCase(L""))
+            else if (!pieces->at(0).CompareNoCase(L"IDE_Loc"))
             {
                 ideTab.Set(pieces->at(1).GetTrim());
             }

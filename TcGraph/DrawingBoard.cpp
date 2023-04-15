@@ -89,6 +89,8 @@ DrawingBoard::DrawingBoard(GLFWwindow* window)
 	if (!window) throw 0;
 	this->window = window;
 
+	tabSpace = 4;
+
 	cursors.push_back(glfwCreateStandardCursor(GLFW_ARROW_CURSOR));
 	cursors.push_back(glfwCreateStandardCursor(GLFW_IBEAM_CURSOR));
 	cursors.push_back(glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR));
@@ -130,6 +132,12 @@ void DrawingBoard::ResetProjection()
 {
 	orthoProjection = glm::ortho(0.0f, static_cast<float>(area.right), 0.0f, static_cast<float>(area.bottom));
 }
+
+UINT DrawingBoard::GetTabSpace()
+{
+	return tabSpace;
+}
+
 
 bool DrawingBoard::RetrieveFontEntry(const TString& name, std::map<CharWithSize, GLuint>& map)
 {

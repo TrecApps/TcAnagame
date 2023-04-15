@@ -67,7 +67,7 @@ void TIdeLayout::Draw(TrecPointer<TVariable> object)
 
 void TIdeLayout::OnRButtonUp(UINT nFlags, const TPoint& point, message_output& mOut, TDataArray<EventID_Cred>& er)
 {
-    TRandomLayout::OnRButtonUp(nFlags, point, mOut, er);
+    //TRandomLayout::OnRButtonUp(nFlags, point, mOut, er);
     if (!DrawingBoard::IsContained(point, area))
         return;
 
@@ -77,7 +77,7 @@ void TIdeLayout::OnRButtonUp(UINT nFlags, const TPoint& point, message_output& m
 
 void TIdeLayout::OnRButtonDown(UINT nFlags, const TPoint& point, message_output& mOut, TDataArray<EventID_Cred>& er)
 {
-    TRandomLayout::OnRButtonDown(nFlags, point, mOut, er);
+    //TRandomLayout::OnRButtonDown(nFlags, point, mOut, er);
     if (!DrawingBoard::IsContained(point, area))
         return;
 
@@ -88,7 +88,7 @@ void TIdeLayout::OnRButtonDown(UINT nFlags, const TPoint& point, message_output&
 void TIdeLayout::OnLButtonUp(UINT nFlags, const TPoint& point, message_output& mOut, TDataArray<EventID_Cred>& er)
 {
     this->captured.Nullify();
-    TRandomLayout::OnLButtonUp(nFlags, point, mOut, er);
+    // TRandomLayout::OnLButtonUp(nFlags, point, mOut, er);
     if (!DrawingBoard::IsContained(point, area))
         return;
 
@@ -144,7 +144,7 @@ void TIdeLayout::OnMouseMove(UINT nFlags, TPoint point, message_output& mOut, TD
 
 void TIdeLayout::OnLButtonDblClk(UINT nFlags, TPoint point, message_output& mOut, TDataArray<EventID_Cred>& args)
 {
-    TRandomLayout::OnLButtonDblClk(nFlags, point, mOut, args);
+    //TRandomLayout::OnLButtonDblClk(nFlags, point, mOut, args);
     if (!DrawingBoard::IsContained(point, area))
         return;
     if (rootSection.Get())
@@ -153,7 +153,7 @@ void TIdeLayout::OnLButtonDblClk(UINT nFlags, TPoint point, message_output& mOut
 
 void TIdeLayout::OnLButtonDown(UINT nFlags, const TPoint& point, message_output& mOut, TDataArray<EventID_Cred>& args)
 {
-    TRandomLayout::OnLButtonDown(nFlags, point, mOut, args);
+    //TRandomLayout::OnLButtonDown(nFlags, point, mOut, args);
     if (!DrawingBoard::IsContained(point, area))
         return;
     if (rootSection.Get())
@@ -578,7 +578,7 @@ void TIdeLayout::HandleTabVariable(TrecPointer<IdeSection>& section, TrecPointer
 
     auto strField = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(field);
 
-    if (!strField.Get())
+    if (strField.Get())
         tabSection->name.Set(strField->GetString());
 
     tabSection->Prep();

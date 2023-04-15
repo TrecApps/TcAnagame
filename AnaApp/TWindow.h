@@ -28,11 +28,7 @@ protected:
 
     bool locked;
 
-    //TrecPointerSoft<TInstance> instance;
-
 public:
-
-    //TrecPointer<TInstance> GetInstance();
 
     TrecPointer<DrawingBoard> GetDrawingBoard();
 

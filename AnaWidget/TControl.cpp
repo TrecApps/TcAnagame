@@ -973,6 +973,7 @@ void TControl::OnResize(RECT_F& newLoc, UINT nFlags, TDataArray<EventID_Cred>& e
 
 		eventAr.push_back(cred);
 	}
+	area = newLoc;
 	if (border.Get())
 		border->loci = area;
 	if (content.Get())
