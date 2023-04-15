@@ -546,7 +546,7 @@ void TTextElement::ReCreateLayout()
 		float advanceX = static_cast<float>(curFace->glyph->metrics.horiAdvance) / static_cast<float>(curFace->glyph->metrics.width);
 
 		ch.location.left = x;
-		ch.location.right = x + curFace->glyph->bitmap.width * widthMultiplier;
+		ch.location.right = x + static_cast<float>(curFace->glyph->bitmap.width) * static_cast<float>(widthMultiplier);
 
 		// Since a space yields 0 space, use 'o' as a dummy face to aritficially shift the x
 		if (!curFace->glyph->bitmap.width)
@@ -558,7 +558,7 @@ void TTextElement::ReCreateLayout()
 
 
 			assert(tempGlyphIndex && !FT_Load_Glyph(tempFace, tempGlyphIndex, FT_LOAD_COLOR) && !FT_Render_Glyph(tempFace->glyph, FT_RENDER_MODE_NORMAL));
-			x += tempFace->glyph->bitmap.width;
+			x += static_cast<float>(tempFace->glyph->bitmap.width) * static_cast<float>(widthMultiplier);
 			//continue;
 		}
 		else
