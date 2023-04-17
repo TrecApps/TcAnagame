@@ -18,6 +18,7 @@
 				"BorderColor":"0.0,0.0,0.0,0.5",
 				"BorderThickness":1.0,
 				"FontColor" : "white",
+				"ContentColor": "0.0,0.0,0.3,1.0",
 				"HorizontalAlignment" : "left",
 				"VerticalAlignment" : "Top"
 			}
