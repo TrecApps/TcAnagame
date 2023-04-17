@@ -118,9 +118,6 @@ DrawingBoard::DrawingBoard(GLFWwindow* window)
 
 	caret.thickness = 2.0f;
 	caret.OnDraw = false;
-	//glEnable(GL_CULL_FACE);
-	//glEnable(GL_BLEND);
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	needsRefresh = true;
 	needsConstantRefresh = false;

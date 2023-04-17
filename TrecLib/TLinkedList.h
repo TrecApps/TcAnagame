@@ -91,6 +91,7 @@ public:
 			p->next = n;
 			n->prev = TrecPointerKey::SoftFromTrec<>(p);
 			current = n;
+			currentNode = index;
 			size--;
 		}
 
@@ -258,6 +259,7 @@ public:
 			return false;
 		TrecPointerSoft< ListNode<T>> p = current->prev;
 		current = TrecPointerKey::TrecFromSoft<>(p);
+		currentNode--;
 		return true;
 	}
 	
