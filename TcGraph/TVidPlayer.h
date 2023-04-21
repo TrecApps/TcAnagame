@@ -50,6 +50,8 @@ class Stream
     TAvCodec codec;
     TLinkedList<TcAVFrame> frames;
     TrecPointer<TImageBrush> brush;
+
+    double timestampCorrection;
 public:
     Stream() = default;
     Stream(const Stream& copy) = default;

@@ -92,7 +92,10 @@ bool Stream::DoPresent(double& baseTime)
 
     for (UINT Rust = 0; Rust < frames.GetSize(); )
     {
-        bool doPresent = (static_cast<double>(frames.at(Rust).frame->pts) * timeBase) > current;
+        if (!timestampCorrection && frames.at(Rust).frame->pts < 0)
+            timestampCorrection = -static_cast<double>(frames.at(Rust).frame->pts);
+
+        bool doPresent = ((timestampCorrection + (static_cast<double>(frames.at(Rust).frame->pts)) * timeBase) + baseTime) > current;
         if (!doPresent)
             return ret;
         if (this->streamType == av_stream_type::t_video)
@@ -139,6 +142,8 @@ bool TVidPlayer::RunRound()
 
     // Check to see if each Stream needs prcessing
     bool ret = true;
+
+    
     for (UINT Rust = 0; Rust < streams.Size(); Rust++)
     {
         streams[Rust].ProcessFrames(board);
@@ -295,13 +300,15 @@ TrecPointer<TVidPlayer> TVidPlayer::GetPlayer(TrecPointer<DrawingBoard> board, T
 
     if (!avFormatContext)
         return ret;
-
+    avFormatContext->avoid_negative_ts = AVFMT_AVOID_NEG_TS_MAKE_ZERO;
     if (avformat_open_input(&avFormatContext, file->GetPath().GetRegString().c_str(), nullptr, nullptr))
     {
         avFormatContext = nullptr; // Function call automatically deallocates context upon failure
         return ret;
     }
     
+    // 
+
     ret = TrecPointerKey::ConvertPointer<TVariable, TVidPlayer>(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TVidPlayer>());
     ret->board = board;
     ret->videoState = video_state::vs_not_init;
