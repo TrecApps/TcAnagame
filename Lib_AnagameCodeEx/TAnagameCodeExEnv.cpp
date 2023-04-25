@@ -20,8 +20,16 @@ TrecPointer<TObject> TAnagameCodeExEnv::RetrieveResource(const TString& name)
     {
         TrecPointer<TFileShell> dataFile;
         if (pieces->Size() >= 3)
-            dataFile = TFileShell::GetFileInfo(pieces->at(2));
-
+        {
+            TString path(this->directory->GetPath() + TC_FILE_SEP + pieces->at(2));
+            dataFile = TFileShell::GetFileInfo(path);
+            if (!dataFile.Get())
+            {
+                TFile attemptFile(this->directory, pieces->at(2), TFile::t_file_create_new | TFile::t_file_write);
+                attemptFile.Close();
+                dataFile = TFileShell::GetFileInfo(path);
+            }
+        }
         TrecPointer<AnafaceBuilder> builder = TrecPointerKey::GetNewTrecPointer<AnafaceBuilder>();
         builder->SetHandler(TrecPointerKey::GetNewSelfTrecPointerAlt<TPage::EventHandler, TCodeHandler>());
 

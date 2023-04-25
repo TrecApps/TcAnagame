@@ -170,7 +170,7 @@ void TIdeWindow::PrepResource(TrecPointer<TJsonVariable> resourceData)
 
 	TrecPointer<TObject> resource = environment->GetResource(source + L":" + title + L":" + name);
 
-	TrecPointer<AnafaceBuilder> builder = TrecPointerKey::ConvertPointer<TObject, AnafaceBuilder>(resource);
+	TrecPointer<TPageBuilder> builder = TrecPointerKey::ConvertPointer<TObject, TPageBuilder>(resource);
 
 	if (builder.Get())
 	{
@@ -188,6 +188,15 @@ void TIdeWindow::PrepResource(TrecPointer<TJsonVariable> resourceData)
 		TrecPointer<TIdeLayout> ideLayout = TrecPointerKey::ConvertPointer<TControl, TIdeLayout>(anaMainPage->GetControlById(L"TC_IDE_LAYOUT"));
 		if (!ideLayout.Get())
 			return;
+		TrecPointer<TPage::EventHandler> newHandler = page->GetHandler();
+
+		if (dynamic_cast<TFileEventHandler*>(newHandler.Get()))
+		{
+			// We have a file Page at play. Wrap it around with a File Page
+			page = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TFilePage>(TrecActivePointer<TPage>(page), name, L"");
+
+			// To-Do: Means of IDE window being able to keep Track of the file Pages
+		}
 
 		ideLayout->SubmitToTab(idePage, useResourceTitle ? title : name, page);
 		needsRefresh = true;
