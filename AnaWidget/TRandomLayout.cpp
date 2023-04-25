@@ -25,6 +25,8 @@ TRandomLayout::~TRandomLayout()
 
 void TRandomLayout::Draw(TrecPointer<TVariable> object)
 {
+    if (!isActive)
+        return;
     TControl::Draw(object);
     auto var = TrecPointer<TVariable>();
     for (UINT Rust = 0; Rust < childControls.Size(); Rust++)

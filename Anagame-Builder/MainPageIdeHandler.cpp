@@ -39,6 +39,13 @@ void MainPageIdeHandler::Initialize(TrecPointer<TPage> page)
 {
 	TrecPointer<TIdeWindow> ideWindow = TrecPointerKey::ConvertPointer<DrawingBoard, TIdeWindow>(page->GetDrawingBoard());
 	window = TrecPointerKey::SoftFromTrec<TIdeWindow>(ideWindow);
+
+	TrecPointer<AnafacePage> anaPage = TrecPointerKey::ConvertPointer<TPage, AnafacePage>(page);
+	auto column = anaPage->GetControlById(L"ResourceColumn");
+	column->setActive(false);
+	this->resourceColumn = TrecPointerKey::SoftFromTrec<>(column);
+	auto textProj = anaPage->GetControlById(L"ProjectNameBox");
+	this->projectName = TrecPointerKey::SoftFromTrec<>(textProj);
 }
 
 bool MainPageIdeHandler::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, message_output* mOut)
@@ -114,8 +121,17 @@ void MainPageIdeHandler::OnLoadNewSolution(TrecPointer<TPage> tc, EventArgs ea)
 		assert(pData.Initialize(data));
 
 		auto ideWindow = TrecPointerKey::ConvertPointer<TWindow, TIdeWindow>(actWindow);
-		ideWindow->PrepProject(pData);
-
+		if (ideWindow->PrepProject(pData))
+		{
+			auto column = TrecPointerKey::TrecFromSoft<>(resourceColumn);
+			if (column.Get())
+				column->setActive(true);
+			auto textProj = TrecPointerKey::ConvertPointer<TControl, TTextInput>(TrecPointerKey::TrecFromSoft<>(this->projectName));
+			TrecPointer<TVariable> projName;
+			if (textProj.Get() && data->RetrieveField(L"name", projName))
+				textProj->SetText(TStringVariable::Extract(projName, L""));
+		}
+		actWindow->PrepRefresh();
 	}
 }
 

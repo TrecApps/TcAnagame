@@ -9,6 +9,9 @@ class MainPageIdeHandler :
 	typedef void (MainPageIdeHandler::* LayoutCall)(TrecPointer<TPage> tc, EventArgs ea);
 	TDataArray<LayoutCall> calls;
 	TDataMap<UINT> events;
+
+	TrecPointerSoft<TControl> resourceColumn;
+	TrecPointerSoft<TControl> projectName;
 public:
 	MainPageIdeHandler();
 

@@ -2,6 +2,7 @@
 #include "TAnagameCodeExEnv.h"
 #include <TInstance.h>
 #include "TCodeHandler.h"
+#include <TFormatReader.h>
 
 TString anagameCodeName(L"AnaCode");
 
@@ -79,11 +80,49 @@ void TAnagameCodeExEnv::GetProjectNodeTypes(TDataArray<TString>& nodeTypes)
 
 TString TAnagameCodeExEnv::Save()
 {
-    return TString();
+    TrecPointer<TFileShell> fileShell = TFileShell::GetFileInfo(directory->GetPath() + TC_FILE_SEP + L".Anacode.json");
+    if (!fileShell.Get())
+    {
+        TFile attemptFile(directory, L".Anacode.json", TFile::t_file_create_new | TFile::t_file_write);
+        attemptFile.Close();
+        fileShell = TFileShell::GetFileInfo(directory->GetPath() + TC_FILE_SEP + L".Anacode.json");
+    }
+    TrecPointer<TFormatReader> formatWriter = TFormatReader::GetReader(fileShell);
+    if (formatWriter.Get())
+    {
+        formatWriter->Write(this->projectVariables, TFormatReader::write_mode::formatted);
+        return L"";
+    }
+    return L"Could not Save Environment!";
 }
 
 void TAnagameCodeExEnv::Refresh()
 {
+    TrecPointer<TFileShell> fileShell = TFileShell::GetFileInfo(directory->GetPath() + TC_FILE_SEP + L".Anacode.json");
+    TrecPointer<TFormatReader> formatWriter = TFormatReader::GetReader(fileShell);
+    this->projectVariables.Nullify();
+    if (formatWriter.Get())
+    {
+        TString res(formatWriter->Read());
+        if (res.GetSize())
+        {
+
+
+        }
+        else
+            this->projectVariables = formatWriter->GetData();
+    }
+
+    if (!projectVariables.Get())
+    {
+        this->projectVariables = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TJsonVariable>();
+        auto jsonProjectVars = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(projectVariables);
+
+        jsonProjectVars->SetField(L"Name", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(projectName));
+        jsonProjectVars->SetField(L"Files", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TJsonVariable>());
+
+        Save();
+    }
 }
 
 TDataArray<TString> TAnagameCodeExEnv::GetBuilderDependencies()
@@ -147,7 +186,7 @@ void TAnagameCodeExBuilder::GetProjectTypes(TDataArray<TString>& types, TrecActi
     for (UINT Rust = 0; Rust < files.Size(); Rust++)
     {
         TString fName(files[Rust]->GetName());
-        if (fName.EndsWith(L".projtml"))
+        if (!fName.CompareNoCase(L".Anacode.json"))
         {
             types.push_back(anagameCodeName);
         }
