@@ -154,7 +154,13 @@ void NewResourceHandler::OnOkay(TrecPointer<TPage> tc, EventArgs ea)
         jProj->SetField(L"ResourceSource", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(this->resourceSource));
         jProj->SetField(L"ResourceTitle", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(this->resourceTitle));
         if(nameRequired)
-            jProj->SetField(L"Name", TrecPointerKey::ConvertPointer<TStringVariable, TVariable>(actNameInput->GetTextElement()->GetText()));
+        {
+            TString newResourceName(actNameInput->GetTextElement()->GetText()->GetString());
+            newResourceName.Trim();
+            if (!newResourceName.EndsWith(ext, true))
+                newResourceName.Append(ext);
+            jProj->SetField(L"Name", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(newResourceName));
+        }
         else
             jProj->SetField(L"ResourceDetail", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(this->resourceDetails));
 
@@ -208,6 +214,8 @@ void NewResourceHandler::OnResourceSelect(TrecPointer<TPage> tc, EventArgs ea)
             else if (!pieces->at(0).CompareNoCase(L"File-Ext"))
             {
                 nameRequired = true;
+                // To-Do: Add support for multiple file extensions in a listing
+                this->ext.Set(TString(L'.') + pieces->at(1).GetTrim());
             }
             else if (!pieces->at(0).CompareNoCase(L"IDE_Loc"))
             {

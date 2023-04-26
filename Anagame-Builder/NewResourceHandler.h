@@ -23,6 +23,7 @@ class NewResourceHandler :
 	TString resourceSource;
 	TString resourceTitle;
 	TString resourceDetails;
+	TString ext;
 	TString ideTab;
 	bool nameRequired;
 public:
