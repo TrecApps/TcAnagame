@@ -55,9 +55,9 @@ public:
 
 	void SetDataFile(TrecPointer<TFileShell> file)override;
 
-	virtual TString SaveFile() = 0;
+	virtual void SaveFile(TString& ret) = 0;
 
-	virtual TString LoadFile() = 0;
+	virtual void LoadFile(TString& ret) = 0;
 
 	virtual TrecPointer<TVariable> GetData() = 0;
 
@@ -78,9 +78,9 @@ public:
 
 	void SetFile(TrecPointer<TFileShell> file);
 
-	TString SaveFile();
+	void SaveFile(TString&);
 
-	TString LoadFile();
+	void LoadFile(TString&);
 
 	TrecPointer<TVariable> GetData();
 

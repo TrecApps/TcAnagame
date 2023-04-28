@@ -450,20 +450,21 @@ void TIdeWindow::SaveCurrent()
 	TrecPointer<TFilePage> filePage = TrecPointerKey::ConvertPointer<TPage, TFilePage>(
 		TrecPointerKey::TrecFromSoft<>(this->currentFilePage)
 	);
-
+	TString res;
 	if (filePage.Get())
-		filePage->SaveFile();
+		filePage->SaveFile(res);
 }
 
 void TIdeWindow::SaveAll()
 {
 	for (UINT Rust = 0; Rust < this->registeredPages.Size(); Rust++)
 	{
+		TString res;
 		TrecPointer<TFilePage> filePage = TrecPointerKey::ConvertPointer<TPage, TFilePage>(
 			TrecPointerKey::TrecFromSoft<>(this->registeredPages[Rust])
 		);
 
 		if (filePage.Get())
-			filePage->SaveFile();
+			filePage->SaveFile(res);
 	}
 }

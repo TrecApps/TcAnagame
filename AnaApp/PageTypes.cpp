@@ -102,18 +102,18 @@ void TFilePage::SetFile(TrecPointer<TFileShell> file)
         fileEventHandler->SetDataFile(file);
 }
 
-TString TFilePage::SaveFile()
+void TFilePage::SaveFile(TString& ret)
 {
     if(!fileEventHandler.Get())
-        return L"No Handler Set";
-    return fileEventHandler->SaveFile();
+        ret.Set( L"No Handler Set" );
+    else fileEventHandler->SaveFile(ret);
 }
 
-TString TFilePage::LoadFile()
+void TFilePage::LoadFile(TString& ret)
 {
     if (!fileEventHandler.Get())   
-        return L"No Handler Set";
-    return fileEventHandler->LoadFile();
+        ret.Set(L"No Handler Set");
+    else fileEventHandler->LoadFile(ret);
 }
 
 TrecPointer<TVariable> TFilePage::GetData()

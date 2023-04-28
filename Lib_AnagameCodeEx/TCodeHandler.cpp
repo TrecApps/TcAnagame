@@ -51,19 +51,23 @@ void TCodeHandler::HandleEvents(TDataArray<TPage::EventID_Cred>& eventAr)
 {
 }
 
-TString TCodeHandler::SaveFile()
+void TCodeHandler::SaveFile(TString& ret)
 {
 	if (!file.Get())
-		return "File Not Set";
+	{
+		ret.Set(L"File Not Set");
+		return ;
+	}
 	if (!input.Get())
-		return L"File Page not Initialized!";
-
+	{	
+		ret.Set( L"File Page not Initialized!");
+		return;
+	}
 	TFile theFile(file, TFile::t_file_open_always | TFile::t_file_truncate_existing | TFile::t_file_write);
 	if (!theFile.IsOpen())
 	{
-		TString ret;
 		ret.Format(L"Could not open file '%ws'", file->GetPath().GetConstantBuffer().getBuffer());
-		return ret;
+		return;
 	}
 
 	auto str = input->GetTextElement()->GetText();
@@ -76,10 +80,9 @@ TString TCodeHandler::SaveFile()
 }
 
 
-TString TCodeHandler::LoadFile()
+void TCodeHandler::LoadFile(TString&)
 {
 	DoLoadFile(this->file, this->input);
-	return TString();
 }
 
 TrecPointer<TVariable> TCodeHandler::GetData()

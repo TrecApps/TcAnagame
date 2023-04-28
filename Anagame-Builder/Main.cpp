@@ -19,7 +19,6 @@ void onFrameResize(GLFWwindow* window, int width, int height);
 
 int main()
 {
-
 	mainInstance = TInstance::GetInstance();
 
 	//mainInstance->LoadLibraries(TDataArray<TString>());

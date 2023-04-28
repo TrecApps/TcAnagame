@@ -30,6 +30,10 @@ void TInputTextElement::UpdateCarotPoisition(UINT loc)
 
 	if (!editAllowed)
 		return;
+
+	if (loc > text->GetSize())
+		loc = text->GetSize();
+
 	if (!loc && text.Get() && text->GetSize() == 0)
 	{
 		carotLoc = 0;
@@ -354,6 +358,8 @@ bool TInputTextElement::OnInputChar(WCHAR ch, UINT count, UINT flags)
 		}
 		ReCreateLayout();
 		UpdateCarotPoisition(carotLoc);
+
+		drawingBoard->PrepRefresh();
 	}
 	return true;
 }

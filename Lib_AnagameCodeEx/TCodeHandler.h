@@ -16,9 +16,9 @@ public:
 
 	virtual void HandleEvents(TDataArray<TPage::EventID_Cred>& eventAr) override;
 
-	virtual TString SaveFile() override;
+	virtual void SaveFile(TString&) override;
 
-	virtual TString LoadFile() override;
+	virtual void LoadFile(TString&) override;
 
 	virtual TrecPointer<TVariable> GetData() override;
 
