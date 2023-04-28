@@ -7,8 +7,8 @@
 
 // Found on the Home Tab
 TString on_LoadNewSolution(L"LoadNewSolution");
-TString on_SaveFile(L"SaveFile");
-TString on_SaveAll(L"SaveAllFiles");
+TString on_SaveFile(L"OnSave");
+TString on_SaveAll(L"OnSaveAll");
 TString on_NewResource(L"OnNewResource");
 TString on_ImportFile(L"OnImportFile");
 TString on_Print(L"OnPrint");
@@ -137,10 +137,18 @@ void MainPageIdeHandler::OnLoadNewSolution(TrecPointer<TPage> tc, EventArgs ea)
 
 void MainPageIdeHandler::OnSaveFile(TrecPointer<TPage> tc, EventArgs ea)
 {
+	auto actWindow = TrecPointerKey::ConvertPointer<TIdeWindow, TWindow>(TrecPointerKey::TrecFromSoft<>(window));
+	auto ideWindow = TrecPointerKey::ConvertPointer<TWindow, TIdeWindow>(actWindow);
+
+	ideWindow->SaveCurrent();
 }
 
 void MainPageIdeHandler::OnSaveAllFiles(TrecPointer<TPage> tc, EventArgs ea)
 {
+	auto actWindow = TrecPointerKey::ConvertPointer<TIdeWindow, TWindow>(TrecPointerKey::TrecFromSoft<>(window));
+	auto ideWindow = TrecPointerKey::ConvertPointer<TWindow, TIdeWindow>(actWindow);
+
+	ideWindow->SaveAll();
 }
 
 void MainPageIdeHandler::OnNewResource(TrecPointer<TPage> tc, EventArgs ea)

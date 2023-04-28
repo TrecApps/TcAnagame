@@ -30,11 +30,16 @@ protected:
     RECT_F setTo;
     bool doResize;
 
+    TDataArray<TrecPointerSoft<TPage>> registeredPages;
+    TrecPointerSoft<TPage> currentFilePage;
+
 public:
     // Inherited From TWindow
     void OnResize(int w, int h) override;
 
     void PrepResize();
+
+    void SetFocusObject(TrecPointer<TObject> focusObject) override;
 
 
     // IDE Specific Methods
@@ -58,5 +63,9 @@ public:
     void RemoveRibbon(const TString& ribbonName);
 
     TrecPointer<BasicAnagameEnvironment> GetEnvironment();
+
+    // IDE Page Management
+    void SaveCurrent();
+    void SaveAll();
 };
 

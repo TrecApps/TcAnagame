@@ -88,6 +88,13 @@ void TIdeWindow::PrepResize()
 	}
 }
 
+void TIdeWindow::SetFocusObject(TrecPointer<TObject> focusObject)
+{
+	TrecPointer<TPage> filePage = TrecPointerKey::ConvertPointer<TObject, TPage>(focusObject);
+	if (filePage.Get())
+		this->currentFilePage = TrecPointerKey::SoftFromTrec<>(filePage);
+}
+
 TIdeWindow::TIdeWindow(GLFWwindow* window): TWindow(window)
 {
 	mainPageSpace = 180;
@@ -199,6 +206,7 @@ void TIdeWindow::PrepResource(TrecPointer<TJsonVariable> resourceData)
 			page = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TFilePage>(TrecActivePointer<TPage>(page), name, L"");
 
 			// To-Do: Means of IDE window being able to keep Track of the file Pages
+			this->registeredPages.push_back(TrecPointerKey::SoftFromTrec<>(page));
 		}
 
 		ideLayout->SubmitToTab(idePage, useResourceTitle ? title : name, page);
@@ -435,4 +443,27 @@ void TIdeWindow::RemoveRibbon(const TString& ribbonName)
 TrecPointer<BasicAnagameEnvironment> TIdeWindow::GetEnvironment()
 {
 	return environment;
+}
+
+void TIdeWindow::SaveCurrent()
+{
+	TrecPointer<TFilePage> filePage = TrecPointerKey::ConvertPointer<TPage, TFilePage>(
+		TrecPointerKey::TrecFromSoft<>(this->currentFilePage)
+	);
+
+	if (filePage.Get())
+		filePage->SaveFile();
+}
+
+void TIdeWindow::SaveAll()
+{
+	for (UINT Rust = 0; Rust < this->registeredPages.Size(); Rust++)
+	{
+		TrecPointer<TFilePage> filePage = TrecPointerKey::ConvertPointer<TPage, TFilePage>(
+			TrecPointerKey::TrecFromSoft<>(this->registeredPages[Rust])
+		);
+
+		if (filePage.Get())
+			filePage->SaveFile();
+	}
 }

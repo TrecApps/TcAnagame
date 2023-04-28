@@ -155,6 +155,8 @@ public:
 
 protected:
 
+	bool isChildLeftClicked;
+
 	/**
 	 * Tab Bar to manage Child Controls
 	 */

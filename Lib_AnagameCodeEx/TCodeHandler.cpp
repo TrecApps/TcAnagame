@@ -28,7 +28,7 @@ void TCodeHandler::Initialize(TrecPointer<TPage> page)
 {
 	auto rootPage = TrecPointerKey::ConvertPointer<TPage, AnafacePage>(page);
 	//assert(rootPage.Get());
-	this->input = TrecPointerKey::ConvertPointer<TPage, TTextInput>(rootPage->GetRootControl());
+	this->input = TrecPointerKey::ConvertPointer<TControl, TTextInput>(rootPage->GetControlById(L"ActText"));
 
 	DoLoadFile(this->file, this->input);
 }

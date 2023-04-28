@@ -77,6 +77,7 @@ TSwitchControl::TSwitchControl(TrecPointer<DrawingBoard> drawingBoard, TDataMap<
     tabBar =TrecPointerKey::ConvertPointer<TPage, TabBar>( TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TabBar>(drawingBoard) );
     tabShow = 1;
     tabHeight = 30;
+    this->isChildLeftClicked = false;
 }
 
 bool TSwitchControl::onCreate(const RECT_F& loc, TrecPointer<TFileShell> d)
@@ -262,6 +263,8 @@ void TSwitchControl::OnLButtonUp(UINT nFlags, const TPoint& point, message_outpu
         tabBar->OnLButtonUp(nFlags, point, mOut, cred);
     }
 
+    bool shouldFocus = isChildLeftClicked && DrawingBoard::IsContained(point, childSpace);
+
     if (mOut == message_output::mo_negative)
     {
         UINT pss = pageStack.Size();
@@ -269,11 +272,18 @@ void TSwitchControl::OnLButtonUp(UINT nFlags, const TPoint& point, message_outpu
         {
             auto top = pageStack[pss - 1];
             if (top.Get())
+            {
                 top->OnLButtonUp(nFlags, point, mOut, cred);
+
+                if (shouldFocus)
+                    drawingBoard->SetFocusObject(TrecPointerKey::ConvertPointer<TPage, TObject>(top));
+            }
             else
                 pageStack.RemoveAt(pss - 1);
         }
     }
+
+    this->isChildLeftClicked = true;
 }
 
 void TSwitchControl::OnMouseMove(UINT nFlags, TPoint point, message_output& mOut, TDataArray<EventID_Cred>& cred)
@@ -337,6 +347,15 @@ void TSwitchControl::OnLButtonDown(UINT nFlags, const TPoint& point, message_out
             else
                 pageStack.RemoveAt(pss - 1);
         }
+    }
+
+    if (DrawingBoard::IsContained(point, this->childSpace))
+    {
+        this->isChildLeftClicked = true;
+        EventID_Cred id;
+        id.control = TrecPointerKey::TrecFromSoft<>(self);
+        id.eventType = R_Message_Type::On_L_Button_Down;
+        cred.push_back(id);
     }
 }
 
@@ -410,6 +429,8 @@ void TSwitchControl::SetView(TrecPointer<TPage> page)
         pageStack.push_back(pagePointer);
         TDataArray<EventID_Cred> cred;
         pagePointer->OnResize(this->childSpace, 0, cred);
+
+        drawingBoard->SetFocusObject(TrecPointerKey::ConvertPointer<TPage, TObject>(pagePointer));
     }
 }
 

@@ -130,6 +130,10 @@ void DrawingBoard::ResetProjection()
 	orthoProjection = glm::ortho(0.0f, static_cast<float>(area.right), 0.0f, static_cast<float>(area.bottom));
 }
 
+void DrawingBoard::SetFocusObject(TrecPointer<TObject> focusObject)
+{
+}
+
 UINT DrawingBoard::GetTabSpace()
 {
 	return tabSpace;

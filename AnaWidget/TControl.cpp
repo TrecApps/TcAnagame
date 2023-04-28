@@ -768,6 +768,11 @@ void TControl::OnLButtonUp(UINT nFlags, const TPoint& point, message_output& mOu
 
 		if (isLeftClicked)
 		{
+			//drawingBoard->SetFocusObject(TrecPointerKey::ConvertPointer<TPage, TObject>(
+			//	TrecPointerKey::TrecFromSoft<>(this->self)
+			//));
+
+
 			TString index = HasEvent(R_Message_Type::On_Click);
 
 			EventID_Cred cred(R_Message_Type::On_Click, TrecPointerKey::TrecFromSoft<>(self), text.Get() ? text->GetTextInterceptor() : TrecPointer<TTextIntercepter>());
