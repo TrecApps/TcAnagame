@@ -6,7 +6,10 @@
 void TcFileRead(FILE_HANDLE fileName, UCHAR* bytes, DWORD sizeToRead, DWORD& bytesRead)
 {
 	if (!ReadFile(fileName, bytes, sizeToRead, &bytesRead, nullptr))
-		bytesRead = -1;
+	{
+		int err = GetLastError();
+	}
+
 }
 
 void TcFileWrite(FILE_HANDLE fileName, const UCHAR* bytes, DWORD sizeToRead, DWORD& bytesRead)

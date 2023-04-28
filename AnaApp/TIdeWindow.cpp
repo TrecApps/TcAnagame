@@ -20,6 +20,9 @@ void TIdeWindow::SaveIde()
 	auto projEnv = environment->RetrieveProjectEnvironment();
 
 	if (!projEnv.Get())return;
+
+	projEnv->Save();
+
 	auto directory = projEnv->GetDirectory();
 
 	if (!directory.Get())
@@ -288,6 +291,12 @@ bool TIdeWindow::PrepProject(const TProjectData& projectData)
 
 bool TIdeWindow::SetProject(TrecActivePointer<AGProjectEnvironment> project)
 {
+	auto curProj = environment->RetrieveProjectEnvironment();
+	if (curProj.Get())
+	{
+		curProj->Save();
+	}
+
 	this->environment->SetProject(project);
 	//SetMainPage(TrecPointer<TPage>());
 
@@ -302,6 +311,7 @@ bool TIdeWindow::SetProject(TrecActivePointer<AGProjectEnvironment> project)
 	if (!fileShell.Get())
 	{
 		SaveIde();
+		actProject->Refresh();
 		return true;
 	}
 	TrecPointer<TFormatReader> formatReader = TFormatReader::GetReader(fileShell);
@@ -326,6 +336,7 @@ bool TIdeWindow::SetProject(TrecActivePointer<AGProjectEnvironment> project)
 		if(jsonLayout.Get())
 			ideLayout->SetUpLayout(jsonLayout);
 	}
+	actProject->Refresh();
 	return true;
 }
 

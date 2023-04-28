@@ -8,6 +8,9 @@ class ANAGAME_CODE_EX TAnagameCodeExEnv : public AGProjectEnvironment
 {
 protected:
     TrecPointer<TVariable> projectVariables;
+
+    void SaveFileRecord(const TString& fileName);
+
 public:
     TAnagameCodeExEnv(const TString& name, TrecActivePointer<TFileShell> directory);
 

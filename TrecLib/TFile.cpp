@@ -809,9 +809,11 @@ bool TFile::Open(TrecPointer<TFileShell> file, const TString& name, UINT nOpenFl
 	WCHAR sep = L'\0';
 
 #ifdef _WINDOWS
+	if(!atts)
 		atts = OPEN_ALWAYS;
 		sep = L'\\';
 #elif defined(__linux__) || (defined (__APPLE__) && defined (__MACH__))
+	if (!atts)
 		atts = O_CREAT;
 		sep = L'/';
 #endif
@@ -1623,9 +1625,12 @@ FileEncodingType TFile::DeduceEncodingType()
 		return FileEncodingType::fet_unknown;
 	TObjectLocker lock(&thread);
 		UCHAR twoBytes[30];
+	SeekToBegin();
 	UINT bytes = Read(&twoBytes, 30);
 
 	SeekToBegin();
+
+
 #ifdef _WINDOWS
 	int value = IS_TEXT_UNICODE_UNICODE_MASK |
 		IS_TEXT_UNICODE_REVERSE_MASK |
@@ -1720,7 +1725,7 @@ void TFile::ConvertFlags(UINT& input, UINT& open, UINT& security, UINT& creation
 	open = input & 0xff000000;
 
 	security = (input >> 8) & 0x000000ff;
-	creation = (input >> 16) & 0x000000ff;
+	creation = (input & 0x000000ff) >> 16;
 }
 
 UCHAR TFile::ReadUnicode8Char(char* seq4)
@@ -1874,13 +1879,15 @@ void TFile::SeekToBegin()
 	*hZero = 0;
 	PLONG store = hZero;
 	DWORD res = SetFilePointer((HANDLE)fileHandle, 0, hZero, FILE_BEGIN);
-
+	int err = 0;
 	if (res != INVALID_SET_FILE_POINTER)
 	{
 		position = 0;
+		
 	}
 	else
 	{
+		err = GetLastError();
 		// To-Do:
 	}
 

@@ -6,6 +6,35 @@
 
 TString anagameCodeName(L"AnaCode");
 
+void TAnagameCodeExEnv::SaveFileRecord(const TString& fileName)
+{
+    if (!projectVariables.Get())
+        projectVariables = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TJsonVariable>();
+
+    auto jProjVariables = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(projectVariables);
+
+    assert(jProjVariables.Get());
+
+    TrecPointer<TVariable> fileList;
+
+    if (!jProjVariables->RetrieveField(L"Files", fileList) || fileList->GetVarType() != var_type::list)
+    {
+        fileList = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TArrayVariable>();
+        jProjVariables->SetField(L"Files",fileList);
+    }
+
+    auto jFileList = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(fileList);
+
+    TrecPointer<TVariable> fileNameElement;
+    for (UINT Rust = 0; jFileList->GetValueAt(Rust, fileNameElement); Rust++)
+    {
+        TString actName(TStringVariable::Extract(fileNameElement, L""));
+        if (!actName.Compare(fileName))return;
+    }
+
+    jFileList->Push(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(fileName));
+}
+
 TAnagameCodeExEnv::TAnagameCodeExEnv(const TString& name, TrecActivePointer<TFileShell> directory) : AGProjectEnvironment(name, directory)
 {
 }
@@ -30,6 +59,9 @@ TrecPointer<TObject> TAnagameCodeExEnv::RetrieveResource(const TString& name)
                 attemptFile.Close();
                 dataFile = TFileShell::GetFileInfo(path);
             }
+
+            SaveFileRecord(pieces->at(2));
+            Save();
         }
         TrecPointer<AnafaceBuilder> builder = TrecPointerKey::GetNewTrecPointer<AnafaceBuilder>();
         builder->SetHandler(TrecPointerKey::GetNewSelfTrecPointerAlt<TPage::EventHandler, TCodeHandler>());
@@ -119,7 +151,7 @@ void TAnagameCodeExEnv::Refresh()
         auto jsonProjectVars = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(projectVariables);
 
         jsonProjectVars->SetField(L"Name", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(projectName));
-        jsonProjectVars->SetField(L"Files", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TJsonVariable>());
+        jsonProjectVars->SetField(L"Files", TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TArrayVariable>());
 
         Save();
     }
