@@ -238,6 +238,7 @@ void ProjectDialogHandler::OnSelectRecent(TrecPointer<TPage> tc, EventArgs ea)
                 iDirectory->SetText(projectData.directory->GetPath());
         }
     }
+    dialogWindow->PrepRefresh();
     AssessOkay();
 }
 

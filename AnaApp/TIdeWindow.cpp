@@ -294,6 +294,8 @@ bool TIdeWindow::PrepProject(const TProjectData& projectData)
 	if (!projEnv.Get())
 		return false;
 
+	instance->SaveProject(projectData);
+
 	return SetProject(TrecActivePointer<AGProjectEnvironment>(projEnv));
 }
 
