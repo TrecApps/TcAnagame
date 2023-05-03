@@ -58,9 +58,9 @@ void Stream::ProcessFrames(TrecPointer<DrawingBoard>& board)
         {
             return;
         }
-        for (UINT Rust = 0; Rust < this->frames.GetSize(); Rust++)
+        for (auto Rust = this->frames.begin(); Rust != frames.end(); Rust++)
         {
-            auto& frame = frames.at(Rust);
+            auto& frame = (*Rust);
 
             if (frame.brush.Get())
                 continue;
@@ -90,26 +90,39 @@ bool Stream::DoPresent(double& baseTime)
 
     bool ret = false;
 
-    for (UINT Rust = 0; Rust < frames.GetSize(); )
-    {
-        if (!timestampCorrection && frames.at(Rust).frame->pts < 0)
-            timestampCorrection = -static_cast<double>(frames.at(Rust).frame->pts);
+    this->dropCount = 0;
 
-        bool doPresent = ((timestampCorrection + (static_cast<double>(frames.at(Rust).frame->pts)) * timeBase) + baseTime) > current;
+    for (auto Rust = frames.begin(); Rust != frames.end(); Rust++)
+    {
+        auto& frame = *Rust;
+        if (!timestampCorrection && frame.frame->pts < 0)
+            timestampCorrection = -static_cast<double>(frame.frame->pts);
+
+        bool doPresent = ((timestampCorrection + (static_cast<double>(frame.frame->pts)) * timeBase) + baseTime) > current;
         if (!doPresent)
             return ret;
         if (this->streamType == av_stream_type::t_video)
         {
-            brush = frames.at(Rust).brush;
+            brush = frame.brush;
             ret = true;
         }
         else if (streamType == av_stream_type::t_audio)
         {
 
         }
-        frames.DropHead();
+        dropCount++;
+        
     }
     return ret;
+}
+
+void Stream::DropFrames()
+{
+    for (UINT Rust = 0; Rust < dropCount; Rust++)
+    {
+        frames.pop_front();
+    }
+    dropCount = 0;
 }
 
 bool TVidPlayer::Initialize()
@@ -149,8 +162,9 @@ bool TVidPlayer::RunRound()
         streams[Rust].ProcessFrames(board);
         if (streams[Rust].DoPresent(baseTime))
             board->PrepRefresh();
-        if (streams[Rust].frames.GetSize())
+        if (streams[Rust].frames.size())
             ret = false;
+        streams[Rust].DropFrames();
     }
 
     if (ret)
@@ -189,7 +203,7 @@ bool TVidPlayer::SupplementStreams()
             }
             TcAVFrame tcFrame;
             tcFrame.SetFrame(avFrame);
-            curStream.frames.Push(tcFrame);
+            curStream.frames.push_back(tcFrame);
 
             av_packet_unref(avPacket);
         }
@@ -202,7 +216,7 @@ bool TVidPlayer::NeedsFrames()
 {
     for (UINT Rust = 0; Rust < streams.Size(); Rust++)
     {
-        if (streams[Rust].frames.GetSize() < frameBuffer)
+        if (streams[Rust].frames.size() < frameBuffer)
             return true;
     }
     return false;

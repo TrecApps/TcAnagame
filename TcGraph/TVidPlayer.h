@@ -3,6 +3,7 @@
 #include <TFile.h>
 #include <TLinkedList.h>
 #include "TImageBrush.h"
+#include <list>
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -27,7 +28,7 @@ using av_stream_type = enum class av_stream_type {
     t_audio
 };
 
-class TcAVFrame
+class _TC_GRAPH TcAVFrame
 {
     friend class TVidPlayer;
     friend class Stream;
@@ -43,12 +44,13 @@ public:
     void SetFrame(AVFrame* frame);
 };
 
-class Stream
+class _TC_GRAPH Stream
 {
     friend class TVidPlayer;
     av_stream_type streamType;
     TAvCodec codec;
-    TLinkedList<TcAVFrame> frames;
+    std::list<TcAVFrame> frames;
+    UINT dropCount;
     TrecPointer<TImageBrush> brush;
 
     double timestampCorrection;
@@ -58,6 +60,8 @@ public:
 
     void ProcessFrames(TrecPointer<DrawingBoard>& board);
     bool DoPresent(double& baseTime);
+
+    void DropFrames();
 };
 
 using tc_player_state = enum class tc_player_state

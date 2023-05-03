@@ -212,6 +212,9 @@ public:
 			current = current->next;
 		else
 			currentNode--;
+
+		head->next->prev.Nullify();
+
 		head = head->next;
 		size--;
 	}
