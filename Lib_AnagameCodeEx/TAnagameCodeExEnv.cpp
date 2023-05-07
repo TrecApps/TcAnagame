@@ -3,8 +3,77 @@
 #include <TInstance.h>
 #include "TCodeHandler.h"
 #include <TFormatReader.h>
+#include <TcCompiler.h>
 
 TString anagameCodeName(L"AnaCode");
+
+TrecPointer<TcLanguage> TAnagameCodeExEnv::RetrieveLanguage(const TString& fileName)
+{
+    TString extension(fileName.SubString(fileName.FindLast(L".") + 1));
+    TString language;
+    TrecPointer<TcLanguage> ret;
+    if (languageExtensions.retrieveEntry(extension, language) || LoadLanguage(extension, language))
+    {
+        languages.retrieveEntry(language, ret);
+    }
+
+    return ret;
+}
+
+bool TAnagameCodeExEnv::LoadLanguage(const TString& fileName, TString& language)
+{
+    TrecPointer<TDirectory> languagesFolder = TrecPointerKey::ConvertPointer<TFileShell, TDirectory>( TFileShell::GetFileInfo(
+        GetDirectoryWithSlash(CentralDirectories::cd_Executable) + L"Languages"
+    ));
+    assert(languagesFolder.Get());
+
+    TDataArray<TrecPointer<TFileShell>> languageFiles;
+    languagesFolder->GetFileListing(languageFiles);
+
+    for (UINT Rust = 0; Rust < languageFiles.Size(); Rust++) {
+        auto languageFile = languageFiles[Rust];
+
+        TString name(languageFile->GetName());
+        auto namePieces = name.split(L".");
+        assert(namePieces.Get() && namePieces->Size() >= 2);
+        TString languageName(namePieces->at(0));
+        auto extensions = namePieces->at(1).splitn(L"-");
+        
+        bool found = false;
+        for (UINT C = 0; !found && C < extensions->Size(); C++) {
+            if (extensions->at(C).CompareNoCase(fileName))
+            {
+                found = true;
+            }
+        }
+
+        if (!found) continue;
+
+        // First Attempt to generate the language object
+        TrecPointer<TFormatReader> reader = TFormatReader::GetReader(languageFile);
+        assert(reader.Get());
+        reader->Read();
+
+        TrecPointer<TcLanguage> newLanguage = TrecPointerKey::GetNewTrecPointer<TcLanguage>( 
+            TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(reader->GetData())
+        );
+
+        TString langResult(newLanguage->Init());
+        if (langResult.GetSize())
+            return false;
+
+        // It works
+        for (UINT C = 0; !found && C < extensions->Size(); C++)
+        {
+            this->languageExtensions.addEntry(extensions->at(C), name);
+        }
+        language.Set(name);
+        this->languages.addEntry(language, newLanguage);
+        return true;
+    }
+
+    return false;
+}
 
 void TAnagameCodeExEnv::SaveFileRecord(const TString& fileName)
 {
@@ -75,6 +144,33 @@ TrecPointer<TObject> TAnagameCodeExEnv::RetrieveResource(const TString& name)
         builder->SetUIFile(jsonFile);
         return TrecPointerKey::ConvertPointer<AnafaceBuilder, TObject>(builder);
     }
+
+    if (!pieces->at(1).CompareNoCase(L"AG_Compiler") && pieces->Size() >= 3)
+    {
+        TrecPointer<TcLanguage> language = RetrieveLanguage(pieces->at(2));
+        if (language.Get())
+        {
+            TrecPointer<TFileShell> file = TFileShell::GetFileInfo(pieces->at(2));
+            if (!file.Get())
+            {
+                TString path(this->directory->GetPath() + TC_FILE_SEP + pieces->at(2));
+                file = TFileShell::GetFileInfo(path);
+            }
+
+            if (file.Get())
+            {
+                TrecPointer<TEnvironment> thisEnv = TrecPointerKey::TrecFromSoft<>(this->self);
+
+                TrecPointer<TcCompiler> compiler = TrecPointerKey::GetNewTrecPointer<TcCompiler>(
+                    TrecActivePointer<TFileShell>(file),
+                    TrecActivePointer<TEnvironment>(thisEnv),
+                    TrecActivePointer<TcLanguage>(language)
+                );
+                return TrecPointerKey::ConvertPointer<TcCompiler, TObject>(compiler);
+            }
+        }
+    }
+
     return TrecPointer<TObject>();
 }
 
@@ -200,7 +296,7 @@ TrecPointer<TEnvironment> TAnagameCodeExBuilder::BuildProjectEnvironment(TString
         TrecPointer<TFileShell> newDirectory = TFileShell::GetFileInfo(newPath);
 
         
-        return TrecPointerKey::GetNewTrecPointerAlt<TEnvironment, TAnagameCodeExEnv>(projectName, TrecActivePointer<TFileShell>(newDirectory));
+        return TrecPointerKey::GetNewSelfTrecPointerAlt<TEnvironment, TAnagameCodeExEnv>(projectName, TrecActivePointer<TFileShell>(newDirectory));
         
     }
 }

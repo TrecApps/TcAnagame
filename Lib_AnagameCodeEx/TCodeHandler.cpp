@@ -1,6 +1,8 @@
 
 #include "TCodeHandler.h"
 #include <AnafacePage.h>
+#include <TWindow.h>
+#include <TIdeWindow.h>
 
 
 void DoLoadFile(TrecPointer<TFileShell> file, TrecPointer<TTextInput> input)
@@ -24,6 +26,28 @@ void DoLoadFile(TrecPointer<TFileShell> file, TrecPointer<TTextInput> input)
 	contents.Empty();
 }
 
+void TCodeHandler::LoadCompiler()
+{
+	if (compiler.Get() || !window.Get() || !file.Get())
+		return;
+	
+
+
+	auto basicEnv = window->GetEnvironment();
+
+	TString resource;
+	resource.Format(L"%ws:%ws", L"AnagameCodeEx:AG_Compiler:",
+		this->file->GetPath().GetConstantBuffer().getBuffer());
+
+	compiler = TrecPointerKey::ConvertPointer<TObject, TcCompiler>( basicEnv->GetResource(resource) );
+}
+
+void TCodeHandler::SetDataFile(TrecPointer<TFileShell> file)
+{
+	TFileEventHandler::SetDataFile(file);
+	LoadCompiler();
+}
+
 void TCodeHandler::Initialize(TrecPointer<TPage> page)
 {
 	auto rootPage = TrecPointerKey::ConvertPointer<TPage, AnafacePage>(page);
@@ -31,6 +55,12 @@ void TCodeHandler::Initialize(TrecPointer<TPage> page)
 	this->input = TrecPointerKey::ConvertPointer<TControl, TTextInput>(rootPage->GetControlById(L"ActText"));
 
 	DoLoadFile(this->file, this->input);
+
+
+	// Load Compiler
+	TrecPointer<TIdeWindow> window = TrecPointerKey::ConvertPointer<DrawingBoard, TIdeWindow>(page->GetDrawingBoard());
+
+	LoadCompiler();
 }
 
 bool TCodeHandler::OnChar(bool fromChar, UINT nChar, UINT nRepCnt, UINT nFlags, message_output* mOut)

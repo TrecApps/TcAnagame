@@ -7,13 +7,17 @@
 class _TREC_LIB_DLL TEnvironment :
     public TObject
 {
+    friend class TrecPonterKey;
     TDataArray<TrecPointer<TEnvironment>> childEnvironments;
 protected:
     TDataMap<TrecPointer<TVariable>> properties;
+    TrecPointerSoft<TEnvironment> self;
     virtual TrecPointer<TObject> RetrieveResource(const TString& name) = 0;
     virtual void RetrieveResourceListSub(TDataArray<TrecPointer<TVariable>>& resources) = 0;
 public:
     TEnvironment() = default;
+
+    void SetSelf(TrecPointer<TEnvironment> newSelf);
 
     virtual void SaveProperties();
 

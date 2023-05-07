@@ -2,12 +2,18 @@
 #include <TEnvironment.h>
 #include "AnagameCodeEx.h"
 #include <AnagameEnvironment.h>
+#include <TcLanguage.h>
 
 
 class ANAGAME_CODE_EX TAnagameCodeExEnv : public AGProjectEnvironment
 {
 protected:
     TrecPointer<TVariable> projectVariables;
+    TDataMap<TrecPointer<TcLanguage>> languages;
+    TDataMap<TString> languageExtensions;
+
+    TrecPointer<TcLanguage> RetrieveLanguage(const TString& fileName);
+    bool LoadLanguage(const TString& fileName, TString& language);
 
     void SaveFileRecord(const TString& fileName);
 

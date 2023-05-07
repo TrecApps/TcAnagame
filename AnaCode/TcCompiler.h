@@ -8,7 +8,7 @@
 
 
 
-class TcCompiler :
+class _ANA_CODE TcCompiler :
     public TVObject
 {
 protected:
@@ -31,7 +31,7 @@ public:
         TrecActivePointer<TEnvironment> env,                // The Environment in which the Compiler operates under
         TrecActivePointer<TcLanguage> languageDetails);  // Details of the language to Compile
 
-    TString Init();         // Sets up the language attributes and opens the file for processing
+    TString Init(TrecPointer<TStringVariable> text);         // Sets up the language attributes and opens the file for processing
 
     TString PerformLex();   // Run Lex Parsing on the Source String
 
@@ -39,7 +39,7 @@ public:
 
     TrecPointer<TStringVariable> GetSourceString();
 
-    virtual TString Compile() = 0;
+    virtual TString Compile();
 
 
 };

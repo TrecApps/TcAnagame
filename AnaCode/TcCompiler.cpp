@@ -33,25 +33,28 @@ TcCompiler::TcCompiler(TrecActivePointer<TFileShell> file, TrecActivePointer<TEn
 	this->language = languageDetails.GetTrecPointer();
 }
 
-TString TcCompiler::Init()
+TString TcCompiler::Init(TrecPointer<TStringVariable> text)
 {
 	if (!stage)
 	{
-		TFile reader(file, TFile::t_file_open_existing | TFile::t_file_read);
-		if (!reader.IsOpen())
-			return L"Failed to Open File!";
-		TString contents;
-		TString contentSlice;
+		if (!text.Get())
+		{
+			TFile reader(file, TFile::t_file_open_existing | TFile::t_file_read);
+			if (!reader.IsOpen())
+				return L"Failed to Open File!";
+			TString contents;
+			TString contentSlice;
 
-		while (reader.ReadStringLine(contentSlice, 500))
-			contents.Append(contentSlice);
+			while (reader.ReadStringLine(contentSlice, 500))
+				contents.Append(contentSlice);
 
-		text = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(
-			TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(contents));
+			this->text = TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(
+				TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(contents));
+		}
+		else
+			this->text = text;
 		stage++;
 	}
-
-
 	return TString();
 }
 
@@ -75,4 +78,9 @@ TrecPointer<TStringVariable> TcCompiler::GetSourceString()
 		return TrecPointer<TStringVariable>();
 	return TrecPointerKey::ConvertPointer<TVariable, TStringVariable>(
 		TrecPointerKey::GetNewTrecPointerAlt<TVariable, TStringVariable>(text->GetString()));
+}
+
+TString TcCompiler::Compile()
+{
+	return TString();
 }

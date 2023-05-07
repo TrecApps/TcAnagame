@@ -1,6 +1,7 @@
 #pragma once
 #include <TString.h>
 #include <TContainerVariable.h>
+#include "AnaCode.h"
 
 using str_recognition = enum class str_recognition {
     str_single_final_prim,
@@ -82,7 +83,7 @@ public:
 };
 
 
-class TcLanguage :
+class _ANA_CODE TcLanguage :
     public TObject
 {
 protected:

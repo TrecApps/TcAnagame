@@ -18,6 +18,13 @@ void TEnvironment::RetrieveResourceList(TDataArray<TrecPointer<TVariable>>& reso
         childEnvironments[Rust]->RetrieveResourceList(resources);
 }
 
+void TEnvironment::SetSelf(TrecPointer<TEnvironment> newSelf)
+{
+    if (this != newSelf.Get())
+        throw L"Not Self Reference";
+    this->self = TrecPointerKey::SoftFromTrec<>(newSelf);
+}
+
 void TEnvironment::AddEnvironment(TrecPointer<TEnvironment> childEnvironment)
 {
     if (childEnvironment.Get())
