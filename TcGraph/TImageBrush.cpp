@@ -20,6 +20,8 @@ TImageBrush::~TImageBrush()
 	if (data)
 		stbi_image_free(data);
 	data = nullptr;
+
+	glDeleteTextures(1, &textureId);
 }
 
 brush_type TImageBrush::GetBrushType()

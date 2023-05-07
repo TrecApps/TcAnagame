@@ -496,7 +496,10 @@ TrecPointer<TBrush> DrawingBoard::GetImageBrush(UCHAR* data, UINT width, UINT he
 	ret->width = width;
 	ret->height = height;
 	ret->window = self;
-	glGenTextures(1, &(ret->textureId));
+	GLuint tex[] = { 0 };
+	glGenTextures(1, tex);
+	GLenum er = glGetError();
+	ret->textureId = tex[0];
 	glBindTexture(GL_TEXTURE_2D, ret->textureId);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ret->width, ret->height, 0, unum, GL_UNSIGNED_BYTE, data);

@@ -24,6 +24,8 @@ public:
     bool operator<(const CharWithSize& other) const;
 };
 
+
+
 using shader_type = enum class shader_type {
     shader_2d,
     shader_write,

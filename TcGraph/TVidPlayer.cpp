@@ -15,12 +15,13 @@ static AVPixelFormat correct_for_deprecated_pixel_format(AVPixelFormat pix_fmt) 
 
 TcAVFrame::TcAVFrame()
 {
-    this->frame = av_frame_alloc();
+    this->frame = nullptr;
 }
 TcAVFrame::TcAVFrame(const TcAVFrame& copy)
 {
-    this->frame = av_frame_alloc();
-    av_frame_copy(this->frame, copy.frame);
+    this->frame = nullptr;
+    if (copy.frame)
+        frame = av_frame_clone(copy.frame);
     this->brush = copy.brush;
 }
 TcAVFrame::~TcAVFrame()
@@ -30,14 +31,20 @@ TcAVFrame::~TcAVFrame()
 
 TcAVFrame& TcAVFrame::operator=(const TcAVFrame& copy)
 {
-    av_frame_copy(this->frame, copy.frame);
+    if(frame)
+        av_frame_free(&frame);
+    if (copy.frame)
+        frame = av_frame_clone(copy.frame);
     this->brush = copy.brush;
     return *this;
 }
 
 void TcAVFrame::SetFrame(AVFrame* frame)
 {
-    av_frame_copy(this->frame, frame);
+    if(this->frame)
+        av_frame_free(&(this->frame));
+    if (frame)
+        this->frame = av_frame_clone(frame);
 }
 
 void Stream::ProcessFrames(TrecPointer<DrawingBoard>& board)
@@ -177,7 +184,7 @@ bool TVidPlayer::SupplementStreams()
     if (endOfFile)
         return true;
     int readResult = 0;
-    while (NeedsFrames() && (readResult = av_read_frame(avFormatContext, avPacket)) >= 0)
+    while (NeedsFrames() && ((readResult = av_read_frame(avFormatContext, avPacket)) >= 0))
     {
         // End of File, this will cause the Async Runer to enter a "finished" state
         if (readResult < 0)
@@ -203,6 +210,7 @@ bool TVidPlayer::SupplementStreams()
             }
             TcAVFrame tcFrame;
             tcFrame.SetFrame(avFrame);
+            av_frame_unref(avFrame);
             curStream.frames.push_back(tcFrame);
 
             av_packet_unref(avPacket);
