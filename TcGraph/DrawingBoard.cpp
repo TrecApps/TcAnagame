@@ -130,6 +130,26 @@ void DrawingBoard::ResetProjection()
 	orthoProjection = glm::ortho(0.0f, static_cast<float>(area.right), 0.0f, static_cast<float>(area.bottom));
 }
 
+void DrawingBoard::AddOperation(TrecPointer<GraphicsOp> ops)
+{
+	TObjectLocker lock(&thread);
+	if (ops.Get())
+	{
+		this->graphicsOperations.push_back(ops);
+	}
+}
+
+void DrawingBoard::PerformGraphicsOps()
+{
+	TObjectLocker lock(&thread);
+	glfwMakeContextCurrent(window);
+	auto drawBoard = TrecPointerKey::TrecFromSoft<>(self);
+	for (UINT Rust = 0; Rust < graphicsOperations.Size(); Rust++) {
+		graphicsOperations[Rust]->Perform(drawBoard);
+	}
+	graphicsOperations.RemoveAll();
+}
+
 void DrawingBoard::SetFocusObject(TrecPointer<TObject> focusObject)
 {
 }

@@ -28,28 +28,33 @@ using av_stream_type = enum class av_stream_type {
     t_audio
 };
 
-class _TC_GRAPH TcAVFrame
+class _TC_GRAPH TcAVFrame: public TObject
 {
     friend class TVidPlayer;
     friend class Stream;
     mutable AVFrame* frame;
     TrecPointer<TImageBrush> brush;
+    bool createdOp;
 public:
     TcAVFrame();
     TcAVFrame(const TcAVFrame& copy);
     ~TcAVFrame();
 
+    TrecPointer<TImageBrush> GetBrush();
+    void SetBrush(TrecPointer<TImageBrush> brush);
+
     TcAVFrame& operator=(const TcAVFrame& copy);
 
     void SetFrame(AVFrame* frame);
+    AVFrame* GetFrame();
 };
 
-class _TC_GRAPH Stream
+class _TC_GRAPH Stream : public TObject
 {
     friend class TVidPlayer;
     av_stream_type streamType;
     TAvCodec codec;
-    std::list<TcAVFrame> frames;
+    std::list<TrecPointer<TcAVFrame>> frames;
     UINT dropCount;
     TrecPointer<TImageBrush> brush;
 
@@ -58,10 +63,21 @@ public:
     Stream() = default;
     Stream(const Stream& copy) = default;
 
+    void PrepCodec();
+
     void ProcessFrames(TrecPointer<DrawingBoard>& board);
     bool DoPresent(double& baseTime);
 
     void DropFrames();
+};
+
+class TextureToAVFrameOperation : public DrawingBoard::GraphicsOp {
+    TrecPointer<TcAVFrame> frame;
+    SwsContext* context;
+    int codecWidth, codecHeight;
+public:
+    TextureToAVFrameOperation(TrecPointer<TcAVFrame> frame, SwsContext* context, int w, int h);
+    void Perform(TrecPointer<DrawingBoard> board) override;
 };
 
 using tc_player_state = enum class tc_player_state

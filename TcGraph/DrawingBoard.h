@@ -81,6 +81,7 @@ using ag_mouse_pointer = enum class ag_mouse_pointer
     v_arrows
 };
 
+
 class _TC_GRAPH DrawingBoard :
     public TVObject
 {
@@ -106,6 +107,16 @@ class _TC_GRAPH DrawingBoard :
     void InitializeCaretRunner();
 
     void DrawCaret();
+
+public:
+    /**
+     * Represents graphics operations requested by other threads that can be performed in the main thread
+     */
+    class _TC_GRAPH GraphicsOp
+    {
+    public:
+        virtual void Perform(TrecPointer<DrawingBoard> board) = 0;
+    };
 
 protected:
     TrecPointer<TcAsyncRunner> caretRunner;
@@ -133,7 +144,12 @@ protected:
 
     UINT tabSpace; // How many spaces a tab represents
 
+    TDataArray < TrecPointer<GraphicsOp>> graphicsOperations;
+
 public:
+
+    void AddOperation(TrecPointer<GraphicsOp> ops);
+    void PerformGraphicsOps();
 
     virtual void SetFocusObject(TrecPointer<TObject> focusObject);
 

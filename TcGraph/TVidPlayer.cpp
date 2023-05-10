@@ -16,6 +16,7 @@ static AVPixelFormat correct_for_deprecated_pixel_format(AVPixelFormat pix_fmt) 
 TcAVFrame::TcAVFrame()
 {
     this->frame = nullptr;
+    this->createdOp = false;
 }
 TcAVFrame::TcAVFrame(const TcAVFrame& copy)
 {
@@ -27,6 +28,20 @@ TcAVFrame::TcAVFrame(const TcAVFrame& copy)
 TcAVFrame::~TcAVFrame()
 {
     av_frame_free(&frame);
+}
+
+TrecPointer<TImageBrush> TcAVFrame::GetBrush()
+{
+    TObjectLocker lock(&thread);
+    return this->brush;
+}
+
+void TcAVFrame::SetBrush(TrecPointer<TImageBrush> brush)
+{
+    if (brush.Get()) {
+        TObjectLocker lock(&thread);
+        this->brush = brush;
+    }
 }
 
 TcAVFrame& TcAVFrame::operator=(const TcAVFrame& copy)
@@ -47,20 +62,28 @@ void TcAVFrame::SetFrame(AVFrame* frame)
         this->frame = av_frame_clone(frame);
 }
 
+AVFrame* TcAVFrame::GetFrame()
+{
+    return this->frame;
+}
+
+void Stream::PrepCodec()
+{
+    if (streamType == av_stream_type::t_video && !codec.scalerContext)
+    {
+        auto source_pix_fmt = correct_for_deprecated_pixel_format(codec.av_codec_ctx->pix_fmt);
+        codec.scalerContext = sws_getContext(
+            codec.width, codec.height, source_pix_fmt,
+            codec.width, codec.height, AV_PIX_FMT_RGB0,
+            SWS_BILINEAR, nullptr, nullptr, nullptr);
+    }
+}
+
 void Stream::ProcessFrames(TrecPointer<DrawingBoard>& board)
 {
 
     if (streamType == av_stream_type::t_video)
     {
-        if (!codec.scalerContext)
-        {
-            auto source_pix_fmt = correct_for_deprecated_pixel_format(codec.av_codec_ctx->pix_fmt);
-            codec.scalerContext = sws_getContext(
-                codec.width, codec.height, source_pix_fmt,
-                codec.width, codec.height, AV_PIX_FMT_RGB0,
-                SWS_BILINEAR, nullptr, nullptr, nullptr);
-            
-        }
         if (!codec.scalerContext)
         {
             return;
@@ -69,17 +92,10 @@ void Stream::ProcessFrames(TrecPointer<DrawingBoard>& board)
         {
             auto& frame = (*Rust);
 
-            if (frame.brush.Get())
+            if (frame->brush.Get())
                 continue;
 
-            UCHAR* frame_data = (UCHAR*)_aligned_malloc(codec.width * codec.height * 4, 128);
-            uint8_t* dest[4] = { frame_data, NULL, NULL, NULL };
-            int dest_linesize[4] = { codec.width * 4, 0, 0, 0 };
-            sws_scale(codec.scalerContext, frame.frame->data, frame.frame->linesize, 0, codec.height, dest, dest_linesize);
-
-            frame.brush = TrecPointerKey::ConvertPointer<TBrush, TImageBrush>(board->GetImageBrush(frame_data, codec.width, codec.height));
-
-            _aligned_free(frame_data);
+            
         }
         return;
     }
@@ -102,22 +118,24 @@ bool Stream::DoPresent(double& baseTime)
     for (auto Rust = frames.begin(); Rust != frames.end(); Rust++)
     {
         auto& frame = *Rust;
-        if (!timestampCorrection && frame.frame->pts < 0)
-            timestampCorrection = -static_cast<double>(frame.frame->pts);
+        if (!timestampCorrection && frame->frame->pts < 0)
+            timestampCorrection = -static_cast<double>(frame->frame->pts);
 
-        bool doPresent = ((timestampCorrection + (static_cast<double>(frame.frame->pts)) * timeBase) + baseTime) > current;
+        bool doPresent = ((timestampCorrection + (static_cast<double>(frame->frame->pts)) * timeBase) + baseTime) > current;
         if (!doPresent)
             return ret;
-        if (this->streamType == av_stream_type::t_video)
+        if (this->streamType == av_stream_type::t_video && frame->GetBrush().Get())
         {
-            brush = frame.brush;
+            TObjectLocker lock(&thread);
+            brush = frame->GetBrush();
             ret = true;
+            dropCount++;
         }
         else if (streamType == av_stream_type::t_audio)
         {
-
+            dropCount++;
         }
-        dropCount++;
+        
         
     }
     return ret;
@@ -195,6 +213,7 @@ bool TVidPlayer::SupplementStreams()
         if (avPacket->stream_index < streams.Size())
         {
             auto& curStream = streams[avPacket->stream_index];
+            curStream.PrepCodec();
             readResult = avcodec_send_packet(curStream.codec.av_codec_ctx, avPacket);
             if (readResult < 0) {
                 return false;
@@ -208,10 +227,21 @@ bool TVidPlayer::SupplementStreams()
             else if (readResult < 0) {
                 return false;
             }
-            TcAVFrame tcFrame;
-            tcFrame.SetFrame(avFrame);
+            TrecPointer<TcAVFrame> tcFrame = TrecPointerKey::GetNewTrecPointer<TcAVFrame>();
+            tcFrame->SetFrame(avFrame);
             av_frame_unref(avFrame);
+            
             curStream.frames.push_back(tcFrame);
+
+            if (curStream.streamType == av_stream_type::t_video) {
+                // If this is a video go ahead and signal the drawing Board to 
+                board->AddOperation(TrecPointerKey::GetNewTrecPointerAlt<DrawingBoard::GraphicsOp, TextureToAVFrameOperation>(
+                    tcFrame,
+                    curStream.codec.scalerContext,
+                    curStream.codec.width,
+                    curStream.codec.height
+                ));
+            }
 
             av_packet_unref(avPacket);
         }
@@ -395,4 +425,28 @@ TrecPointer<TVidPlayer> TVidPlayer::GetPlayer(TrecPointer<DrawingBoard> board, T
     ret->avFormatContext = avFormatContext;
     return ret;
 
+}
+
+TextureToAVFrameOperation::TextureToAVFrameOperation(TrecPointer<TcAVFrame> frame, SwsContext* context, int w, int h)
+{
+    this->context = context;
+    this->frame = frame;
+}
+
+void TextureToAVFrameOperation::Perform(TrecPointer<DrawingBoard> board)
+{
+    UCHAR* frame_data = (UCHAR*)_aligned_malloc(codecWidth * codecHeight * 4, 128);
+    uint8_t* dest[4] = { frame_data, NULL, NULL, NULL };
+    int dest_linesize[4] = { codecWidth * 4, 0, 0, 0 };
+
+    frame->ThreadLock();
+    AVFrame* rawFrame = frame->GetFrame();
+
+    sws_scale(context, rawFrame->data, rawFrame->linesize, 0, codecHeight, dest, dest_linesize);
+
+    frame->SetBrush(TrecPointerKey::ConvertPointer<TBrush, TImageBrush>(board->GetImageBrush(frame_data, codecWidth, codecHeight)));
+
+    _aligned_free(frame_data);
+
+    frame->ThreadRelease();
 }

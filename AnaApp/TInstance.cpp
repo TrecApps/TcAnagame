@@ -310,7 +310,10 @@ void TInstance::DoDraw()
 	for (UINT Rust = 0; Rust < windows.Size(); Rust++)
 	{
 		if (windows[Rust].Get())
+		{
+			windows[Rust]->PerformGraphicsOps();
 			windows[Rust]->OnDraw();
+		}
 	}
 }
 
