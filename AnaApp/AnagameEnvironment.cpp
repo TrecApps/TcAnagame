@@ -29,7 +29,7 @@ TrecPointer<TObject> BasicAnagameEnvironment::RetrieveResource(const TString& na
 	{
 
 		auto hierarchyType = project->GetProjectNodes(pieces->at(2));
-		if (hierarchyType.Get())
+		if (!hierarchyType.Get())
 			return TrecPointer<TObject>();
 		auto ret = TrecPointerKey::GetNewTrecPointerAlt<TObject, AnafaceBuilder>();
 		auto pRet = TrecPointerKey::ConvertPointer<TObject, AnafaceBuilder>(ret);

@@ -23,18 +23,21 @@ void TPage::TScrollBar::onDraw(TrecPointer<DrawingBoard> target)
 	if (!target.Get() || !actParent.Get() || !(widthFactor < 1.0f)) return;
 
 	RECT_F location = actParent->GetArea();
-
+	RECT_F actRect;
 	auto brush = TrecPointerKey::ConvertPointer<TBrush, TColorBrush>( target->GetSolidColorBrush(body_box));
-	brush->FillRectangle(body_rect);
+	TColorBrush::NormalizeRect(actRect, body_rect, target);
+	brush->FillRectangle(actRect);
 
 	RECT_F d_box = body_rect;
+	
 
 	brush->SetColor(end_box);
 	if (scrollAlignment == ScrollOrient::so_horizontal)
 	{
 		d_box.right = d_box.left + BOX_SIZE;
 
-		brush->FillRectangle(d_box);
+		TColorBrush::NormalizeRect(actRect, d_box, target);
+		brush->FillRectangle(actRect);
 
 		float move = (body_rect.right - body_rect.left) - BOX_SIZE;
 		d_box.right += move;
@@ -45,20 +48,21 @@ void TPage::TScrollBar::onDraw(TrecPointer<DrawingBoard> target)
 	else
 	{
 		d_box.bottom = d_box.top + BOX_SIZE;
-
-		brush->FillRectangle(d_box);
+		TColorBrush::NormalizeRect(actRect, d_box, target);
+		brush->FillRectangle(actRect);
 
 		float move = (body_rect.bottom - body_rect.top) - BOX_SIZE;
 		d_box.bottom += move;
 	}
-	brush->FillRectangle(d_box);
+	TColorBrush::NormalizeRect(actRect, d_box, target);
+	brush->FillRectangle(actRect);
 
 	if (onFocus)
 		brush->SetColor(middle_box_click);
 	else
 		brush->SetColor(middle_box);
-
-	brush->FillRectangle(scroll_rect);
+	TColorBrush::NormalizeRect(actRect, scroll_rect, target);
+	brush->FillRectangle(actRect);
 }
 
 

@@ -20,5 +20,8 @@ public:
 
 protected:
 	TrecPointer<TDataNodeControl> nodeControl;
+	TrecPointer<TObjectNode> nodes;
+
+	void PrepNodes();
 };
 

@@ -215,6 +215,34 @@ TString TInstance::SaveProject(const TProjectData& project)
 	if (!list.Get())
 		list = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TArrayVariable>());
 
+	bool found = false;
+	TrecPointer<TVariable> projVar;
+	for (UINT Rust = 0; !found && list->GetValueAt(Rust, projVar); Rust++) {
+		TrecPointer<TJsonVariable> projVarJ = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(projVar);
+		if (!projVarJ.Get())
+			continue;
+
+		projVarJ->RetrieveField(L"builderType", projVar);
+		TString builderType(TStringVariable::Extract(projVar, L""));
+
+		projVarJ->RetrieveField(L"projectType", projVar);
+		TString projectType(TStringVariable::Extract(projVar, L""));
+
+		projVarJ->RetrieveField(L"name", projVar);
+		TString name(TStringVariable::Extract(projVar, L""));
+
+		projVarJ->RetrieveField(L"directory", projVar);
+		TString directory(TStringVariable::Extract(projVar, L""));
+
+		found = !builderType.Compare(project.builderName) &&
+			!projectType.Compare(project.environmentName) &&
+			!name.Compare(project.projectName) &&
+			!directory.Compare(project.directory->GetPath());
+	}
+
+	// We already have this project registered, don't save a new copy
+	if (found)return L"";
+
 	TrecPointer<TVariable> newEntry = TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TJsonVariable>();
 	TrecPointer<TJsonVariable> jsonEntry = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(newEntry);
 

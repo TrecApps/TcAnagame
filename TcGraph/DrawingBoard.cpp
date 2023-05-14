@@ -281,20 +281,64 @@ void DrawingBoard::PauseCaret()
 
 void DrawingBoard::AddLayer(const RECT_F& ref)
 {
-	layers.push_back(ref);
-	glfwMakeContextCurrent(window);
 
-	glViewport(ref.left, ref.top, ref.right - ref.left, ref.bottom - ref.top);
+	glfwMakeContextCurrent(window);
+	if (!layers.Size())
+	{
+		glEnable(GL_STENCIL_TEST);
+	}
+	layers.push_back(ref);
+
+
+	glColorMask(false, false, false, false);
+	glDepthMask(false);
+	glStencilFunc(GL_ALWAYS, 1, 0xFF);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+	glClear(GL_STENCIL_BUFFER_BIT);
+
+	
+	RECT_F actRect;
+	TColorBrush::NormalizeRect(actRect, ref, TrecPointerKey::TrecFromSoft<>(self));
+
+	glBegin(GL_QUADS);
+	glColor4f(0, 0, 0, 1.0f);
+	glVertex2d(actRect.left, actRect.top);
+	glVertex2d(actRect.right, actRect.top);
+	glVertex2d(actRect.right, actRect.bottom);
+	glVertex2d(actRect.left, actRect.bottom);
+	glEnd();
+
+	glColorMask(true, true, true, true);
+	glDepthMask(true);
+	glStencilFunc(GL_EQUAL, 1, 0xFF);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 }
 
 void DrawingBoard::PopLayer()
 {
-	UINT curSize = layers.Size();
-	if (curSize)
-		layers.RemoveAt(--curSize);
-	RECT_F ref = curSize ? layers[curSize - 1] : area;
-	glViewport(ref.left, ref.top, ref.right - ref.left, ref.bottom - ref.top);
-		
+	if (!layers.Size())
+		return;
+
+	glColorMask(false, false, false, false);
+	glDepthMask(false);
+	glStencilFunc(GL_ALWAYS, 1, 0xFF);
+	glStencilOp(GL_DECR, GL_DECR, GL_DECR);
+
+	RECT_F actRect;
+	TColorBrush::NormalizeRect(actRect, layers.RemoveAt(layers.Size()-1), TrecPointerKey::TrecFromSoft<>(self));
+	glBegin(GL_QUADS);
+	glColor4f(0, 0, 0, 1.0f);
+	glVertex2d(actRect.left, actRect.top);
+	glVertex2d(actRect.right, actRect.top);
+	glVertex2d(actRect.right, actRect.bottom);
+	glVertex2d(actRect.left, actRect.bottom);
+	glEnd();
+
+	glColorMask(true, true, true, true);
+	glDepthMask(true);
+
+	if (!layers.Size())
+		glDisable(GL_STENCIL_TEST);
 }
 
 GLuint DrawingBoard::GetTextureShaderId()

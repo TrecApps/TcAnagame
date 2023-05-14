@@ -580,7 +580,13 @@ void AnafacePage::InjectScrollerPage(const RECT_F& bounds, const RECT_F& needs, 
 		TrecPointer<TPage> scroller = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TScrollerPage>(drawingBoard, page);
 		TDataArray<EventID_Cred> cred;
 		auto b = bounds;
+
+		page->SetParentPage(scroller);
+
 		scroller->OnResize(b, 0, cred);
+
+		
+
 		rootPage = scroller;
 	}
 }

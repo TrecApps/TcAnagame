@@ -34,6 +34,10 @@ void TWindow::HandleWindowEvents(TDataArray<TPage::EventID_Cred>& cred)
             this->caret.intercepter = cred[Rust].textIntercepter;
         if (cred[Rust].eventType == R_Message_Type::On_Redraw)
             needsRefresh = true;
+        if (cred[Rust].eventType == R_Message_Type::On_Select_Scroller)
+        {
+            currentScrollBar = cred[Rust].scroll;
+        }
     }
 
 }
@@ -134,6 +138,7 @@ void TWindow::OnLButtonUp(int mods)
 
     if (currentScrollBar.Get()) {
         currentScrollBar->OnLButtonUp(0, mousePoint, mOut);
+        currentScrollBar.Nullify();
         this->needsRefresh = true;
         return;
     }

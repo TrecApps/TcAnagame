@@ -8,6 +8,8 @@ void TScrollerPage::RefreshScroll()
 		ThreadRelease();
 		return;
 	}
+	vScroll.Nullify();
+	hScroll.Nullify();
 	RECT_F childLocation = childPage->GetArea();
 	if (!vScroll.Get() && ((area.bottom - area.top) < (childLocation.bottom - childLocation.top)))
 	{

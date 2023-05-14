@@ -98,11 +98,15 @@ void TDataNodeControl::OnLButtonUp(UINT nFlags, const TPoint& point, message_out
 					if (DrawingBoard::IsContained(point, triLoc) && isTickSelected && !blockExpansion)
 					{
 						if (tNode->IsExtended())
+						{
 							tNode->DropChildNodes();
+							drawingBoard->PrepRefresh();
+						}
 						else if (tNode->IsExtendable())
 						{
 							tNode->Extend();
 							OnResize(area, 0, eventAr);
+							drawingBoard->PrepRefresh();
 						}
 
 
@@ -268,7 +272,7 @@ void TDataNodeControl::Draw(TrecPointer<TVariable> object)
 		triLoc = cLoc;
 		triLoc.left = r;
 		assert(TColorBrush::NormalizeRect(actTriLoc, triLoc, drawingBoard));
-		cont->OnResize(actTriLoc, 0, cred);
+		cont->OnResize(cLoc, 0, cred);
 		cont->Draw(TrecPointerKey::GetNewSelfTrecPointerAlt<TVariable, TStringVariable>(curNode->GetContent()));
 
 		if (nodeBrush.Get() && c == highlightNodeSelected)
