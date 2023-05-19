@@ -112,7 +112,7 @@ public:
     /**
      * Represents graphics operations requested by other threads that can be performed in the main thread
      */
-    class _TC_GRAPH GraphicsOp
+    class _TC_GRAPH GraphicsOp : public TCoreObject
     {
     public:
         virtual void Perform(TrecPointer<DrawingBoard> board) = 0;

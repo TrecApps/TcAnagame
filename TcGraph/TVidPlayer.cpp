@@ -86,7 +86,9 @@ void Stream::ProcessFrames(TrecPointer<DrawingBoard>& board)
     {
         if (!codec.scalerContext)
         {
-            return;
+            /*PrepCodec();
+            if(!codec.scalerContext)*/
+                return;
         }
         for (auto Rust = this->frames.begin(); Rust != frames.end(); Rust++)
         {
@@ -213,7 +215,7 @@ bool TVidPlayer::SupplementStreams()
         if (avPacket->stream_index < streams.Size())
         {
             auto& curStream = streams[avPacket->stream_index];
-            curStream.PrepCodec();
+            
             readResult = avcodec_send_packet(curStream.codec.av_codec_ctx, avPacket);
             if (readResult < 0) {
                 return false;
@@ -232,7 +234,7 @@ bool TVidPlayer::SupplementStreams()
             av_frame_unref(avFrame);
             
             curStream.frames.push_back(tcFrame);
-
+            curStream.PrepCodec();
             if (curStream.streamType == av_stream_type::t_video) {
                 // If this is a video go ahead and signal the drawing Board to 
                 board->AddOperation(TrecPointerKey::GetNewTrecPointerAlt<DrawingBoard::GraphicsOp, TextureToAVFrameOperation>(
@@ -431,6 +433,8 @@ TextureToAVFrameOperation::TextureToAVFrameOperation(TrecPointer<TcAVFrame> fram
 {
     this->context = context;
     this->frame = frame;
+    this->codecHeight = h;
+    this->codecWidth = w;
 }
 
 void TextureToAVFrameOperation::Perform(TrecPointer<DrawingBoard> board)
