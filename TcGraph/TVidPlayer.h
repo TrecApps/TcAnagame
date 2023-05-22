@@ -116,6 +116,8 @@ class _TC_GRAPH TVidPlayer :
     double pauseTime;
 
     video_state videoState;
+
+    UINT constantRefreshIndex;
 protected:
     bool RunRound() override;
 

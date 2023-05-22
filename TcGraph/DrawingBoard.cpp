@@ -176,6 +176,31 @@ void DrawingBoard::PrepRefresh()
 	this->needsRefresh = true;
 }
 
+UINT DrawingBoard::PrepConstantRefresh()
+{
+	TObjectLocker lock(&thread);
+	needsConstantRefresh = true;
+	for (UINT Rust = 0; Rust < constantRefreshReqs.Size(); Rust++) {
+		if (!constantRefreshReqs[Rust]) {
+			constantRefreshReqs[Rust] = true;
+			return Rust;
+		}
+	}
+	return constantRefreshReqs.push_back(true);
+}
+
+void DrawingBoard::ReleaseConstantRefresh(UINT u)
+{
+	TObjectLocker lock(&thread);
+	if (u >= constantRefreshReqs.Size()) return;
+		constantRefreshReqs[u] = false;
+	for (UINT Rust = 0; Rust < constantRefreshReqs.Size(); Rust++) {
+		if (constantRefreshReqs[Rust])
+			return;
+	}
+	needsConstantRefresh = false;
+}
+
 void DrawingBoard::SetCursor(ag_mouse_pointer mPointer)
 {
 	glfwSetCursor(window, cursors[static_cast<UINT>(mPointer)]);

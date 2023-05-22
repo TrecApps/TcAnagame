@@ -274,6 +274,8 @@ void TVidPlayer::Run(ReturnObject& ret)
         baseTime = glfwGetTime();
         TcAsyncRunner::Run(ret);
         videoState = video_state::vs_playing;
+        if (board.Get())
+            constantRefreshIndex = board->PrepConstantRefresh();
     }
 }
 
@@ -284,6 +286,8 @@ void TVidPlayer::Pause()
         TcAsyncRunner::Pause();
         pauseTime = glfwGetTime();
         videoState = video_state::vs_paused;
+        if (board.Get())
+            board->ReleaseConstantRefresh(constantRefreshIndex);
     }
 }
 
@@ -294,6 +298,8 @@ void TVidPlayer::Resume()
         baseTime = (glfwGetTime() - pauseTime);
         TcAsyncRunner::Resume();
         videoState = video_state::vs_playing;
+        if (board.Get())
+            constantRefreshIndex = board->PrepConstantRefresh();
     }
 }
 
@@ -301,6 +307,9 @@ void TVidPlayer::Stop()
 {
     videoState = video_state::vs_stopped;
     TcAsyncRunner::Stop();
+
+    if (board.Get())
+        board->ReleaseConstantRefresh(constantRefreshIndex);
 }
 
 video_state TVidPlayer::GetVideoState()

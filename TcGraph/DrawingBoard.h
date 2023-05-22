@@ -138,6 +138,7 @@ protected:
 
     ThreadBlocker drawingThread;
     
+    TDataArray<bool> constantRefreshReqs;
     bool needsRefresh, needsConstantRefresh;
 
     void ResetProjection();
@@ -158,6 +159,8 @@ public:
     void SetFontEntry(const TString& name, const std::map<CharWithSize, GLuint>& map);
 
     void PrepRefresh();
+    UINT PrepConstantRefresh();
+    void ReleaseConstantRefresh(UINT u);
     void SetCursor(ag_mouse_pointer mPointer);
 
     void NormalizePoint(const TPoint& input, TPoint& output);
