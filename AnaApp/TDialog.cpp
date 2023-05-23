@@ -2,7 +2,7 @@
 #include <nfd.h>
 
 
-TDialog::TDialog(TrecPointer<TWindow> parent, GLFWwindow* win): TWindow(win)
+TDialog::TDialog(TrecPointer<TWindow> parent, GLFWwindow* win, VkPhysicalDevice anagameVulkanDevice): TWindow(win, anagameVulkanDevice)
 {
 	this->parent = parent;
 	mode = t_dialog_modal_mode::no_modal;

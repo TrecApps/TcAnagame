@@ -95,7 +95,7 @@ void TIdeWindow::SetFocusObject(TrecPointer<TObject> focusObject)
 		this->currentFilePage = TrecPointerKey::SoftFromTrec<>(filePage);
 }
 
-TIdeWindow::TIdeWindow(GLFWwindow* window): TWindow(window)
+TIdeWindow::TIdeWindow(GLFWwindow* window, VkPhysicalDevice anagameVulkanDevice): TWindow(window, anagameVulkanDevice)
 {
 	mainPageSpace = 180;
 	environment = TrecPointerKey::GetNewTrecPointer< BasicAnagameEnvironment>();

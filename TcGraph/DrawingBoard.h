@@ -1,5 +1,5 @@
 #pragma once
-
+#define GLFW_INCLUDE_VULKAN
 #include "TBrush.h"
 #include "TShader.h"
 #include <TPoint.h>
@@ -9,6 +9,7 @@
 #include <TcRunner.h>
 #include <TTextIntercepter.h>
 #include <TDataMap.h>
+#include <optional>
 
 class CharWithSize
 {
@@ -101,6 +102,12 @@ class _TC_GRAPH DrawingBoard :
 
     TrecPointer<TBrush> textHighlight;
 
+    // Vulkcan Features
+    VkQueue graphicsQueue;
+    VkQueue presentQueue;
+    VkSurfaceKHR surface;
+    VkDevice logicalDevice;
+
 
     
 
@@ -119,6 +126,16 @@ public:
     };
 
 protected:
+
+    using ueueFamilyIndices = struct QueueFamilyIndices {
+        std::optional<uint32_t> graphicsFamily;
+        std::optional<uint32_t> presentFamily;
+
+        bool isComplete() {
+            return graphicsFamily.has_value() && presentFamily.has_value();
+        }
+    };
+
     TrecPointer<TcAsyncRunner> caretRunner;
     TrecPointerSoft<DrawingBoard> self;
 
@@ -128,8 +145,10 @@ protected:
 
     AnagameCaret caret;
     GLFWwindow* window;
-    explicit DrawingBoard(GLFWwindow* window);
+    explicit DrawingBoard(GLFWwindow* window, VkPhysicalDevice anagameVulkanDevice);
 
+    void createLogicalDevice(VkPhysicalDevice anagameVulkanDevice);
+    QueueFamilyIndices findQueueFamilies(VkPhysicalDevice anagameVulkanDevice);
 
     RECT_F origArea;
     RECT_F area;

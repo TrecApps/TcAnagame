@@ -26,6 +26,8 @@ int main()
 	if (!mainInstance->GetGlfwInitResult())
 		return -1;
 
+	mainInstance->InitializeVulkan("Anagame Builder");
+
 	mainInstance->SetCallbacks(onChar, onMouseMove, onKeyPress, onMouseClick, onScroll, onFocus, onWindowResize, onWindowClose, onFrameResize);
 	mainInstance->SubmitEnvironmentBuilder(TrecPointerKey::GetNewTrecPointerAlt<TEnvironmentBuilder, TAnagameCodeExBuilder>());
 	

@@ -1,4 +1,7 @@
 #pragma once
+#ifndef GLFW_INCLUDE_VULKAN
+#define GLFW_INCLUDE_VULKAN
+#endif
 #include <TString.h>
 #include "TWindow.h"
 #include <GLFW/glfw3.h>
@@ -91,6 +94,11 @@ class _ANA_APP TInstance :
 
     GLFWwindowclosefun closeFunction;
 
+    // Now that we are using Vulkan
+    VkInstance vulkanInstance;
+    std::string appName;
+    VkPhysicalDevice anagameVulkanDevice;
+
     TrecPointer<TWindow> GetWindow(GLFWwindow* win);
 
     UINT windowCount;
@@ -111,6 +119,8 @@ class _ANA_APP TInstance :
 public:
     static TrecPointer<TInstance> GetInstance();
     ~TInstance();
+
+    void InitializeVulkan(const std::string name);
 
     void SubmitEnvironmentBuilder(TrecPointer<TEnvironmentBuilder> builder);
 

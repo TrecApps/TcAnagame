@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\..\Freetype_2.0\include;..\..\glm;..\..\GLFW\include;..\AnaWidget;..\AnaApp;..\AnaCode;..\TcGraph;..\TrecLib;$(IncludePath)</IncludePath>
+    <IncludePath>C:\VulkanSDK\1.3.246.1\Include;..\..\Freetype_2.0\include;..\..\glm;..\..\GLFW\include;..\AnaWidget;..\AnaApp;..\AnaCode;..\TcGraph;..\TrecLib;$(IncludePath)</IncludePath>
     <LibraryPath>..\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -116,6 +116,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

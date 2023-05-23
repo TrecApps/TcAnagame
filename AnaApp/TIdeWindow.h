@@ -46,7 +46,7 @@ public:
 
     void PrepResource(TrecPointer<TJsonVariable> resourceData);
 
-    TIdeWindow(GLFWwindow* window);
+    TIdeWindow(GLFWwindow* window, VkPhysicalDevice anagameVulkanDevice);
 
     void SetMainPage(TrecPointer<TPage> mainPage) override;
 

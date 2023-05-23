@@ -22,6 +22,8 @@ int main()
 	if (!mainInstance->GetGlfwInitResult())
 		return -1;
 
+	mainInstance->InitializeVulkan("Anagame Central");
+
 	mainInstance->SetCallbacks(onChar, onMouseMove, nullptr, onMouseClick, onScroll, onFocus, onWindowResize, onWindowClose, onFrameResize);
 	
 	TrecPointer<TWindow> mainWindow;

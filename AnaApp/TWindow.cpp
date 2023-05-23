@@ -2,7 +2,7 @@
 #include "TWindow.h"
 #include "TInstance.h"
 
-TWindow::TWindow(GLFWwindow* window) : DrawingBoard(window)
+TWindow::TWindow(GLFWwindow* window, VkPhysicalDevice anagameVulkanDevice) : DrawingBoard(window, anagameVulkanDevice)
 {
     isClicked = locked = false;
 }

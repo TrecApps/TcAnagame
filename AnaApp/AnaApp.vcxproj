@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\..\nativefiledialog-extended\src\include;..\..\Freetype_2.0\include;..\..\GLEW;..\AnaWidget;..\..\GLFW\include;..\TrecLib;..\TcGraph;..\..\glm;..\AnaCode;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\nativefiledialog-extended\out\build\x64-Debug\src;..\..\GLEW\lib;..\..\GLFW\lib;..\x64\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\VulkanSDK\1.3.246.1\Include;..\..\nativefiledialog-extended\src\include;..\..\Freetype_2.0\include;..\..\GLEW;..\AnaWidget;..\..\GLFW\include;..\TrecLib;..\TcGraph;..\..\glm;..\AnaCode;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\VulkanSDK\1.3.246.1\Lib;..\..\nativefiledialog-extended\out\build\x64-Debug\src;..\..\GLEW\lib;..\..\GLFW\lib;..\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -116,12 +116,14 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>TcGraph.lib;TrecLib.lib;AnaWidget.lib;AnaCode.lib;nfd.lib;glfw3dll.lib;OpenGL32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>TcGraph.lib;TrecLib.lib;AnaWidget.lib;AnaCode.lib;nfd.lib;glfw3dll.lib;OpenGL32.lib;glew32.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\VulkanSDK\1.3.246.1\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

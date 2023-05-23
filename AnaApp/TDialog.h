@@ -11,7 +11,7 @@ protected:
     TrecPointer<TVariable> result;
     TrecPointer<TWindow> parent;
 
-    TDialog(TrecPointer<TWindow> parent, GLFWwindow* win);
+    TDialog(TrecPointer<TWindow> parent, GLFWwindow* win, VkPhysicalDevice anagameVulkanDevice);
     TrecPointer<TcProcedureRunner> closeCallback;
     t_dialog_modal_mode mode;
     bool dialogRunning;

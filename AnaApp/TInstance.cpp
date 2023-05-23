@@ -1,8 +1,9 @@
-#include <GLFW/glfw3.h>
+
 #include "TDialog.h"
 #include "TIdeWindow.h"
 #include <TFormatReader.h>
 #include <TContainerVariable.h>
+#include <stdexcept>
 
 
 TrecPointer<TInstance> theInstance;
@@ -22,7 +23,7 @@ TrecPointer<TWindow> TInstance::GetWindow(GLFWwindow* win)
 
 TInstance::TInstance()
 {
-
+	anagameVulkanDevice = VK_NULL_HANDLE;
 
 
 	glfwInitResult = glfwInit();
@@ -147,6 +148,45 @@ TInstance::~TInstance()
 {
 	if (glfwInitResult)
 		glfwTerminate();
+	vkDestroyInstance(vulkanInstance, nullptr);
+}
+
+void TInstance::InitializeVulkan(const std::string name)
+{
+	appName = name;
+	VkApplicationInfo appInfo{};
+	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+	appInfo.pApplicationName = appName.c_str();
+	appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+	appInfo.pEngineName = "Anagame";
+	appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+	appInfo.apiVersion = VK_API_VERSION_1_0;
+
+	VkInstanceCreateInfo createInfo{};
+	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+	createInfo.pApplicationInfo = &appInfo;
+
+	uint32_t glfwExtensionCount = 0;
+	const char** glfwExtensions;
+	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
+	createInfo.enabledExtensionCount = glfwExtensionCount;
+	createInfo.ppEnabledExtensionNames = glfwExtensions;
+
+	createInfo.enabledLayerCount = 0;
+
+	if (vkCreateInstance(&createInfo, nullptr, &vulkanInstance) != VK_SUCCESS) {
+		throw std::runtime_error("failed to create instance!");
+	}
+
+	uint32_t deviceCount = 0;
+	vkEnumeratePhysicalDevices(vulkanInstance, &deviceCount, nullptr);
+	if (deviceCount == 0) {
+		throw std::runtime_error("failed to find GPUs with Vulkan support!");
+	}
+	std::vector<VkPhysicalDevice> devices(deviceCount);
+	vkEnumeratePhysicalDevices(vulkanInstance, &deviceCount, devices.data());
+	anagameVulkanDevice = devices[0];
 }
 
 void TInstance::SubmitEnvironmentBuilder(TrecPointer<TEnvironmentBuilder> builder)
@@ -363,6 +403,7 @@ UINT TInstance::GenerateWindow(TrecPointer<TWindow>& window, TrecPointer<TFileSh
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
 	GLFWwindow* glfwWindow = glfwCreateWindow(900,700, useName.GetRegString().c_str(), nullptr, nullptr);
 	if (!glfwWindow)
@@ -373,10 +414,10 @@ UINT TInstance::GenerateWindow(TrecPointer<TWindow>& window, TrecPointer<TFileSh
 	switch (type)
 	{
 	case t_window_type::t_window_type_ide:
-		board = TrecPointerKey::GetNewSelfTrecPointerAlt<DrawingBoard, TIdeWindow>(glfwWindow);
+		board = TrecPointerKey::GetNewSelfTrecPointerAlt<DrawingBoard, TIdeWindow>(glfwWindow, anagameVulkanDevice);
 		break;
 	default:
-		board = TrecPointerKey::GetNewSelfTrecPointerAlt<DrawingBoard, TWindow>(glfwWindow);
+		board = TrecPointerKey::GetNewSelfTrecPointerAlt<DrawingBoard, TWindow>(glfwWindow, anagameVulkanDevice);
 	}
 	// To-Do: Other Initialization
 
@@ -437,11 +478,12 @@ UINT TInstance::GenerateDialog(TrecPointer<TWindow>& window, TrecPointer<TWindow
 	TString useName(name);
 	if (!useName.GetSize())
 		useName.Set(L"Anagame Dialog");
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	GLFWwindow* glfwWindow = glfwCreateWindow(800, 680, useName.GetRegString().c_str(), nullptr, nullptr);
 	if (!glfwWindow)
 		return 1;
 
-	TrecPointer<DrawingBoard> board = TrecPointerKey::GetNewSelfTrecPointerAlt<DrawingBoard, TDialog>(parent, glfwWindow);
+	TrecPointer<DrawingBoard> board = TrecPointerKey::GetNewSelfTrecPointerAlt<DrawingBoard, TDialog>(parent, glfwWindow, anagameVulkanDevice);
 
 	dynamic_cast<TDialog*>(board.Get())->SetModalMode(modalMode);
 
