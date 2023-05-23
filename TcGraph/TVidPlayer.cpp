@@ -108,7 +108,11 @@ bool Stream::DoPresent(double& baseTime)
 
         bool doPresent = ((timestampCorrection + (static_cast<double>(frame->frame->pts)) * timeBase) + baseTime) > current;
         if (!doPresent)
+        {
+            if (frames.size() > 20)
+                dropCount = frames.size() - 20;
             return ret;
+        }
         if (this->streamType == av_stream_type::t_video && frame->GetBrush().Get())
         {
             TObjectLocker lock(&thread);
@@ -228,6 +232,7 @@ bool TVidPlayer::SupplementStreams()
             }
 
             av_packet_unref(avPacket);
+            //av_packet_free(&avPacket);
         }
     }
     return true;

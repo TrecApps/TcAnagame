@@ -84,37 +84,37 @@ void TImageBrush::FillRectangle(const RECT_F& location)
 
 void TImageBrush::FillRectangle(const RECT_F& picLocation, const RECT_F& clipLocation)
 {
-	//TrecPointer<DrawingBoard> board = TrecPointerKey::TrecFromSoft<>(window);
-	//if (!board.Get())
-	//	return;
-	//float* verticies = GeneratePictureVertices(picLocation, clipLocation);
-	//if (!verticies)
-	//	return;
+	TrecPointer<DrawingBoard> board = TrecPointerKey::TrecFromSoft<>(window);
+	if (!board.Get())
+		return;
+	float* verticies = GeneratePictureVertices(picLocation, clipLocation);
+	if (!verticies)
+		return;
 
-	//board->SetShader(TrecPointer<TShader>(), shader_type::shader_2d);
+	board->SetShader(TrecPointer<TShader>(), shader_type::shader_2d);
 
-	//glBindTexture(GL_TEXTURE_2D, this->textureId);
-	//glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, this->textureId);
+	glEnable(GL_TEXTURE_2D);
 
-	//glBegin(GL_QUADS);
+	glBegin(GL_QUADS);
 
-	//glTexCoord2f(verticies[2], verticies[3]);
-	//glVertex2f(verticies[0], verticies[1]);
-	//
+	glTexCoord2f(verticies[2], verticies[3]);
+	glVertex2f(verticies[0], verticies[1]);
+	
 
-	//glTexCoord2f(verticies[6], verticies[7]);
-	//glVertex2f(verticies[4], verticies[5]);
+	glTexCoord2f(verticies[6], verticies[7]);
+	glVertex2f(verticies[4], verticies[5]);
 
-	//glTexCoord2f(verticies[10], verticies[11]);
-	//glVertex2f(verticies[8], verticies[9]);
+	glTexCoord2f(verticies[10], verticies[11]);
+	glVertex2f(verticies[8], verticies[9]);
 
-	//glTexCoord2f(verticies[22], verticies[23]);
-	//glVertex2f(verticies[20], verticies[21]);
+	glTexCoord2f(verticies[22], verticies[23]);
+	glVertex2f(verticies[20], verticies[21]);
 
-	//glEnd();
-	//glDisable(GL_TEXTURE_2D);
-	//glBindTexture(GL_TEXTURE_2D, 0);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
-	//delete[] verticies;
-	//verticies = nullptr;
+	delete[] verticies;
+	verticies = nullptr;
 }
