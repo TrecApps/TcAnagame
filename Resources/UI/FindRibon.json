@@ -1,0 +1,99 @@
+{
+	"TLayout" : {
+		"IsGallery": true,
+		"ColumnWidths": [ 200, 200 ],
+		"BorderColor": "1.0,1.0,0.0,1.0",
+		"ContentColor": "1.0,1.0,0.0,0.4",
+		"Children" : [
+		{
+			"TLayout": {
+				"ColPosition": 0,
+				"RowHeights" : ["3*","3*","3*","1*"],
+				"Children" : [
+				{
+					"TInput" : {
+						"RowPosition" : 0,
+						"CanEdit": true,
+						"ID": "Find1",
+						"Margin": "5,5,5,5",
+						"BorderColor": "1.0,1.0,0.0,1.0",
+						"EventOnTextChange" : "OnFindChange"
+					}
+				},{
+					"TInput" : {
+						"RowPosition" : 1,
+						"CanEdit": true,
+						"ID": "Find2",
+						"Margin": "5,5,5,5",
+						"BorderColor": "1.0,1.0,0.0,1.0",
+						"EventOnTextChange" : "OnFindChange"
+					}
+				},{
+					"TInput" : {
+						"RowPosition" : 2,
+						"CanEdit": true,
+						"ID": "Find3",
+						"Margin": "5,5,5,5",
+						"BorderColor": "1.0,1.0,0.0,1.0",
+						"EventOnTextChange" : "OnFindChange"
+					}
+				},{
+					{
+					"TControl" : {
+						"RowPosition" : 3,
+						"Caption": "Find",
+						"FontSize": 12,
+					}
+				}]
+			},
+		},{
+			"TLayout": {
+				"ColPosition": 1,
+				"RowHeights" : ["3*","3*","3*","3*","1*"],
+				"Children" : [
+				{
+					"TCheckBox": {
+						"RowPosition": 0,
+						"BorderColor": "1.0,1.0,0.0,1.0",
+						"Margin": "5,5,5,5",
+						"EventOnCheck": "OnSetCaseSensitivity",
+						"Caption": "Match-Case"
+					}
+				},{
+					"TCheckBox": {
+						"RowPosition": 1,
+						"BorderColor": "1.0,1.0,0.0,1.0",
+						"Margin": "5,5,5,5",
+						"EventOnCheck": "OnSetWholeWord",
+						"Caption": "Whole Words"
+					}
+				},{
+					"TCheckBox": {
+						"RowPosition": 2,
+						"BorderColor": "1.0,1.0,0.0,1.0",
+						"Margin": "5,5,5,5",
+						"EventOnCheck": "OnSetHighlightAll",
+						"Caption": "Highlight All"
+					}
+				},{
+					"TCheckBox": {
+						"RowPosition": 3,
+						"BorderColor": "1.0,1.0,0.0,1.0",
+						"Margin": "5,5,5,5",
+						"EventOnCheck": "OnSetShowReplace",
+						"Caption": "Replace"
+					}
+				},{
+					{
+					"TControl" : {
+						"RowPosition" : 4,
+						"Caption": "Options",
+						"FontSize": 12,
+					}
+				}
+				]
+			}
+		}
+		]
+	}
+}
