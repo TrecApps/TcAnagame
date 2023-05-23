@@ -18,13 +18,6 @@ TcAVFrame::TcAVFrame()
     this->frame = nullptr;
     this->createdOp = false;
 }
-TcAVFrame::TcAVFrame(const TcAVFrame& copy)
-{
-    this->frame = nullptr;
-    if (copy.frame)
-        frame = av_frame_clone(copy.frame);
-    this->brush = copy.brush;
-}
 TcAVFrame::~TcAVFrame()
 {
     av_frame_free(&frame);
@@ -44,22 +37,12 @@ void TcAVFrame::SetBrush(TrecPointer<TImageBrush> brush)
     }
 }
 
-TcAVFrame& TcAVFrame::operator=(const TcAVFrame& copy)
-{
-    if(frame)
-        av_frame_free(&frame);
-    if (copy.frame)
-        frame = av_frame_clone(copy.frame);
-    this->brush = copy.brush;
-    return *this;
-}
 
-void TcAVFrame::SetFrame(AVFrame* frame)
+int TcAVFrame::RecieveFrame(AVCodecContext* avctx)
 {
-    if(this->frame)
-        av_frame_free(&(this->frame));
-    if (frame)
-        this->frame = av_frame_clone(frame);
+    if (!frame)
+        frame = av_frame_alloc();
+    return avcodec_receive_frame(avctx, frame);
 }
 
 AVFrame* TcAVFrame::GetFrame()
@@ -220,8 +203,8 @@ bool TVidPlayer::SupplementStreams()
             if (readResult < 0) {
                 return false;
             }
-
-            readResult = avcodec_receive_frame(curStream.codec.av_codec_ctx, avFrame);
+            TrecPointer<TcAVFrame> tcFrame = TrecPointerKey::GetNewTrecPointer<TcAVFrame>();
+            readResult = tcFrame->RecieveFrame(curStream.codec.av_codec_ctx);
             if (readResult == AVERROR(EAGAIN) || readResult == AVERROR_EOF) {
                 av_packet_unref(avPacket);
                 continue;
@@ -229,9 +212,8 @@ bool TVidPlayer::SupplementStreams()
             else if (readResult < 0) {
                 return false;
             }
-            TrecPointer<TcAVFrame> tcFrame = TrecPointerKey::GetNewTrecPointer<TcAVFrame>();
-            tcFrame->SetFrame(avFrame);
-            av_frame_unref(avFrame);
+            
+
             
             curStream.frames.push_back(tcFrame);
             curStream.PrepCodec();
@@ -457,7 +439,7 @@ void TextureToAVFrameOperation::Perform(TrecPointer<DrawingBoard> board)
 
     sws_scale(context, rawFrame->data, rawFrame->linesize, 0, codecHeight, dest, dest_linesize);
 
-    frame->SetBrush(TrecPointerKey::ConvertPointer<TBrush, TImageBrush>(board->GetImageBrush(frame_data, codecWidth, codecHeight)));
+    frame->SetBrush(TrecPointerKey::ConvertPointer<TBrush, TImageBrush>(board->GetImageBrush(frame_data, codecWidth, codecHeight, GL_RGB)));
 
     _aligned_free(frame_data);
 

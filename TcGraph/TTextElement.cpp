@@ -560,6 +560,7 @@ void TTextElement::ReCreateLayout()
 			assert(tempGlyphIndex && !FT_Load_Glyph(tempFace, tempGlyphIndex, FT_LOAD_COLOR) && !FT_Render_Glyph(tempFace->glyph, FT_RENDER_MODE_NORMAL));
 			x += static_cast<float>(tempFace->glyph->bitmap.width) * static_cast<float>(widthMultiplier);
 			//continue;
+
 		}
 		else
 			x += (curFace->glyph->bitmap.width * advanceX * widthMultiplier);
@@ -601,6 +602,8 @@ void TTextElement::ReCreateLayout()
 				curLine.isCarryOver = true;
 			}
 		}
+
+		//FT_Done_Face(curFace);
 	}
 
 	if (!theText.EndsWith(L'\n'))

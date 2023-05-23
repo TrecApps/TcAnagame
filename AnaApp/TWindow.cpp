@@ -14,15 +14,15 @@ bool TWindow::IsWindow(GLFWwindow* test)
 
 void TWindow::OnDraw()
 {
-    if (needsRefresh || needsConstantRefresh)
-    {
+    //if (needsRefresh || needsConstantRefresh)
+    //{
         this->BeginDraw();
 
         if (mainPage.Get())
             mainPage->Draw(TrecPointer<TVariable>());
 
         this->ConfirmDraw();
-    }
+    //}
     needsRefresh = false;
 }
 

@@ -197,9 +197,10 @@ void TControlComponent::onDraw(RECT_F& f_loc)
 			//case TShape::T_Custom_shape:
 			//	break;
 			//}
-			brush->FillRectangle(f_loc);
 			if (image.Get())
 				image->FillRectangle(f_loc);
+			else
+			brush->FillRectangle(f_loc);
 
 			//if (isLayered)
 			//	drawingBoard->PopLayer();

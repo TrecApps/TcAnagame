@@ -37,15 +37,14 @@ class _TC_GRAPH TcAVFrame: public TObject
     bool createdOp;
 public:
     TcAVFrame();
-    TcAVFrame(const TcAVFrame& copy);
     ~TcAVFrame();
 
     TrecPointer<TImageBrush> GetBrush();
     void SetBrush(TrecPointer<TImageBrush> brush);
 
-    TcAVFrame& operator=(const TcAVFrame& copy);
 
-    void SetFrame(AVFrame* frame);
+    int RecieveFrame(AVCodecContext* avctx);
+
     AVFrame* GetFrame();
 };
 
