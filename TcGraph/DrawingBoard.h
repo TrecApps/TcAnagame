@@ -107,7 +107,13 @@ class _TC_GRAPH DrawingBoard :
     VkQueue presentQueue;
     VkSurfaceKHR surface;
     VkDevice logicalDevice;
+    VkInstance instance;
 
+    VkSwapchainKHR swapChain;
+    std::vector<VkImage> swapChainImages;
+    VkFormat swapChainImageFormat;
+    VkExtent2D swapChainExtent;
+    std::vector<VkImageView> swapChainImageViews;
 
     
 
@@ -145,10 +151,13 @@ protected:
 
     AnagameCaret caret;
     GLFWwindow* window;
-    explicit DrawingBoard(GLFWwindow* window, VkPhysicalDevice anagameVulkanDevice);
+    explicit DrawingBoard(GLFWwindow* window, VkPhysicalDevice anagameVulkanDevice, VkInstance instance);
 
     void createLogicalDevice(VkPhysicalDevice anagameVulkanDevice);
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice anagameVulkanDevice);
+
+    void createSwapChain(VkPhysicalDevice anagameVulkanDevice);
+    void createImageViews();
 
     RECT_F origArea;
     RECT_F area;

@@ -14,7 +14,7 @@ class _ANA_APP TWindow :
     TPoint mousePoint;
 protected:
 
-    TWindow(GLFWwindow* window, VkPhysicalDevice anagameVulkanDevice);
+    TWindow(GLFWwindow* window, VkPhysicalDevice anagameVulkanDevice, VkInstance instance);
     bool IsWindow(GLFWwindow* test);
 
     void OnDraw();

@@ -10,6 +10,10 @@ TrecPointer<TInstance> theInstance;
 
 typedef void(__cdecl* LOAD_PROC)();
 
+const std::vector<const char*> deviceExtensions = {
+	VK_KHR_SWAPCHAIN_EXTENSION_NAME
+};
+
 
 TrecPointer<TWindow> TInstance::GetWindow(GLFWwindow* win)
 {
@@ -186,6 +190,11 @@ void TInstance::InitializeVulkan(const std::string name)
 	}
 	std::vector<VkPhysicalDevice> devices(deviceCount);
 	vkEnumeratePhysicalDevices(vulkanInstance, &deviceCount, devices.data());
+
+	for (const auto& device : devices) {
+		
+	}
+
 	anagameVulkanDevice = devices[0];
 }
 
@@ -414,10 +423,10 @@ UINT TInstance::GenerateWindow(TrecPointer<TWindow>& window, TrecPointer<TFileSh
 	switch (type)
 	{
 	case t_window_type::t_window_type_ide:
-		board = TrecPointerKey::GetNewSelfTrecPointerAlt<DrawingBoard, TIdeWindow>(glfwWindow, anagameVulkanDevice);
+		board = TrecPointerKey::GetNewSelfTrecPointerAlt<DrawingBoard, TIdeWindow>(glfwWindow, anagameVulkanDevice, vulkanInstance);
 		break;
 	default:
-		board = TrecPointerKey::GetNewSelfTrecPointerAlt<DrawingBoard, TWindow>(glfwWindow, anagameVulkanDevice);
+		board = TrecPointerKey::GetNewSelfTrecPointerAlt<DrawingBoard, TWindow>(glfwWindow, anagameVulkanDevice, vulkanInstance);
 	}
 	// To-Do: Other Initialization
 
@@ -483,7 +492,7 @@ UINT TInstance::GenerateDialog(TrecPointer<TWindow>& window, TrecPointer<TWindow
 	if (!glfwWindow)
 		return 1;
 
-	TrecPointer<DrawingBoard> board = TrecPointerKey::GetNewSelfTrecPointerAlt<DrawingBoard, TDialog>(parent, glfwWindow, anagameVulkanDevice);
+	TrecPointer<DrawingBoard> board = TrecPointerKey::GetNewSelfTrecPointerAlt<DrawingBoard, TDialog>(parent, glfwWindow, anagameVulkanDevice, vulkanInstance);
 
 	dynamic_cast<TDialog*>(board.Get())->SetModalMode(modalMode);
 
