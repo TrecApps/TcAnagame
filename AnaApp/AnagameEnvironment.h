@@ -2,6 +2,7 @@
 #include <TPage.h>
 #include <TEnvironment.h>
 #include "AnaApp.h"
+#include "FindTextHandler.h"
 
 using env_target = enum class env_target {
     user,
@@ -79,6 +80,8 @@ class _ANA_APP BasicAnagameEnvironment :
 {
     TrecPointer<TEnvironment> anagame, user;
     TrecPointer<AGProjectEnvironment> project;
+
+    TrecPointerSoft<FindTextHandler> findTextHandler;
 protected:
     TrecPointer<TObject> RetrieveResource(const TString& name) override;
     void RetrieveResourceListSub(TDataArray<TrecPointer<TVariable>>& resources) override;

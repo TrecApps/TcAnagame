@@ -85,6 +85,9 @@ public:
 	TrecPointer<TVariable> GetData();
 
 	TString SubmitInfo(TrecPointer<TVariable>);
+
+	void OnFocus();
+	void OnNonFocus();
 };
 
 class _ANA_APP TFileSupHandler : public TPage::EventHandler

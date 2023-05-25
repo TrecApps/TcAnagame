@@ -46,7 +46,18 @@ TrecPointer<TObject> BasicAnagameEnvironment::RetrieveResource(const TString& na
 	if (!pieces->at(1).CompareNoCase(L"page") && pieces->Size() >= 3) {
 		if (!pieces->at(2).CompareNoCase(L"TextFind"))
 		{
+			auto findPageHandler = TrecPointerKey::TrecFromSoft<>(this->findTextHandler);
+			if (findPageHandler.Get())
+				return TrecPointerKey::ConvertPointer<TPage, TObject>(findPageHandler->GetPage());
 
+			TrecPointer<AnafaceBuilder> ret = TrecPointerKey::GetNewTrecPointer<AnafaceBuilder>();
+			TrecPointer<FindTextHandler> textHandler = TrecPointerKey::GetNewSelfTrecPointer<FindTextHandler>();
+			findTextHandler = TrecPointerKey::SoftFromTrec<>(textHandler);
+			ret->SetHandler(TrecPointerKey::ConvertPointer<FindTextHandler, TPage::EventHandler>(textHandler));
+			TrecPointer<TFileShell> fileShell = TFileShell::GetFileInfo(GetDirectoryWithSlash(CentralDirectories::cd_Executable) + L"UI/FindRibbon.json");
+			assert(fileShell.Get());
+			
+			return TrecPointerKey::ConvertPointer<AnafaceBuilder, TObject>(ret);
 		}
 
 	}

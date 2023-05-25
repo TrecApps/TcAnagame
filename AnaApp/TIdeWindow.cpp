@@ -252,30 +252,6 @@ void TIdeWindow::SetMainPage(TrecPointer<TPage> mainPage)
 	TString layout(TStringVariable::Extract(environment->TEnvironment::GetProperty(L"anagame.ide.layout"), L"code"));
 	LoadLayout(layout);
 
-	//TrecPointer<IdeSection> ideSection;
-	//assert(ideLayout->InitDivide(true, false, 0.75f));
-	//page = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TSwitchControl>(TWindow::GetDrawingBoard(), TDataMap<TDataMap<TString>>());
-	//dynamic_cast<TSwitchControl*>(page.Get())->onCreate(area, TrecPointer<TFileShell>());
-	//
-	//ideSection = ideLayout->GetRootSection();
-
-	//
-	//assert(ideLayout->DivideSection(ideSection, false, false, 0.66f));
-
-	//assert(ideLayout->AppendSection(ideSection, TrecPointerKey::ConvertPointer<TPage, TSwitchControl>(page)));
-	//ideSection = ideLayout->GetFirstSection(ideSection);
-
-	//page = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TSwitchControl>(TWindow::GetDrawingBoard(), TDataMap<TDataMap<TString>>());
-	//dynamic_cast<TSwitchControl*>(page.Get())->onCreate(area, TrecPointer<TFileShell>());
-
-	//assert(ideLayout->AppendSection(ideSection, TrecPointerKey::ConvertPointer<TPage, TSwitchControl>(page)));
-
-	//page = TrecPointerKey::GetNewSelfTrecPointerAlt<TPage, TSwitchControl>(TWindow::GetDrawingBoard(), TDataMap<TDataMap<TString>>());
-	//dynamic_cast<TSwitchControl*>(page.Get())->onCreate(area, TrecPointer<TFileShell>());
-
-	//assert(ideLayout->AppendSection(ideSection, TrecPointerKey::ConvertPointer<TPage, TSwitchControl>(page)));
-
-
 }
 
 bool TIdeWindow::PrepProject(const TProjectData& projectData)
