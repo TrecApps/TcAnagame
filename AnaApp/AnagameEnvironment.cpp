@@ -43,6 +43,13 @@ TrecPointer<TObject> BasicAnagameEnvironment::RetrieveResource(const TString& na
 
 		return ret;
 	}
+	if (!pieces->at(1).CompareNoCase(L"page") && pieces->Size() >= 3) {
+		if (!pieces->at(2).CompareNoCase(L"TextFind"))
+		{
+
+		}
+
+	}
 	return TrecPointer<TObject>();
 }
 void BasicAnagameEnvironment::RetrieveResourceListSub(TDataArray<TrecPointer<TVariable>>& resources) {

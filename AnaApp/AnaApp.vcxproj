@@ -147,6 +147,7 @@
     <ClInclude Include="AnaApp.h" />
     <ClInclude Include="AnagameEnvironment.h" />
     <ClInclude Include="FileHandler.h" />
+    <ClInclude Include="FindTextHandler.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="PageTypes.h" />
     <ClInclude Include="pch.h" />
@@ -159,6 +160,7 @@
     <ClCompile Include="AnagameEnvironment.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="FileHandler.cpp" />
+    <ClCompile Include="FindTextHandler.cpp" />
     <ClCompile Include="PageTypes.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
