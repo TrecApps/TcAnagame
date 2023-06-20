@@ -164,6 +164,7 @@
     <ClInclude Include="TShader.h" />
     <ClInclude Include="TTextElement.h" />
     <ClInclude Include="TVidPlayer.h" />
+    <ClInclude Include="TVulkanShader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -186,6 +187,7 @@
     <ClCompile Include="TShader.cpp" />
     <ClCompile Include="TTextElement.cpp" />
     <ClCompile Include="TVidPlayer.cpp" />
+    <ClCompile Include="TVulkanShader.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
