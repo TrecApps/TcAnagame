@@ -109,6 +109,8 @@ class _TC_GRAPH DrawingBoard :
     VkDevice logicalDevice;
     VkInstance instance;
 
+    VkRenderPass renderPass;
+
     VkSwapchainKHR swapChain;
     std::vector<VkImage> swapChainImages;
     VkFormat swapChainImageFormat;
@@ -157,6 +159,7 @@ protected:
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice anagameVulkanDevice);
 
     void createSwapChain(VkPhysicalDevice anagameVulkanDevice);
+    void createRenderPass();
     void createImageViews();
 
     RECT_F origArea;
