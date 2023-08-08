@@ -120,46 +120,8 @@ void TVulkanShader::RemovePipeline()
 	pipelineLayout = nullptr;
 }
 
-TVulkanShader::TVulkanShader()
+void TVulkanShader::SetShader(VkPrimitiveTopology topology)
 {
-	graphicsPipeline = nullptr;
-	pipelineLayout = nullptr;
-	device = nullptr;
-}
-
-
-
-void TVulkanShader::Initialize(VkDevice device, VkRenderPass renderPass, const VulkanShaderParams& params)
-{
-	RemovePipeline();
-	if (!device) return;
-	this->device = device;
-
-	TrecPointer<TFileShell> rootDirectory = TFileShell::GetFileInfo(params.rootDirectory);
-
-	assert(rootDirectory.Get());
-
-	// Vertex Shader
-	TrecPointer<TFileShell> shaderFile = TFileShell::GetFileInfo(rootDirectory->GetPath() + TC_FILE_SEP + params.vertexShader);
-	VkPipelineShaderStageCreateInfo stageInfo;
-	if (!GetStage(vk_shader_stage::vk_vertex, params.vertexFunction, params.defaultFunction, shaderFile, stageInfo))
-	{
-		throw std::runtime_error("Failed to Create Vertex Shader");
-	}
-	shaderStages.push_back(stageInfo);
-
-	// Fragment Shader
-	shaderFile = TFileShell::GetFileInfo(rootDirectory->GetPath() + TC_FILE_SEP + params.fragmentShader);
-	if (!GetStage(vk_shader_stage::vk_fragment, params.fragmentFunction, params.defaultFunction, shaderFile, stageInfo))
-	{
-		throw std::runtime_error("Failed to Create Fragment Shader");
-	}
-	shaderStages.push_back(stageInfo);
-
-	// To-Do: Address other shaders as Anagame develops
-
-
-	// End To-Do
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 	vertexInputInfo.vertexBindingDescriptionCount = 0;
@@ -167,7 +129,7 @@ void TVulkanShader::Initialize(VkDevice device, VkRenderPass renderPass, const V
 
 	VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
 	inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-	inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+	inputAssembly.topology = topology;
 	inputAssembly.primitiveRestartEnable = VK_FALSE;
 
 	VkPipelineViewportStateCreateInfo viewportState{};
@@ -242,14 +204,58 @@ void TVulkanShader::Initialize(VkDevice device, VkRenderPass renderPass, const V
 	if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create graphics pipeline!");
 	}
+}
 
+TVulkanShader::TVulkanShader()
+{
+	graphicsPipeline = nullptr;
+	pipelineLayout = nullptr;
+	device = nullptr;
+	renderPass = nullptr;
+}
+
+TVulkanShader::~TVulkanShader()
+{
 	for (UINT Rust = 0; Rust < shaderStages.Size(); Rust++) {
 		auto& shaderModule = shaderStages[Rust].module;
 		vkDestroyShaderModule(device, shaderModule, nullptr);
 		shaderModule = nullptr;
 	}
+}
 
 
 
-	//vkCreateGraphicsPipelines();
+void TVulkanShader::Initialize(VkDevice device, VkRenderPass renderPass, const VulkanShaderParams& params)
+{
+	RemovePipeline();
+	if (!device) return;
+	this->device = device;
+	this->renderPass = renderPass;
+
+	TrecPointer<TFileShell> rootDirectory = TFileShell::GetFileInfo(params.rootDirectory);
+
+	assert(rootDirectory.Get());
+
+	// Vertex Shader
+	TrecPointer<TFileShell> shaderFile = TFileShell::GetFileInfo(rootDirectory->GetPath() + TC_FILE_SEP + params.vertexShader);
+	VkPipelineShaderStageCreateInfo stageInfo;
+	if (!GetStage(vk_shader_stage::vk_vertex, params.vertexFunction, params.defaultFunction, shaderFile, stageInfo))
+	{
+		throw std::runtime_error("Failed to Create Vertex Shader");
+	}
+	shaderStages.push_back(stageInfo);
+
+	// Fragment Shader
+	shaderFile = TFileShell::GetFileInfo(rootDirectory->GetPath() + TC_FILE_SEP + params.fragmentShader);
+	if (!GetStage(vk_shader_stage::vk_fragment, params.fragmentFunction, params.defaultFunction, shaderFile, stageInfo))
+	{
+		throw std::runtime_error("Failed to Create Fragment Shader");
+	}
+	shaderStages.push_back(stageInfo);
+
+	// To-Do: Address other shaders as Anagame develops
+
+
+	// End To-Do
+	SetShader();
 }

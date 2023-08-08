@@ -10,6 +10,7 @@
 #include <TTextIntercepter.h>
 #include <TDataMap.h>
 #include <optional>
+#include "TVulkanShader.h"
 
 class CharWithSize
 {
@@ -178,7 +179,10 @@ protected:
 
     TDataArray < TrecPointer<GraphicsOp>> graphicsOperations;
 
+    TDataArray<TVulkanShader> vulkanShaders;
+
 public:
+    bool PrepVulkanShader(UINT& id, TrecPointer<TFileShell>& file);
 
     void AddOperation(TrecPointer<GraphicsOp> ops);
     void PerformGraphicsOps();

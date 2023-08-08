@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <limits>
 #include <algorithm>
+#include <TFormatReader.h>
 
 
 // Vulkan Resources
@@ -409,6 +410,22 @@ void DrawingBoard::createImageViews()
 void DrawingBoard::ResetProjection()
 {
 	orthoProjection = glm::ortho(0.0f, static_cast<float>(area.right), 0.0f, static_cast<float>(area.bottom));
+}
+
+bool DrawingBoard::PrepVulkanShader(UINT& id, TrecPointer<TFileShell>& file)
+{
+	
+	TrecPointer<TFormatReader> reader = TFormatReader::GetReader(file);
+	if(!reader.Get())
+		return false;
+
+	if (reader->Read().GetSize())
+		return false;
+	TVulkanShader::VulkanShaderParams params;
+	params.Initialize(reader->GetData());
+
+	UINT ret = vulkanShaders.push_back(TVulkanShader());
+	vulkanShaders[ret].Initialize(this->logicalDevice, this->renderPass, params);
 }
 
 void DrawingBoard::AddOperation(TrecPointer<GraphicsOp> ops)

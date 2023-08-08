@@ -3,6 +3,7 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <TFile.h>
+#include <map>
 
 using vk_shader_stage = enum class vk_shader_stage {
 	vk_vertex,
@@ -34,11 +35,16 @@ private:
 	VkPipeline graphicsPipeline;
 	VkPipelineLayout pipelineLayout;
 	VkDevice device;
+	VkRenderPass renderPass;
+	std::map<VkPrimitiveTopology, VkPipeline> graphicsPipelines;
 protected:
 	bool GetStage(vk_shader_stage stage, const TString& strStage, const TString& defaultFunction, TrecPointer<TFileShell> fileToRead, VkPipelineShaderStageCreateInfo& info);
 	void RemovePipeline();
+
+	void SetShader(VkPrimitiveTopology topology = VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 public:
 	TVulkanShader();
+	~TVulkanShader();
 	void Initialize(VkDevice device, VkRenderPass renderPass, const VulkanShaderParams& params);
 };
 
