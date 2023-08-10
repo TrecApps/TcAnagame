@@ -1,0 +1,7 @@
+{
+	"DefaultFunction": "main",
+	"VertexShader" : "Single_Color_2D.vert.spv",
+	"FragmentShader" : "Single_Color_2D.frag.spv",
+	"IsVertexCompiled" : true,
+	"IsFragmentCompiled" : true
+}

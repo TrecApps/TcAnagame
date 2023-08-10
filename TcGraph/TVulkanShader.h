@@ -26,7 +26,7 @@ public:
 		TString fragmentFunction;
 		bool isFragmentShaderCompiled;
 
-		void Initialize(TrecPointer<TVariable> shaderVars);
+		void Initialize(TrecPointer<TVariable> shaderVars, TrecActivePointer<TFileShell> sourceFile);
 	};
 private:
 	TDataArray< VkPipelineShaderStageCreateInfo > shaderStages;

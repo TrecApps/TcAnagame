@@ -3,14 +3,14 @@
 #include <cassert>
 #include <stdexcept>
 
-void TVulkanShader::VulkanShaderParams::Initialize(TrecPointer<TVariable> shaderVars)
+void TVulkanShader::VulkanShaderParams::Initialize(TrecPointer<TVariable> shaderVars, TrecActivePointer<TFileShell> sourceFile)
 {
 	TrecPointer<TJsonVariable> jVars = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(shaderVars);
 
+	this->rootDirectory = sourceFile.GetTrecPointer()->GetParent()->GetPath();
+
 	TrecPointer<TVariable> value;
-	if (jVars->RetrieveField(L"RootDirectory", value)) {
-		this->rootDirectory.Set(TStringVariable::Extract(value, L""));
-	}
+	
 
 	value.Nullify();
 	if (jVars->RetrieveField(L"DefaultFunction", value)) {
