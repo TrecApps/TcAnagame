@@ -109,11 +109,14 @@ class _TC_GRAPH DrawingBoard :
     VkSurfaceKHR surface;
     VkDevice logicalDevice;
     VkInstance instance;
+    VkCommandPool commandPool;
+    VkCommandBuffer commandBuffer;
 
     VkRenderPass renderPass;
 
     VkSwapchainKHR swapChain;
     std::vector<VkImage> swapChainImages;
+    std::vector<VkFramebuffer> swapChainBuffers;
     VkFormat swapChainImageFormat;
     VkExtent2D swapChainExtent;
     std::vector<VkImageView> swapChainImageViews;
@@ -136,7 +139,7 @@ public:
 
 protected:
 
-    using ueueFamilyIndices = struct QueueFamilyIndices {
+    using QueueFamilyIndices = struct QueueFamilyIndices {
         std::optional<uint32_t> graphicsFamily;
         std::optional<uint32_t> presentFamily;
 
@@ -156,12 +159,14 @@ protected:
     GLFWwindow* window;
     explicit DrawingBoard(GLFWwindow* window, VkPhysicalDevice anagameVulkanDevice, VkInstance instance);
 
-    void createLogicalDevice(VkPhysicalDevice anagameVulkanDevice);
+    QueueFamilyIndices createLogicalDevice(VkPhysicalDevice anagameVulkanDevice);
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice anagameVulkanDevice);
 
     void createSwapChain(VkPhysicalDevice anagameVulkanDevice);
     void createRenderPass();
     void createImageViews();
+
+    void createFramebuffers();
 
     RECT_F origArea;
     RECT_F area;
@@ -179,10 +184,11 @@ protected:
 
     TDataArray < TrecPointer<GraphicsOp>> graphicsOperations;
 
-    TDataArray<TVulkanShader> vulkanShaders;
+    TDataMap<TVulkanShader> vulkanShaders;
 
 public:
-    bool PrepVulkanShader(UINT& id, TrecPointer<TFileShell>& file);
+    bool PrepVulkanShader(TrecPointer<TFileShell>& file);
+    bool UseVulkanShader(const TString& shader, VkPrimitiveTopology topology);
 
     void AddOperation(TrecPointer<GraphicsOp> ops);
     void PerformGraphicsOps();

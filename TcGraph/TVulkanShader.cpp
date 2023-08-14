@@ -111,8 +111,10 @@ void TVulkanShader::RemovePipeline()
 {
 	if (!device)
 		return;
-	if (graphicsPipeline)
-		vkDestroyPipeline(device, graphicsPipeline, nullptr);
+	for (auto pipes = graphicsPipelines.begin(); pipes != graphicsPipelines.end(); pipes++) {
+		vkDestroyPipeline(device, pipes->second, nullptr);
+	}
+	graphicsPipelines.empty();
 	if (pipelineLayout)
 		vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
 
@@ -204,6 +206,7 @@ void TVulkanShader::SetShader(VkPrimitiveTopology topology)
 	if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create graphics pipeline!");
 	}
+	graphicsPipelines.insert({ topology, graphicsPipeline });
 }
 
 TVulkanShader::TVulkanShader()
@@ -212,6 +215,18 @@ TVulkanShader::TVulkanShader()
 	pipelineLayout = nullptr;
 	device = nullptr;
 	renderPass = nullptr;
+}
+
+TVulkanShader::TVulkanShader(const TVulkanShader& copy): 
+	functionNames(copy.functionNames),
+	shaderStages(copy.shaderStages),
+	graphicsPipelines(copy.graphicsPipelines)
+{
+	this->device = copy.device;
+	this->graphicsPipeline = copy.graphicsPipeline;
+	this->pipelineLayout = copy.pipelineLayout;
+	this->renderPass = copy.renderPass;
+	
 }
 
 TVulkanShader::~TVulkanShader()
@@ -258,4 +273,17 @@ void TVulkanShader::Initialize(VkDevice device, VkRenderPass renderPass, const V
 
 	// End To-Do
 	SetShader();
+}
+
+VkPipeline TVulkanShader::GetPipeline(VkPrimitiveTopology topology)
+{
+	SetUpShader(topology);
+	return graphicsPipelines.find(topology)->second;
+
+}
+
+void TVulkanShader::SetUpShader(VkPrimitiveTopology topology)
+{
+	if (graphicsPipelines.find(topology) == graphicsPipelines.end())
+		SetShader(topology);
 }

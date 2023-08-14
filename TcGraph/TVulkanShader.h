@@ -44,7 +44,11 @@ protected:
 	void SetShader(VkPrimitiveTopology topology = VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 public:
 	TVulkanShader();
+	TVulkanShader(const TVulkanShader& copy);
 	~TVulkanShader();
 	void Initialize(VkDevice device, VkRenderPass renderPass, const VulkanShaderParams& params);
+	VkPipeline GetPipeline(VkPrimitiveTopology topology);
+
+	void SetUpShader(VkPrimitiveTopology topology);
 };
 

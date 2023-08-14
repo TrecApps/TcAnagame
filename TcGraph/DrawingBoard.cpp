@@ -209,12 +209,31 @@ DrawingBoard::DrawingBoard(GLFWwindow* window, VkPhysicalDevice anagameVulkanDev
 	needsConstantRefresh = false;
 
 	TcInitLock(&drawingThread);
-	createLogicalDevice(anagameVulkanDevice);
+	QueueFamilyIndices indices = createLogicalDevice(anagameVulkanDevice);
 	createSwapChain(anagameVulkanDevice);
 	createImageViews();
+
+	VkCommandPoolCreateInfo poolInfo{};
+	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+	poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+	poolInfo.queueFamilyIndex = indices.graphicsFamily.value();
+
+	if (vkCreateCommandPool(this->logicalDevice, &poolInfo, nullptr, &commandPool) != VK_SUCCESS) {
+		throw std::runtime_error("failed to create command pool!");
+	}
+
+	VkCommandBufferAllocateInfo allocInfo{};
+	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	allocInfo.commandPool = commandPool;
+	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	allocInfo.commandBufferCount = 1;
+
+	if (vkAllocateCommandBuffers(logicalDevice, &allocInfo, &commandBuffer) != VK_SUCCESS) {
+		throw std::runtime_error("failed to allocate command buffers!");
+	}
 }
 
-void DrawingBoard::createLogicalDevice(VkPhysicalDevice anagameVulkanDevice)
+DrawingBoard::QueueFamilyIndices DrawingBoard::createLogicalDevice(VkPhysicalDevice anagameVulkanDevice)
 {
 	QueueFamilyIndices indices = findQueueFamilies(anagameVulkanDevice);
 
@@ -257,6 +276,8 @@ void DrawingBoard::createLogicalDevice(VkPhysicalDevice anagameVulkanDevice)
 
 	vkGetDeviceQueue(logicalDevice, indices.graphicsFamily.value(), 0, &graphicsQueue);
 	vkGetDeviceQueue(logicalDevice, indices.presentFamily.value(), 0, &presentQueue);
+
+	return indices;
 }
 
 DrawingBoard::QueueFamilyIndices DrawingBoard::findQueueFamilies(VkPhysicalDevice anagameVulkanDevice)
@@ -407,13 +428,39 @@ void DrawingBoard::createImageViews()
 	}
 }
 
+void DrawingBoard::createFramebuffers() {
+	swapChainBuffers.resize(swapChainImageViews.size());
+
+	for (size_t i = 0; i < swapChainImageViews.size(); i++) {
+		VkImageView attachments[] = {
+			swapChainImageViews[i]
+		};
+
+		VkFramebufferCreateInfo framebufferInfo{};
+		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebufferInfo.renderPass = renderPass;
+		framebufferInfo.attachmentCount = 1;
+		framebufferInfo.pAttachments = attachments;
+		framebufferInfo.width = swapChainExtent.width;
+		framebufferInfo.height = swapChainExtent.height;
+		framebufferInfo.layers = 1;
+
+		if (vkCreateFramebuffer(logicalDevice, &framebufferInfo, nullptr, &swapChainBuffers[i]) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create framebuffer!");
+		}
+	}
+}
+
 void DrawingBoard::ResetProjection()
 {
 	orthoProjection = glm::ortho(0.0f, static_cast<float>(area.right), 0.0f, static_cast<float>(area.bottom));
 }
 
-bool DrawingBoard::PrepVulkanShader(UINT& id, TrecPointer<TFileShell>& file)
+bool DrawingBoard::PrepVulkanShader(TrecPointer<TFileShell>& file)
 {
+	TVulkanShader shade;
+	if (vulkanShaders.retrieveEntry(file->GetPath(), shade))
+		return true;
 	
 	TrecPointer<TFormatReader> reader = TFormatReader::GetReader(file);
 	if(!reader.Get())
@@ -422,10 +469,36 @@ bool DrawingBoard::PrepVulkanShader(UINT& id, TrecPointer<TFileShell>& file)
 	if (reader->Read().GetSize())
 		return false;
 	TVulkanShader::VulkanShaderParams params;
-	params.Initialize(reader->GetData());
+	params.Initialize(reader->GetData(), TrecActivePointer(file));
 
-	UINT ret = vulkanShaders.push_back(TVulkanShader());
-	vulkanShaders[ret].Initialize(this->logicalDevice, this->renderPass, params);
+	shade.Initialize(this->logicalDevice, this->renderPass, params);
+	vulkanShaders.addEntry(file->GetPath(), shade);
+}
+
+bool DrawingBoard::UseVulkanShader(const TString& shader, VkPrimitiveTopology topology)
+{
+	TVulkanShader shade;
+	if(!vulkanShaders.retrieveEntry(shader, shade))
+		return false;
+
+	VkPipeline pipeline = shade.GetPipeline(topology);
+
+	vkCmdBindPipeline(this->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+
+	VkViewport viewport{};
+	viewport.x = 0.0f;
+	viewport.y = 0.0f;
+	viewport.width = static_cast<float>(swapChainExtent.width);
+	viewport.height = static_cast<float>(swapChainExtent.height);
+	viewport.minDepth = 0.0f;
+	viewport.maxDepth = 1.0f;
+	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+
+
+
+
+	//shade.
+	return true;
 }
 
 void DrawingBoard::AddOperation(TrecPointer<GraphicsOp> ops)
@@ -742,6 +815,15 @@ bool DrawingBoard::GetDisplayResolution(int& width, int& height)
 
 DrawingBoard::~DrawingBoard()
 {
+	if (commandPool) {
+		vkDestroyCommandPool(logicalDevice, commandPool, nullptr);
+		commandPool = nullptr;
+	}
+
+	for (auto framebuffer : swapChainBuffers) {
+		vkDestroyFramebuffer(logicalDevice, framebuffer, nullptr);
+	}
+
 	if (renderPass)
 		vkDestroyRenderPass(this->logicalDevice, renderPass, nullptr);
 	renderPass = nullptr;
@@ -756,27 +838,57 @@ TrecPointer<TColorBrush> gBrush;
 void DrawingBoard::BeginDraw() const
 {
 	glfwMakeContextCurrent(window);
-	glClearColor(
-		defaultClearColor.GetRed(),
-		defaultClearColor.GetGreen(), 
-		defaultClearColor.GetRed(),
-		defaultClearColor.GetOpacity());
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glMatrixMode(GL_MODELVIEW); //Switch to the drawing perspective
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	VkCommandBufferBeginInfo beginInfo{};
+	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	beginInfo.flags = 0; // Optional
+	beginInfo.pInheritanceInfo = nullptr; // Optional
 
-	glLoadIdentity(); //Reset the drawing perspective
-	if(!gBrush.Get())
-		gBrush = TrecPointerKey::ConvertPointer<TBrush, TColorBrush>( this->GetSolidColorBrush(defaultClearColor));
-	gBrush->FillRectangle(this->area);
+	if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
+		throw std::runtime_error("failed to begin recording command buffer!");
+	}
+
+	VkRenderPassBeginInfo renderPassInfo{};
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassInfo.renderPass = renderPass;
+	renderPassInfo.framebuffer = swapChainImages[0]; // To-Do: 
+	renderPassInfo.renderArea.offset = { 0, 0 };
+	renderPassInfo.renderArea.extent = swapChainExtent;
+
+	VkClearValue clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
+	renderPassInfo.clearValueCount = 1;
+	renderPassInfo.pClearValues = &clearColor;
+
+	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+
+	// Former OpenGL Era code
+
+	//glClearColor(
+	//	defaultClearColor.GetRed(),
+	//	defaultClearColor.GetGreen(), 
+	//	defaultClearColor.GetRed(),
+	//	defaultClearColor.GetOpacity());
+
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glMatrixMode(GL_MODELVIEW); //Switch to the drawing perspective
+	//glEnable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	//glLoadIdentity(); //Reset the drawing perspective
+	//if(!gBrush.Get())
+	//	gBrush = TrecPointerKey::ConvertPointer<TBrush, TColorBrush>( this->GetSolidColorBrush(defaultClearColor));
+	//gBrush->FillRectangle(this->area);
 }
 
 void DrawingBoard::ConfirmDraw()
 {
 	DrawCaret();
-	glfwSwapBuffers(window);
+	vkCmdEndRenderPass(commandBuffer);
+
+	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+		throw std::runtime_error("failed to record command buffer!");
+	}
 	glfwMakeContextCurrent(nullptr);
 }
 

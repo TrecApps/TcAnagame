@@ -10,6 +10,7 @@ class _TC_GRAPH TColorBrush :
 
     TDataArray<TColor> colors;
 
+	void PrepShader();
 public:
 	TrecPointer<DrawingBoard> GetDrawingBoard();
 

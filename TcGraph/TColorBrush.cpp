@@ -1,5 +1,8 @@
 #include "TColorBrush.h"
 
+TString solidShader(GetDirectoryWithSlash(CentralDirectories::cd_Executable) + L"Shaders/Single_Color_2d.json");
+TString vertexShader(GetDirectoryWithSlash(CentralDirectories::cd_Executable) + L"Shaders/Vertex_Color_2d.json");
+
 bool TColorBrush::NormalizeRect(RECT_F& output, const RECT_F& input, TrecPointer<DrawingBoard> board)
 {
     if(!board.Get())
@@ -15,6 +18,20 @@ bool TColorBrush::NormalizeRect(RECT_F& output, const RECT_F& input, TrecPointer
     output.top = -((input.top / r.bottom) - 1.0f);
 
     return true;
+}
+
+void TColorBrush::PrepShader()
+{
+    if (colors.Size() == 1)
+    {
+        auto file = TFileShell::GetFileInfo(solidShader);
+        TrecPointerKey::TrecFromSoft<>(window)->PrepVulkanShader(file);
+    }
+    else {
+        
+        auto file = TFileShell::GetFileInfo(vertexShader);
+        TrecPointerKey::TrecFromSoft<>(window)->PrepVulkanShader(file);
+    }
 }
 
 TrecPointer<DrawingBoard> TColorBrush::GetDrawingBoard()
@@ -52,7 +69,8 @@ void TColorBrush::DrawRectangle(const RECT_F& r, float thickness)
     TrecPointer<DrawingBoard> board = TrecPointerKey::TrecFromSoft<>(window);
     if (!board.Get())
         return;
-    board->SetShader(TrecPointer<TShader>(), shader_type::shader_2d);
+   
+    PrepShader();
     glBegin(GL_LINES);
 
     glLineWidth(thickness);
