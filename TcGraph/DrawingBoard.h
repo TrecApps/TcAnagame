@@ -192,10 +192,14 @@ protected:
     TDataArray < TrecPointer<GraphicsOp>> graphicsOperations;
 
     TDataMap<TVulkanShader> vulkanShaders;
+    TrecPointer<TDataArray<VkVertexInputBindingDescription>> bindingDesc;
+    TrecPointer<TDataArray<VkVertexInputAttributeDescription>> attributeDesc;
 
 public:
     bool PrepVulkanShader(TrecPointer<TFileShell>& file);
     bool UseVulkanShader(const TString& shader, VkPrimitiveTopology topology);
+    void RetrieveShaderDescriptors(TrecPointer<TDataArray<VkVertexInputBindingDescription>>& b,
+        TrecPointer<TDataArray<VkVertexInputAttributeDescription>>& a);
 
     void AddOperation(TrecPointer<GraphicsOp> ops);
     void PerformGraphicsOps();

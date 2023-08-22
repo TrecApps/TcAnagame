@@ -14,6 +14,8 @@ class TVulkanShader
 {
 public:
 	class VulkanShaderParams {
+		VkVertexInputBindingDescription GetBindingDesc(TrecPointer<TJsonVariable> vars);
+		VkVertexInputAttributeDescription GetAttributeDesc(TrecPointer<TJsonVariable> vars);
 	public:
 		TString rootDirectory;
 		TString defaultFunction;
@@ -26,6 +28,10 @@ public:
 		TString fragmentFunction;
 		bool isFragmentShaderCompiled;
 
+
+		TrecPointer<TDataArray<VkVertexInputBindingDescription>> bindingDesc;
+		TrecPointer<TDataArray<VkVertexInputAttributeDescription>> attributeDesc;
+
 		void Initialize(TrecPointer<TVariable> shaderVars, TrecActivePointer<TFileShell> sourceFile);
 	};
 private:
@@ -37,6 +43,10 @@ private:
 	VkDevice device;
 	VkRenderPass renderPass;
 	std::map<VkPrimitiveTopology, VkPipeline> graphicsPipelines;
+
+	// Bindings and Attributes
+	TrecPointer<TDataArray<VkVertexInputBindingDescription>> bindingDesc;
+	TrecPointer<TDataArray<VkVertexInputAttributeDescription>> attributeDesc;
 protected:
 	bool GetStage(vk_shader_stage stage, const TString& strStage, const TString& defaultFunction, TrecPointer<TFileShell> fileToRead, VkPipelineShaderStageCreateInfo& info);
 	void RemovePipeline();
@@ -48,6 +58,9 @@ public:
 	~TVulkanShader();
 	void Initialize(VkDevice device, VkRenderPass renderPass, const VulkanShaderParams& params);
 	VkPipeline GetPipeline(VkPrimitiveTopology topology);
+
+	void RetrieveShaderDescriptors(TrecPointer<TDataArray<VkVertexInputBindingDescription>>& b,
+		TrecPointer<TDataArray<VkVertexInputAttributeDescription>>& a);
 
 	void SetUpShader(VkPrimitiveTopology topology);
 };

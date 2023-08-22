@@ -506,6 +506,8 @@ bool DrawingBoard::UseVulkanShader(const TString& shader, VkPrimitiveTopology to
 
 	VkPipeline pipeline = shade.GetPipeline(topology);
 
+	shade.RetrieveShaderDescriptors(bindingDesc, attributeDesc);
+
 	vkCmdBindPipeline(this->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 
 	VkViewport viewport{};
@@ -522,6 +524,12 @@ bool DrawingBoard::UseVulkanShader(const TString& shader, VkPrimitiveTopology to
 
 	//shade.
 	return true;
+}
+
+void DrawingBoard::RetrieveShaderDescriptors(TrecPointer<TDataArray<VkVertexInputBindingDescription>>& b, TrecPointer<TDataArray<VkVertexInputAttributeDescription>>& a)
+{
+	b = this->bindingDesc;
+	a = this->attributeDesc;
 }
 
 void DrawingBoard::AddOperation(TrecPointer<GraphicsOp> ops)

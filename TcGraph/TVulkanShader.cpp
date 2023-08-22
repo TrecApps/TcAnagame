@@ -3,6 +3,90 @@
 #include <cassert>
 #include <stdexcept>
 
+TDataMap<VkFormat> vkFormats;
+
+static void PrepFormats() {
+	if (vkFormats.count())
+		return;
+
+	vkFormats.addEntry(L"float", VK_FORMAT_R32_SFLOAT);
+	vkFormats.addEntry(L"float2", VK_FORMAT_R32G32_SFLOAT);
+	vkFormats.addEntry(L"float3", VK_FORMAT_R32G32B32_SFLOAT);
+	vkFormats.addEntry(L"float4", VK_FORMAT_R32G32B32A32_SFLOAT);
+
+	vkFormats.addEntry(L"int", VK_FORMAT_R32_SINT);
+	vkFormats.addEntry(L"sint", VK_FORMAT_R32_SINT);
+	vkFormats.addEntry(L"uint", VK_FORMAT_R32_UINT);
+
+	vkFormats.addEntry(L"int2", VK_FORMAT_R32G32_SINT);
+	vkFormats.addEntry(L"sint2", VK_FORMAT_R32G32_SINT);
+	vkFormats.addEntry(L"uint2", VK_FORMAT_R32G32_UINT);
+
+	vkFormats.addEntry(L"int3", VK_FORMAT_R32G32B32_SINT);
+	vkFormats.addEntry(L"sint3", VK_FORMAT_R32G32B32_SINT);
+	vkFormats.addEntry(L"uint3", VK_FORMAT_R32G32B32_UINT);
+
+	vkFormats.addEntry(L"int4", VK_FORMAT_R32G32B32A32_SINT);
+	vkFormats.addEntry(L"sint4", VK_FORMAT_R32G32B32A32_SINT);
+	vkFormats.addEntry(L"uint4", VK_FORMAT_R32G32B32A32_UINT);
+
+}
+
+VkVertexInputBindingDescription TVulkanShader::VulkanShaderParams::GetBindingDesc(TrecPointer<TJsonVariable> vars)
+{
+	VkVertexInputBindingDescription ret{
+		0, // binding
+		0, // stride
+		VK_VERTEX_INPUT_RATE_VERTEX // input rate
+	};
+
+	if (vars.Get()) {
+		TrecPointer<TVariable> var;
+		if (vars->RetrieveField(L"Binding", var))
+			ret.binding = var->Get4Value();
+		if (vars->RetrieveField(L"Stride", var))
+			ret.stride = var->Get4Value();
+		
+		if (vars->RetrieveField(L"InputRate", var)) {
+			TString rate(TStringVariable::Extract(var, L"Vertex"));
+			if (!rate.CompareNoCase(L"Vertex"))
+				ret.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+			else if (!rate.CompareNoCase(L"Instance"))
+				ret.inputRate = VK_VERTEX_INPUT_RATE_INSTANCE;
+			else if (!rate.CompareNoCase(L"MaxEnum"))
+				ret.inputRate = VK_VERTEX_INPUT_RATE_MAX_ENUM;
+		}
+	}
+	return ret;
+}
+
+VkVertexInputAttributeDescription TVulkanShader::VulkanShaderParams::GetAttributeDesc(TrecPointer<TJsonVariable> vars)
+{
+	PrepFormats();
+	VkVertexInputAttributeDescription ret{
+		0, // binding
+		0, // location in shader
+		VK_FORMAT_UNDEFINED, // Input format
+		0 // Offset
+	};
+	if (vars.Get()) {
+		TrecPointer<TVariable> var;
+		if (vars->RetrieveField(L"Binding", var))
+			ret.binding = var->Get4Value();
+		if (vars->RetrieveField(L"Location", var))
+			ret.location = var->Get4Value();
+		if (vars->RetrieveField(L"Offset", var))
+			ret.location = var->Get4Value();
+
+		if (vars->RetrieveField(L"", var)) {
+			TString key(TStringVariable::Extract(var, L""));
+			vkFormats.retrieveEntry(key, ret.format);
+		}
+	}
+
+	return ret;
+}
+
 void TVulkanShader::VulkanShaderParams::Initialize(TrecPointer<TVariable> shaderVars, TrecActivePointer<TFileShell> sourceFile)
 {
 	TrecPointer<TJsonVariable> jVars = TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(shaderVars);
@@ -49,6 +133,32 @@ void TVulkanShader::VulkanShaderParams::Initialize(TrecPointer<TVariable> shader
 		this->isFragmentShaderCompiled = value->Get4Value();
 	}
 
+
+	// Now Set up the Binding and Attribute Desc
+	TDataArray<VkVertexInputBindingDescription> bDesc;
+	TDataArray<VkVertexInputAttributeDescription> aDesc;
+
+	if (jVars->RetrieveField(L"BindingDesc", value) && value.Get() && value->GetVarType() == var_type::list) {
+		TrecPointer<TArrayVariable> aValue = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(value);
+
+		for (UINT Rust = 0; aValue->At(value, Rust); Rust++) {
+			bDesc.push_back(this->GetBindingDesc(TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(value)));
+		}
+	}
+
+	if (jVars->RetrieveField(L"AttributeDesc", value) && value.Get() && value->GetVarType() == var_type::list) {
+		TrecPointer<TArrayVariable> aValue = TrecPointerKey::ConvertPointer<TVariable, TArrayVariable>(value);
+
+		for (UINT Rust = 0; aValue->At(value, Rust); Rust++) {
+
+			aDesc.push_back(this->GetAttributeDesc(TrecPointerKey::ConvertPointer<TVariable, TJsonVariable>(value)));
+		}
+	}
+
+	if (bDesc.Size())
+		this->bindingDesc = TrecPointerKey::GetNewTrecPointer<TDataArray<VkVertexInputBindingDescription>>(bDesc);
+	if (aDesc.Size())
+		this->attributeDesc = TrecPointerKey::GetNewTrecPointer<TDataArray<VkVertexInputAttributeDescription>>(aDesc);
 }
 
 
@@ -247,6 +357,9 @@ void TVulkanShader::Initialize(VkDevice device, VkRenderPass renderPass, const V
 	this->device = device;
 	this->renderPass = renderPass;
 
+	this->attributeDesc = params.attributeDesc;
+	this->bindingDesc = params.bindingDesc;
+
 	TrecPointer<TFileShell> rootDirectory = TFileShell::GetFileInfo(params.rootDirectory);
 
 	assert(rootDirectory.Get());
@@ -280,6 +393,12 @@ VkPipeline TVulkanShader::GetPipeline(VkPrimitiveTopology topology)
 	SetUpShader(topology);
 	return graphicsPipelines.find(topology)->second;
 
+}
+
+void TVulkanShader::RetrieveShaderDescriptors(TrecPointer<TDataArray<VkVertexInputBindingDescription>>& b, TrecPointer<TDataArray<VkVertexInputAttributeDescription>>& a)
+{
+	b = this->bindingDesc;
+	a = this->attributeDesc;
 }
 
 void TVulkanShader::SetUpShader(VkPrimitiveTopology topology)
