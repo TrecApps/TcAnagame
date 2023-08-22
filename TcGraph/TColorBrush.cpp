@@ -22,16 +22,21 @@ bool TColorBrush::NormalizeRect(RECT_F& output, const RECT_F& input, TrecPointer
 
 void TColorBrush::PrepShader()
 {
-    if (colors.Size() == 1)
-    {
+    // To-Do: Implement multiColor support
+    
+    
+    //if (colors.Size() == 1)
+    //{
         auto file = TFileShell::GetFileInfo(solidShader);
         TrecPointerKey::TrecFromSoft<>(window)->PrepVulkanShader(file);
-    }
-    else {
+        
+    //}
+
+    /*else {
         
         auto file = TFileShell::GetFileInfo(vertexShader);
         TrecPointerKey::TrecFromSoft<>(window)->PrepVulkanShader(file);
-    }
+    }*/
 }
 
 TrecPointer<DrawingBoard> TColorBrush::GetDrawingBoard()
@@ -71,6 +76,12 @@ void TColorBrush::DrawRectangle(const RECT_F& r, float thickness)
         return;
    
     PrepShader();
+
+    auto file = TFileShell::GetFileInfo(solidShader);
+    TrecPointerKey::TrecFromSoft<>(window)->UseVulkanShader(solidShader, VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_LINE_LIST);
+
+
+
     glBegin(GL_LINES);
 
     glLineWidth(thickness);

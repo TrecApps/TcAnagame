@@ -3,5 +3,19 @@
 	"VertexShader" : "Single_Color_2D.vert.spv",
 	"FragmentShader" : "Single_Color_2D.frag.spv",
 	"IsVertexCompiled" : true,
-	"IsFragmentCompiled" : true
+	"IsFragmentCompiled" : true,
+	"BindingDesc": [
+	{
+		"Binding": 0,
+		"Stride": 8
+	}
+	],
+	"AttributeDesc": [
+	{
+		"Binding": 0,
+		"Location": 0,
+		"Format": "float2",
+		"Offset": 0
+	}
+	]
 }

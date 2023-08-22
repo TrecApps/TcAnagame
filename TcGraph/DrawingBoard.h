@@ -112,6 +112,10 @@ class _TC_GRAPH DrawingBoard :
     VkCommandPool commandPool;
     VkCommandBuffer commandBuffer;
 
+    VkSemaphore imageAvailableSemaphore;
+    VkSemaphore renderFinishedSemaphore;
+    VkFence inFlightFence;
+
     VkRenderPass renderPass;
 
     VkSwapchainKHR swapChain;
@@ -167,6 +171,9 @@ protected:
     void createImageViews();
 
     void createFramebuffers();
+    void createSyncObjects();
+
+    mutable uint32_t imageIndex;
 
     RECT_F origArea;
     RECT_F area;
